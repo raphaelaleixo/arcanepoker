@@ -218,6 +218,11 @@ describe("Page (rank '0') rules", () => {
     ];
     const result = evaluateBestHand(cards, OPT);
     expect(result.rankName).toBe("straight");
+    // Ace must appear last (before Page), acting as 1
+    const aceIndex = result.bestFive.findIndex((card) => card.value === "A");
+    const pageIndex = result.bestFive.findIndex((card) => card.value === "0");
+    expect(aceIndex).toBeLessThan(result.bestFive.length); // Ace is in the hand
+    expect(pageIndex).toBe(result.bestFive.length - 1);    // Page is the very last
   });
 
   it("Page-Ace straight ranks lower than A-2-3-4-5 straight", () => {
@@ -269,6 +274,10 @@ describe("Page (rank '0') rules", () => {
     const result = evaluateBestHand(cards, OPT);
     expect(result.rankName).toBe("straight");
     expect(result.kickers[0]).toBe(5); // top of the wheel is 5
+    // Ace must appear last in bestFive (value 1, not 14)
+    const aceCard = result.bestFive.find((card) => card.value === "A")!;
+    const aceIndex = result.bestFive.indexOf(aceCard);
+    expect(aceIndex).toBe(result.bestFive.length - 1);
   });
 
   it("Page-2-3-4-5 is NOT a straight (Page only connects adjacent to Ace)", () => {

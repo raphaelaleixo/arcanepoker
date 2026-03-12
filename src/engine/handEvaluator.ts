@@ -136,6 +136,18 @@ function cardKickers(
   return cards.map((c) => numVal(c, inverted));
 }
 
+/**
+ * When Ace is used as the low card in a straight (A-2-3-4-5 or Page-A-2-3-4),
+ * return the effective numeric value to use for display/sorting purposes.
+ * In all other contexts, Ace keeps its normal value (14 or inverted 1).
+ */
+function aceLowVal(card: StandardCard, desc: number[]): number {
+  if (card.value !== "A") return -1; // sentinel: not an ace
+  const isAceLowWheel = desc[0] === 14 && desc[1] === 5; // A-2-3-4-5
+  const isPageAce     = desc[0] === 14 && desc[4] === 0; // Page-A-2-3-4
+  return isAceLowWheel || isPageAce ? 1 : -1;
+}
+
 // ─── Evaluate exactly 5 cards ─────────────────────────────────────────────────
 
 function evaluateFive(
@@ -207,7 +219,21 @@ function evaluateFive(
     kickers = cardKickers(sorted, inverted, emperorActive);
   }
 
-  return { rankName, rankValue, kickers, bestFive: sorted };
+  // For ace-low straights, re-sort bestFive treating Ace as 1 so it appears last.
+  let bestFive = sorted;
+  if (
+    (rankName === "straight" || rankName === "straight-flush") &&
+    desc[0] === 14 &&
+    (desc[4] === 0 || desc[1] === 5)
+  ) {
+    bestFive = [...sorted].sort((a, b) => {
+      const av = aceLowVal(a, desc) !== -1 ? aceLowVal(a, desc) : numVal(a, inverted);
+      const bv = aceLowVal(b, desc) !== -1 ? aceLowVal(b, desc) : numVal(b, inverted);
+      return bv - av;
+    });
+  }
+
+  return { rankName, rankValue, kickers, bestFive };
 }
 
 // ─── Best 5 from n cards ──────────────────────────────────────────────────────
