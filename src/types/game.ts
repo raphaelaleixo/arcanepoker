@@ -124,6 +124,7 @@ export interface ActiveArcana {
 /** Which user interaction the game is waiting for before it can proceed */
 export type PendingInteraction =
   | { type: "arcana-reveal"; arcanaCard: ArcanaCard } // hero must click to reveal & apply arcana
+  | { type: "page-challenge" }                        // winner(s) with a Page collect big blind from all others
   | { type: "chariot-pass"; playerId: string }        // hero picks a card to pass
   | { type: "temperance-pick"; playerId: string }     // hero picks 1 of 3 river cards (candidates in state)
   | { type: "star-discard"; playerId: string }         // hero decides whether to swap

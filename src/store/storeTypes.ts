@@ -108,6 +108,7 @@ export type GameAction =
   | { type: "RESOLVE_MAGICIAN"; payload: { suit: string } }
   | { type: "RESOLVE_JUDGEMENT"; payload: { rejoin: boolean } }
   | { type: "REVEAL_ARCANA" }
+  | { type: "RESOLVE_PAGE_CHALLENGE" }
   | { type: "DISMISS_TAROT_READING" }
   | { type: "NEXT_HAND" };
 

@@ -216,6 +216,34 @@ export function CommunityArea({ sx }: CommunityAreaProps) {
         </Box>
       )}
 
+      {/* Challenge of the Page */}
+      {state.pendingInteraction?.type === "page-challenge" && (
+        <Box
+          sx={{
+            border: "1px solid",
+            borderColor: "gold.dark",
+            borderRadius: 2,
+            p: 1,
+            maxWidth: 260,
+            background: "rgba(123,63,0,0.25)",
+            textAlign: "center",
+          }}
+        >
+          <Typography
+            variant="caption"
+            sx={{ display: "block", color: "gold.main", fontWeight: "bold", fontSize: "0.75rem" }}
+          >
+            Challenge of the Page
+          </Typography>
+          <Typography
+            variant="caption"
+            sx={{ display: "block", color: "silver.light", fontSize: "0.65rem", fontStyle: "italic", mt: 0.25 }}
+          >
+            The winner holds a Page — all others pay {state.bigBlind} chips.
+          </Typography>
+        </Box>
+      )}
+
       {/* Arcana pending reveal — face-down card */}
       {pendingArcanaCard && (
         <Box sx={{ textAlign: "center" }}>

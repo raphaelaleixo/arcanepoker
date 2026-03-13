@@ -153,7 +153,28 @@ export function PokerTable() {
             isHero
           />
         )}
-        {state.pendingInteraction?.type === "arcana-reveal" ? (
+        {state.pendingInteraction?.type === "page-challenge" ? (
+          <Button
+            variant="contained"
+            size="large"
+            onClick={() => dispatch({ type: "RESOLVE_PAGE_CHALLENGE" })}
+            sx={{
+              px: 5,
+              py: 1,
+              background: "linear-gradient(135deg, #7B3F00, #3E1F00)",
+              border: "1px solid",
+              borderColor: "gold.main",
+              color: "gold.light",
+              letterSpacing: "0.08em",
+              "&:hover": {
+                background: "linear-gradient(135deg, #A0522D, #5C2E00)",
+                borderColor: "gold.light",
+              },
+            }}
+          >
+            Challenge of the Page
+          </Button>
+        ) : state.pendingInteraction?.type === "arcana-reveal" ? (
           <Button
             variant="contained"
             size="large"

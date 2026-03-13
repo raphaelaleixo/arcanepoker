@@ -269,6 +269,18 @@ function evaluateShowdown(state: StoreGameState): StoreGameState {
   // First-win tarot reading trigger
   const heroWon = winnerIds.includes(HERO_ID) && !state.hasWonFirstHand;
 
+  // Challenge of the Page: any winner with a Page in their hole cards
+  const pageChallengePending = winnerIds.some((id) => {
+    const p = newPlayers.find((pl) => pl.id === id);
+    return p?.holeCards.some((c) => c.value === "0");
+  });
+
+  const pendingInteraction = heroWon
+    ? { type: "tarot-reading" as const }
+    : pageChallengePending
+    ? { type: "page-challenge" as const }
+    : null;
+
   return {
     ...state,
     stage: "showdown",
@@ -277,7 +289,7 @@ function evaluateShowdown(state: StoreGameState): StoreGameState {
     winnerIds,
     handResults,
     hasWonFirstHand: state.hasWonFirstHand || heroWon,
-    pendingInteraction: heroWon ? { type: "tarot-reading" } : null,
+    pendingInteraction,
   };
 }
 
@@ -896,6 +908,32 @@ function resolveJudgement(
 
 import { CARD_NUMERIC_VALUES } from "../types/game";
 
+// ─── Challenge of the Page ────────────────────────────────────────────────────
+
+function resolvePageChallenge(state: StoreGameState): StoreGameState {
+  const pageWinners = state.players.filter(
+    (p) => state.winnerIds.includes(p.id) && p.holeCards.some((c) => c.value === "0")
+  );
+
+  if (pageWinners.length === 0) return { ...state, pendingInteraction: null };
+
+  const players = [...state.players] as GamePlayer[];
+
+  for (const winner of pageWinners) {
+    let totalCollected = 0;
+    for (let i = 0; i < players.length; i++) {
+      if (players[i].id === winner.id) continue;
+      const payment = Math.min(state.bigBlind, players[i].stack);
+      players[i] = { ...players[i], stack: players[i].stack - payment };
+      totalCollected += payment;
+    }
+    const wIdx = players.findIndex((p) => p.id === winner.id);
+    players[wIdx] = { ...players[wIdx], stack: players[wIdx].stack + totalCollected };
+  }
+
+  return { ...state, players, pendingInteraction: null };
+}
+
 // ─── Next hand prep ───────────────────────────────────────────────────────────
 
 function prepareNextHand(state: StoreGameState): StoreGameState {
@@ -952,6 +990,9 @@ export function gameReducer(
       const { arcanaCard } = state.pendingInteraction;
       return applyArcana({ ...state, pendingInteraction: null }, arcanaCard);
     }
+
+    case "RESOLVE_PAGE_CHALLENGE":
+      return resolvePageChallenge(state);
 
     case "DISMISS_TAROT_READING":
       return { ...state, pendingInteraction: null };
