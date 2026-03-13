@@ -1,5 +1,15 @@
+/**
+ * Client-side tarot reading caller.
+ *
+ * POSTs to the Vercel Edge Function at /api/tarot (project root: api/tarot.ts),
+ * which proxies the request to Google Gemini and returns a prophecy.
+ *
+ * On any failure (network error, non-ok response, or parse error), falls back
+ * to a random entry from MOCK_PROPHECIES prefixed with an error note.
+ */
 import type { TarotReadingRequest, TarotReadingResponse } from "../types/game";
 
+// Fallback prophecies — used only when the /api/tarot endpoint is unreachable or fails.
 const MOCK_PROPHECIES = [
   "The cards reveal a convergence of fate — your hand was more than cards; it was destiny woven by unseen hands.",
   "The Arcana whisper: what was won today carries the echo of countless shuffles yet to come.",
@@ -19,7 +29,8 @@ export async function requestTarotReading(
     });
     if (!res.ok) throw new Error("Tarot reading failed");
     return (await res.json()) as TarotReadingResponse;
-  } catch {
+  } catch (err) {
+    console.error("[tarot] Reading failed, using fallback:", err);
     const index = Math.floor(Math.random() * MOCK_PROPHECIES.length);
     return {
       prophecy: `[The spirits faltered in their message.] ${MOCK_PROPHECIES[index]}`,
