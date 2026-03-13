@@ -69,5 +69,5 @@ export default async function handler(req: Request): Promise<Response> {
   if (!text) {
     return Response.json({ error: "Gemini returned no text" }, { status: 502 });
   }
-  return Response.json({ prophecy: text } satisfies TarotReadingResponse);
+  return Response.json({ prophecy: text } as TarotReadingResponse);
 }
