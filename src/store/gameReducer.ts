@@ -11,7 +11,7 @@ import {
   judgementShouldRejoin,
 } from "../engine/ai";
 import type { EvalOptions } from "../engine/handEvaluator";
-import type { StandardCard, ArcanaCard, ActionType } from "../types/types";
+import type { StandardCard, ArcanaCard, ActionType, GameStage } from "../types/types";
 import type { ActiveArcana, ArcanaEffectKey } from "../types/game";
 import type {
   StoreGameState,
@@ -720,7 +720,7 @@ function applyArcana(
 
     case "priestess-reveal": {
       // Bots each reveal their lower-value hole card
-      const priestessRevealedCards = { ...state.priestessRevealedCards };
+      const priestessRevealedCards = { ...base.priestessRevealedCards };
       for (const p of base.players.filter((pl) => pl.type === "ai" && !pl.folded)) {
         if (p.holeCards.length === 0) continue;
         const sorted = [...p.holeCards].sort(
@@ -1045,7 +1045,7 @@ export function gameReducer(
 
     case "FORCE_ARCANA": {
       const VALID_STAGES = ["pre-flop", "flop", "turn", "river"] as const;
-      if (!(VALID_STAGES as readonly string[]).includes(state.stage)) return state;
+      if (!(VALID_STAGES as readonly GameStage[]).includes(state.stage)) return state;
       const arcanaCard = { suit: "arcana" as const, value: action.payload.value };
       const resetState: StoreGameState = {
         ...state,

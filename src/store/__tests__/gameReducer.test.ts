@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { gameReducer } from "../gameReducer";
 import { createInitialState } from "../initialState";
 import type { StoreGameState } from "../storeTypes";
-import type { ArcanaValue } from "../../types/types";
+import type { ArcanaValue, StandardCard } from "../../types/types";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -126,7 +126,7 @@ describe("startHand resets priestessRevealedCards", () => {
   it("clears priestessRevealedCards on NEXT_HAND", () => {
     const base = makePreFlopState();
     // Manually inject some priestess data
-    const state = { ...base, priestessRevealedCards: { "hero": { value: "A", suit: "hearts" } as any } };
+    const state = { ...base, priestessRevealedCards: { "hero": { value: "A", suit: "hearts" } as StandardCard } };
     // Advance to showdown to allow NEXT_HAND
     const showdown = { ...state, stage: "showdown" as const, pendingInteraction: null };
     const next = gameReducer(showdown, { type: "NEXT_HAND" });
