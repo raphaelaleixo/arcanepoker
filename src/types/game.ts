@@ -1,7 +1,7 @@
 // Arcane Poker — extended game types
 // Imports primitives from types.ts; adds engine, AI, and Arcana-specific types.
 
-import type { ArcanaCard, ArcanaValue, StandardCard } from "./types";
+import type { ArcanaCard, StandardCard } from "./types";
 
 // ─── Suits as bot archetypes ────────────────────────────────────────────────
 

@@ -27,7 +27,8 @@ const MOCK_PROPHECIES = [
  *   const response = await fetch('/api/tarot', { method: 'POST', body: JSON.stringify(request) });
  */
 export async function requestTarotReading(
-  request: TarotReadingRequest
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _request: TarotReadingRequest
 ): Promise<TarotReadingResponse> {
   // --- MOCK IMPLEMENTATION ---
   // Simulate network latency
