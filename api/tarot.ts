@@ -31,11 +31,20 @@ export default async function handler(req: Request): Promise<Response> {
     return Response.json({ error: "Invalid request body" }, { status: 400 });
   }
 
-  if (!body.heroHoleCards || !body.communityCards || !body.handRank) {
+  if (
+    !Array.isArray(body.heroHoleCards) || body.heroHoleCards.length === 0 ||
+    !Array.isArray(body.communityCards) || body.communityCards.length === 0 ||
+    !body.handRank
+  ) {
     return Response.json({ error: "Invalid request body" }, { status: 400 });
   }
 
   const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    console.error("GEMINI_API_KEY is not set");
+    return Response.json({ error: "Server configuration error" }, { status: 500 });
+  }
+
   const geminiRes = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
     {
@@ -56,6 +65,9 @@ export default async function handler(req: Request): Promise<Response> {
     return Response.json({ error: "Gemini returned no candidates" }, { status: 502 });
   }
 
-  const prophecy: string = candidates[0].content.parts[0].text;
-  return Response.json({ prophecy } satisfies TarotReadingResponse);
+  const text = candidates[0]?.content?.parts?.[0]?.text;
+  if (!text) {
+    return Response.json({ error: "Gemini returned no text" }, { status: 502 });
+  }
+  return Response.json({ prophecy: text } satisfies TarotReadingResponse);
 }
