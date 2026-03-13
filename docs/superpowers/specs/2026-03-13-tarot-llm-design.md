@@ -15,7 +15,7 @@ Replace the mock prophecy system in Arcane Poker with real LLM-generated tarot r
 
 ```
 Browser (React)
-  → POST /api/tarot  (Vercel Serverless Function at api/tarot.ts)
+  → POST /api/tarot  (Vercel Edge Function at api/tarot.ts)
     → POST https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent
   ← { prophecy: "..." }
 ← renders prophecy in UI
@@ -29,19 +29,28 @@ Browser (React)
 
 | File | Action | Purpose |
 |------|--------|---------|
-| `api/tarot.ts` | Create (project root) | Vercel Serverless Function — proxies request to Gemini |
+| `api/tarot.ts` | Create (project root) | Vercel Edge Function — proxies request to Gemini |
 | `src/api/tarot.ts` | Edit | Switch from mock to production fetch; add error fallback |
 
 ---
 
 ## Serverless Function: `api/tarot.ts`
 
+- **Runtime:** Vercel Edge Runtime (`export const config = { runtime: 'edge' }`)
+  — uses the Web API `Request`/`Response` signature; body parsed with `req.json()`; responses via `new Response(...)` or `Response.json(...)`
 - **Route:** `/api/tarot` (auto-discovered by Vercel from the `api/` directory at project root)
-- **Method:** POST
+- **Accepted method:** POST only. Any other method returns HTTP 405 with `{ error: "Method not allowed" }`.
 - **Input:** `TarotReadingRequest` JSON body (`heroHoleCards`, `communityCards`, `handRank`, `activeArcanaName`)
-- **Output:** `TarotReadingResponse` JSON (`{ prophecy: string }`)
+- **Output:** `TarotReadingResponse` JSON (`{ prophecy: string }`) with `Content-Type: application/json`
+- **CORS:** Not configured — the app is deployed same-origin on Vercel; CORS headers are out of scope.
+
+### Request Validation
+
+Before calling Gemini, validate that the parsed body contains the required fields (`heroHoleCards`, `communityCards`, `handRank`). If the body is unparseable or missing required fields, return HTTP 400 with `{ error: "Invalid request body" }`.
 
 ### Prompt Design
+
+`activeArcanaName` is `string | null` in `TarotReadingRequest`. When building the prompt, convert `null` to the string `"None"`.
 
 ```
 You are a mystical tarot reader for a poker game called Arcane Poker.
@@ -50,7 +59,7 @@ A player just won a hand. Deliver a dramatic, mystical one-paragraph prophecy.
 Winning hand: {handRank}
 Hole cards: {e.g. "King of Spades, 7 of Hearts"}
 Community cards: {e.g. "Ace of Diamonds, 10 of Clubs, 3 of Hearts, 2 of Spades, Jack of Diamonds"}
-Active Major Arcana: {e.g. "The Tower" or "None"}
+Active Major Arcana: {activeArcanaName ?? "None"}
 
 Keep it under 80 words. Speak in a mystical, arcane tone. No bullet points.
 ```
@@ -64,8 +73,14 @@ Keep it under 80 words. Speak in a mystical, arcane tone. No bullet points.
 
 ### Error Handling (Server-side)
 
-- If Gemini returns non-200: respond with HTTP 502 and `{ error: "Gemini call failed" }`
-- No retries
+| Condition | Response |
+|-----------|----------|
+| Non-POST request | HTTP 405 `{ error: "Method not allowed" }` |
+| Unparseable or missing fields | HTTP 400 `{ error: "Invalid request body" }` |
+| Gemini returns non-200 | HTTP 502 `{ error: "Gemini call failed" }` |
+| Gemini returns 200 but `candidates` is empty (e.g. safety filter triggered) | HTTP 502 `{ error: "Gemini returned no candidates" }` |
+
+All responses include `Content-Type: application/json`. No retries.
 
 ---
 
@@ -102,4 +117,5 @@ This keeps the UI intact and the tone consistent even when the LLM call fails.
 - Caching responses
 - Streaming responses
 - Switching models
+- CORS headers (same-origin Vercel deployment)
 - Any changes to the UI layer or `TarotReadingRequest`/`TarotReadingResponse` types
