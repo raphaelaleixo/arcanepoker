@@ -30,7 +30,7 @@ const ARCANA_LIST = Array.from({ length: 22 }, (_, i) => {
 
 export function PlaygroundDrawer({ open, onClose }: PlaygroundDrawerProps) {
   const { state, dispatch } = useGame();
-  const isValidStage = (VALID_STAGES as readonly string[]).includes(state.stage);
+  const isValidStage = VALID_STAGES.includes(state.stage as typeof VALID_STAGES[number]);
 
   function handleForce(value: ArcanaValue) {
     dispatch({ type: "FORCE_ARCANA", payload: { value } });
