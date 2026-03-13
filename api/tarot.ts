@@ -1,5 +1,7 @@
 import type { TarotReadingRequest, TarotReadingResponse } from "../src/types/game";
 
+declare const process: { env: Record<string, string | undefined> };
+
 export const config = { runtime: "edge" };
 
 export function buildPrompt(request: TarotReadingRequest): string {
