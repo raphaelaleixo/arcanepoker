@@ -89,7 +89,6 @@ export function createInitialState(): StoreGameState {
     hierophantShield: false,
 
     handNumber: 1,
-    hasWonFirstHand: false,
     isFinalHand: false,
     pendingInteraction: null,
 

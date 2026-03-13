@@ -77,7 +77,6 @@ export interface StoreGameState {
 
   // ── Session ──────────────────────────────────────────────────────────────────
   handNumber: number;
-  hasWonFirstHand: boolean;
   isFinalHand: boolean;
   pendingInteraction: PendingInteraction | null;
 
@@ -109,7 +108,6 @@ export type GameAction =
   | { type: "RESOLVE_JUDGEMENT"; payload: { rejoin: boolean } }
   | { type: "REVEAL_ARCANA" }
   | { type: "RESOLVE_PAGE_CHALLENGE" }
-  | { type: "DISMISS_TAROT_READING" }
   | { type: "NEXT_HAND" };
 
 // ─── Arcana value → effect key mapping ───────────────────────────────────────

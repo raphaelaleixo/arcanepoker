@@ -266,20 +266,11 @@ function evaluateShowdown(state: StoreGameState): StoreGameState {
     rankValue: e.hand.rankValue,
   }));
 
-  // First-win tarot reading trigger
-  const heroWon = winnerIds.includes(HERO_ID) && !state.hasWonFirstHand;
-
   // Challenge of the Page: any winner with a Page in their hole cards
   const pageChallengePending = winnerIds.some((id) => {
     const p = newPlayers.find((pl) => pl.id === id);
     return p?.holeCards.some((c) => c.value === "0");
   });
-
-  const pendingInteraction = heroWon
-    ? { type: "tarot-reading" as const }
-    : pageChallengePending
-    ? { type: "page-challenge" as const }
-    : null;
 
   return {
     ...state,
@@ -288,8 +279,7 @@ function evaluateShowdown(state: StoreGameState): StoreGameState {
     potSize: 0,
     winnerIds,
     handResults,
-    hasWonFirstHand: state.hasWonFirstHand || heroWon,
-    pendingInteraction,
+    pendingInteraction: pageChallengePending ? { type: "page-challenge" as const } : null,
   };
 }
 
@@ -303,7 +293,10 @@ function goToLastPlayerWins(
   const updated = newPlayers.map((p) =>
     p.id === winnerId ? { ...p, stack: p.stack + pot } : p
   );
-  const heroWon = winnerId === HERO_ID && !state.hasWonFirstHand;
+  const winnerHasPage = updated
+    .find((p) => p.id === winnerId)
+    ?.holeCards.some((c) => c.value === "0") ?? false;
+
   return {
     ...state,
     stage: "showdown",
@@ -311,8 +304,7 @@ function goToLastPlayerWins(
     potSize: 0,
     winnerIds: [winnerId],
     handResults: [],
-    hasWonFirstHand: state.hasWonFirstHand || heroWon,
-    pendingInteraction: heroWon ? { type: "tarot-reading" } : null,
+    pendingInteraction: winnerHasPage ? { type: "page-challenge" as const } : null,
   };
 }
 
@@ -993,9 +985,6 @@ export function gameReducer(
 
     case "RESOLVE_PAGE_CHALLENGE":
       return resolvePageChallenge(state);
-
-    case "DISMISS_TAROT_READING":
-      return { ...state, pendingInteraction: null };
 
     case "NEXT_HAND":
       return startHand(prepareNextHand(state));

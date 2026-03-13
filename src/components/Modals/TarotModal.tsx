@@ -15,8 +15,12 @@ import { requestTarotReading } from "../../api/tarot";
 import { HERO_ID_CONST } from "../../store/initialState";
 import tarot from "../../data/tarot";
 
-export function TarotModal() {
-  const { state, dispatch } = useGame();
+interface TarotModalProps {
+  onClose: () => void;
+}
+
+export function TarotModal({ onClose }: TarotModalProps) {
+  const { state } = useGame();
   const [prophecy, setProphecy] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [minimized, setMinimized] = useState(false);
@@ -62,7 +66,7 @@ export function TarotModal() {
   }, []);
 
   function handleContinue() {
-    dispatch({ type: "DISMISS_TAROT_READING" });
+    onClose();
   }
 
   if (minimized) {
