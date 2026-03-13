@@ -36,6 +36,8 @@ function dialogTitle(type: string): string {
       return "The Magician: Guess a Suit";
     case "judgement-return":
       return "Judgement: Rejoin the Hand?";
+    case "priestess-reveal":
+      return "The High Priestess: Reveal a Card";
     default:
       return "Choose";
   }
@@ -79,6 +81,10 @@ export function InteractionModal() {
 
   function handleJudgement(rejoin: boolean) {
     dispatch({ type: "RESOLVE_JUDGEMENT", payload: { rejoin } });
+  }
+
+  function handlePriestess(card: StandardCard) {
+    dispatch({ type: "RESOLVE_PRIESTESS", payload: { card } });
   }
 
   const paperSx = {
@@ -245,6 +251,36 @@ export function InteractionModal() {
           >
             Pay 1 big blind ({state.bigBlind} chips) to rejoin the hand with new cards?
           </Typography>
+        )}
+
+        {pendingInteraction.type === "priestess-reveal" && hero && (
+          <Box>
+            <Typography
+              variant="body2"
+              sx={{ color: "silver.light", textAlign: "center", mb: 2 }}
+            >
+              Choose one of your hole cards to reveal to all players.
+            </Typography>
+            <Stack direction="row" spacing={1} justifyContent="center">
+              {hero.holeCards.map((card, i) => (
+                <Box
+                  key={i}
+                  onClick={() => handlePriestess(card)}
+                  sx={{
+                    cursor: "pointer",
+                    transition: "transform 0.2s",
+                    "&:hover": { transform: "translateY(-8px)" },
+                  }}
+                >
+                  <PlayingCard
+                    rank={card.value}
+                    suit={card.suit}
+                    flipped
+                  />
+                </Box>
+              ))}
+            </Stack>
+          </Box>
         )}
       </DialogContent>
 
