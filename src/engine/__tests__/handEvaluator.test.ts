@@ -516,12 +516,40 @@ describe("findWinners", () => {
 
 // ─── Deck integrity ───────────────────────────────────────────────────────────
 
-describe("Evaluator with 5-card hermit scenario", () => {
-  it("evaluates correctly with only 2 hole cards (Hermit edge case)", () => {
+describe("Evaluator with Hermit (< 5 cards) scenarios", () => {
+  it("correctly identifies a pair with 2 hole cards", () => {
     const twoCards = [c("A", "hearts"), c("A", "clubs")];
     const result = evaluateBestHand(twoCards, OPT);
-    // Can't form a 5-card hand — returns high-card with available values
-    expect(result.rankName).toBe("high-card");
+    expect(result.rankName).toBe("pair");
+    expect(result.rankValue).toBe(1);
     expect(result.kickers).toContain(14); // Ace
+  });
+
+  it("correctly identifies high-card with 2 mismatched hole cards", () => {
+    const twoCards = [c("A", "hearts"), c("K", "clubs")];
+    const result = evaluateBestHand(twoCards, OPT);
+    expect(result.rankName).toBe("high-card");
+    expect(result.kickers[0]).toBe(14); // Ace high
+  });
+
+  it("correctly identifies three-of-a-kind with 3 hole cards", () => {
+    const threeCards = [c("K", "hearts"), c("K", "clubs"), c("K", "diamonds")];
+    const result = evaluateBestHand(threeCards, OPT);
+    expect(result.rankName).toBe("three-of-a-kind");
+    expect(result.rankValue).toBe(3);
+  });
+
+  it("correctly identifies two-pair with 4 hole cards", () => {
+    const fourCards = [c("A", "hearts"), c("A", "clubs"), c("K", "diamonds"), c("K", "spades")];
+    const result = evaluateBestHand(fourCards, OPT);
+    expect(result.rankName).toBe("two-pair");
+    expect(result.rankValue).toBe(2);
+  });
+
+  it("pair of 2s beats pair of Aces under Hermit + Strength", () => {
+    const pairAces = evaluateBestHand([c("A", "hearts"), c("A", "clubs")], STRENGTH);
+    const pairTwos = evaluateBestHand([c("2", "hearts"), c("2", "clubs")], STRENGTH);
+    // Under Strength: 2 is highest, so pair of 2s should win
+    expect(compareHands(pairTwos, pairAces)).toBeGreaterThan(0);
   });
 });

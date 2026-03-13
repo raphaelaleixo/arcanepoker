@@ -5,6 +5,7 @@ import { PlayerSeat } from "./PlayerSeat";
 import { CommunityArea } from "./CommunityArea";
 import { ActionBar } from "./ActionBar";
 import { TarotModal } from "../Modals/TarotModal";
+import { InteractionModal } from "../Modals/InteractionModal";
 import { HERO_ID_CONST } from "../../store/initialState";
 
 const BETTING_STAGES = ["pre-flop", "flop", "turn", "river"];
@@ -246,6 +247,7 @@ export function PokerTable() {
 
       {/* Overlay modals */}
       {showTarot && <TarotModal onClose={() => setShowTarot(false)} />}
+      <InteractionModal />
     </Box>
   );
 }

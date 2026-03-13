@@ -237,7 +237,10 @@ function evaluateShowdown(state: StoreGameState): StoreGameState {
             ...p.holeCards,
             ...state.communityCards,
             ...(state.temperanceChoices[p.id] ? [state.temperanceChoices[p.id]] : []),
-            ...(state.moonExtraCards[p.id] ? [state.moonExtraCards[p.id]] : []),
+            // moonExtraCards is excluded here: bots/hero that chose to swap already have
+            // the 3rd card in their holeCards (added in applyArcana / resolveMoon).
+            // Always including it would double-count for those who swapped, and silently
+            // benefit those who chose not to swap.
           ];
       return { playerId: p.id, hand: evaluateBestHand(available, opts) };
     });
@@ -487,6 +490,11 @@ function processPlayerAction(
 
 // ─── Arcana application ───────────────────────────────────────────────────────
 
+/** True when the hero has already folded this hand. */
+function heroFolded(state: StoreGameState): boolean {
+  return state.players.find((p) => p.id === HERO_ID)?.folded ?? true;
+}
+
 function applyArcana(
   state: StoreGameState,
   arcanaCard: ArcanaCard
@@ -595,7 +603,9 @@ function applyArcana(
       return {
         ...base,
         players,
-        pendingInteraction: { type: "chariot-pass", playerId: HERO_ID },
+        pendingInteraction: heroFolded(base)
+          ? null
+          : { type: "chariot-pass", playerId: HERO_ID },
       };
     }
 
@@ -631,7 +641,9 @@ function applyArcana(
         players,
         deck,
         moonExtraCards: moonExtras,
-        pendingInteraction: { type: "moon-swap", playerId: HERO_ID },
+        pendingInteraction: heroFolded(base)
+          ? null
+          : { type: "moon-swap", playerId: HERO_ID },
       };
     }
 
@@ -668,7 +680,9 @@ function applyArcana(
         ...base,
         players,
         deck,
-        pendingInteraction: { type: "star-discard", playerId: HERO_ID },
+        pendingInteraction: heroFolded(base)
+          ? null
+          : { type: "star-discard", playerId: HERO_ID },
       };
     }
 
@@ -696,7 +710,10 @@ function applyArcana(
         players,
         deck,
         potSize: base.potSize + potDelta,
-        pendingInteraction: { type: "judgement-return", playerId: HERO_ID },
+        // Only prompt hero to rejoin if they actually folded this hand
+        pendingInteraction: heroFolded(base)
+          ? { type: "judgement-return", playerId: HERO_ID }
+          : null,
       };
     }
 
@@ -726,7 +743,9 @@ function applyArcana(
         ...base,
         players,
         deck,
-        pendingInteraction: { type: "magician-guess", playerId: HERO_ID },
+        pendingInteraction: heroFolded(base)
+          ? null
+          : { type: "magician-guess", playerId: HERO_ID },
       };
     }
 
@@ -878,6 +897,9 @@ function resolveJudgement(
 
   const hIdx = state.players.findIndex((p) => p.id === HERO_ID);
   const hero = state.players[hIdx];
+
+  // Guard: can only rejoin if actually folded
+  if (!hero?.folded) return { ...state, pendingInteraction: null };
   const { dealt, remaining } = dealCards(state.deck, 2);
   const players = [...state.players] as GamePlayer[];
   players[hIdx] = {

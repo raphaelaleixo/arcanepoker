@@ -46,7 +46,12 @@ export function InteractionModal() {
   const { pendingInteraction } = state;
   const [minimized, setMinimized] = useState(false);
 
-  if (pendingInteraction === null || pendingInteraction.type === "tarot-reading") {
+  if (
+    pendingInteraction === null ||
+    pendingInteraction.type === "tarot-reading" ||
+    pendingInteraction.type === "arcana-reveal" ||
+    pendingInteraction.type === "page-challenge"
+  ) {
     return null;
   }
 

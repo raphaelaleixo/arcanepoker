@@ -244,16 +244,47 @@ function bestFromCombos(
   emperorActive: boolean
 ): EvaluatedHand {
   if (cards.length < 5) {
-    // Fewer than 5 cards (e.g. Hermit with 2 hole cards): return high-card
+    // Fewer than 5 cards (e.g. Hermit with 2 hole cards): detect groups
     const sorted = [...cards].sort(
       (a, b) => numVal(b, inverted) - numVal(a, inverted)
     );
-    return {
-      rankName: "high-card",
-      rankValue: 0,
-      kickers: sorted.map((c) => numVal(c, inverted)),
-      bestFive: sorted,
-    };
+    const groupMap = new Map<number, StandardCard[]>();
+    for (const card of sorted) {
+      const v = numVal(card, inverted);
+      const g = groupMap.get(v) ?? [];
+      g.push(card);
+      groupMap.set(v, g);
+    }
+    const groups = [...groupMap.values()].sort(
+      (a, b) =>
+        b.length - a.length || numVal(b[0], inverted) - numVal(a[0], inverted)
+    );
+    const counts = groups.map((g) => g.length);
+
+    let rankName: HandRankName;
+    let rankValue: number;
+    let kickers: number[];
+
+    if (counts[0] === 4) {
+      rankName = "four-of-a-kind"; rankValue = 7;
+      kickers = groupKickers(groups, inverted, emperorActive);
+    } else if (counts[0] === 3 && counts[1] === 2) {
+      rankName = "full-house"; rankValue = 6;
+      kickers = groupKickers(groups, inverted, emperorActive);
+    } else if (counts[0] === 3) {
+      rankName = "three-of-a-kind"; rankValue = 3;
+      kickers = groupKickers(groups, inverted, emperorActive);
+    } else if (counts[0] === 2 && counts[1] === 2) {
+      rankName = "two-pair"; rankValue = 2;
+      kickers = groupKickers(groups, inverted, emperorActive);
+    } else if (counts[0] === 2) {
+      rankName = "pair"; rankValue = 1;
+      kickers = groupKickers(groups, inverted, emperorActive);
+    } else {
+      rankName = "high-card"; rankValue = 0;
+      kickers = cardKickers(sorted, inverted, emperorActive);
+    }
+    return { rankName, rankValue, kickers, bestFive: sorted };
   }
 
   let best: EvaluatedHand | null = null;
