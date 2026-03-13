@@ -7,12 +7,14 @@ import { ActionBar } from "./ActionBar";
 import { TarotModal } from "../Modals/TarotModal";
 import { InteractionModal } from "../Modals/InteractionModal";
 import { HERO_ID_CONST } from "../../store/initialState";
+import { PlaygroundDrawer } from "../Dev/PlaygroundDrawer";
 
 const BETTING_STAGES = ["pre-flop", "flop", "turn", "river"];
 
 export function PokerTable() {
   const { state, dispatch, startGame } = useGame();
   const [showTarot, setShowTarot] = useState(false);
+  const [playgroundOpen, setPlaygroundOpen] = useState(false);
 
   const hero = state.players.find((p) => p.id === HERO_ID_CONST);
   const heroIndex = state.players.findIndex((p) => p.id === HERO_ID_CONST);
@@ -248,6 +250,28 @@ export function PokerTable() {
       {/* Overlay modals */}
       {showTarot && <TarotModal onClose={() => setShowTarot(false)} />}
       <InteractionModal />
+      <Button
+        size="small"
+        variant="outlined"
+        onClick={() => setPlaygroundOpen(true)}
+        sx={{
+          position: "fixed",
+          bottom: 16,
+          right: 16,
+          zIndex: 1200,
+          minWidth: 0,
+          px: 1.5,
+          py: 0.5,
+          fontSize: "0.7rem",
+          opacity: 0.5,
+          color: "secondary.light",
+          borderColor: "secondary.dark",
+          "&:hover": { opacity: 1 },
+        }}
+      >
+        ⚗ DEV
+      </Button>
+      <PlaygroundDrawer open={playgroundOpen} onClose={() => setPlaygroundOpen(false)} />
     </Box>
   );
 }

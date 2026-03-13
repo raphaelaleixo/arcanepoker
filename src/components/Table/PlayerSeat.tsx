@@ -59,6 +59,7 @@ export function PlayerSeat({ player, playerIndex, isHero = false }: PlayerSeatPr
     state.players[state.activePlayerIndex]?.id === player.id &&
     ["pre-flop", "flop", "turn", "river"].includes(state.stage);
   const isShowdown = state.stage === "showdown";
+  const revealedCard = state.priestessRevealedCards?.[player.id] ?? null;
 
   // Show cards face up: hero always, everyone at showdown (if not folded)
   const showFaceUp = isHero || (isShowdown && !player.folded);
@@ -144,6 +145,26 @@ export function PlayerSeat({ player, playerIndex, isHero = false }: PlayerSeatPr
           </>
         )}
       </Stack>
+
+      {/* Priestess revealed card */}
+      {revealedCard && (
+        <Box sx={{ mt: 0.5 }}>
+          <Typography
+            variant="caption"
+            sx={{ color: "secondary.light", fontSize: "0.6rem", display: "block", textAlign: "center" }}
+          >
+            Revealed
+          </Typography>
+          <Stack direction="row" justifyContent="center">
+            <PlayingCard
+              small
+              rank={revealedCard.value}
+              suit={revealedCard.suit}
+              flipped
+            />
+          </Stack>
+        </Box>
+      )}
 
       {/* Action badge */}
       {player.currentAction && (
