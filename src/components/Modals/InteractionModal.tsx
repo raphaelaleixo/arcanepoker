@@ -1,10 +1,13 @@
+import { useState } from "react";
 import {
   Box,
   Button,
+  Chip,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
+  IconButton,
   Stack,
   Typography,
 } from "@mui/material";
@@ -41,6 +44,7 @@ function dialogTitle(type: string): string {
 export function InteractionModal() {
   const { state, dispatch } = useGame();
   const { pendingInteraction } = state;
+  const [minimized, setMinimized] = useState(false);
 
   if (pendingInteraction === null || pendingInteraction.type === "tarot-reading") {
     return null;
@@ -86,10 +90,38 @@ export function InteractionModal() {
     borderBottom: "1px solid rgba(155,89,182,0.2)",
   };
 
+  if (minimized) {
+    return (
+      <Chip
+        label={dialogTitle(pendingInteraction.type)}
+        onClick={() => setMinimized(false)}
+        sx={{
+          position: "fixed",
+          bottom: 80,
+          right: 16,
+          zIndex: 1300,
+          bgcolor: "secondary.dark",
+          color: "gold.light",
+          fontWeight: "bold",
+          cursor: "pointer",
+          "&:hover": { bgcolor: "secondary.main" },
+        }}
+      />
+    );
+  }
+
   return (
     <Dialog open maxWidth="sm" fullWidth PaperProps={{ sx: paperSx }}>
-      <DialogTitle sx={titleSx}>
+      <DialogTitle sx={{ ...titleSx, display: "flex", alignItems: "center", justifyContent: "center", pr: 6 }}>
         {dialogTitle(pendingInteraction.type)}
+        <IconButton
+          size="small"
+          onClick={() => setMinimized(true)}
+          sx={{ position: "absolute", right: 8, top: 8, color: "secondary.light" }}
+          title="Minimize"
+        >
+          &#8722;
+        </IconButton>
       </DialogTitle>
 
       <DialogContent sx={{ py: 3 }}>

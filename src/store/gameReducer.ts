@@ -112,7 +112,13 @@ function checkPageTrigger(
   const [arcanaCard, ...remainingArcanaDeck] = state.arcanaDeck;
   if (!arcanaCard) return state;
 
-  return applyArcana({ ...state, arcanaDeck: remainingArcanaDeck }, arcanaCard);
+  // Pause for the hero to reveal the arcana before applying its effect
+  return {
+    ...state,
+    arcanaDeck: remainingArcanaDeck,
+    arcanaTriggeredThisRound: true,
+    pendingInteraction: { type: "arcana-reveal", arcanaCard },
+  };
 }
 
 /**
@@ -153,15 +159,29 @@ function advanceStage(state: StoreGameState): StoreGameState {
     }
 
     case "turn": {
-      // Temperance: deal 3 river cards, hero picks 1
+      // Temperance: deal 3 river cards; each player picks their personal river card
       if (state.activeArcana?.effectKey === "temperance-three-river") {
         const { dealt, remaining } = dealCards(state.deck, 3);
+        const candidates = dealt as [StandardCard, StandardCard, StandardCard];
+        const opts = buildEvalOptions(state);
+
+        // Bots auto-pick the candidate that gives them the best hand
+        const temperanceChoices: Record<string, StandardCard> = {};
+        for (const p of state.players.filter((pl) => !pl.folded && pl.type === "ai")) {
+          temperanceChoices[p.id] = candidates.reduce((best, card) => {
+            const withBest = evaluateBestHand([...p.holeCards, ...state.communityCards, best], opts);
+            const withCard = evaluateBestHand([...p.holeCards, ...state.communityCards, card], opts);
+            return compareHands(withCard, withBest) > 0 ? card : best;
+          }, candidates[0]);
+        }
+
         return {
           ...state,
           stage: "river",
           deck: remaining,
-          temperanceCandidates: dealt as [StandardCard, StandardCard, StandardCard],
-          pendingInteraction: { type: "temperance-pick", cards: dealt },
+          temperanceCandidates: candidates,
+          temperanceChoices,
+          pendingInteraction: { type: "temperance-pick", playerId: HERO_ID },
         };
       }
       const { dealt, remaining } = dealCards(state.deck, 1);
@@ -216,9 +236,8 @@ function evaluateShowdown(state: StoreGameState): StoreGameState {
         : [
             ...p.holeCards,
             ...state.communityCards,
-            ...(state.moonExtraCards[p.id]
-              ? [state.moonExtraCards[p.id]]
-              : []),
+            ...(state.temperanceChoices[p.id] ? [state.temperanceChoices[p.id]] : []),
+            ...(state.moonExtraCards[p.id] ? [state.moonExtraCards[p.id]] : []),
           ];
       return { playerId: p.id, hand: evaluateBestHand(available, opts) };
     });
@@ -348,6 +367,7 @@ function startHand(state: StoreGameState): StoreGameState {
     empress6thCardDealt: false,
     moonExtraCards: {},
     temperanceCandidates: null,
+    temperanceChoices: {},
     winnerIds: [],
     handResults: [],
     pendingInteraction: null,
@@ -672,7 +692,7 @@ function applyArcana(
         players,
         deck,
         potSize: base.potSize + potDelta,
-        pendingInteraction: { type: "judgement-return" },
+        pendingInteraction: { type: "judgement-return", playerId: HERO_ID },
       };
     }
 
@@ -681,11 +701,30 @@ function applyArcana(
       // Bots reveal their lowest card (effect is visual; state unchanged)
       return base;
 
-    case "magician-extra-card":
+    case "magician-extra-card": {
+      // Bots guess a random suit immediately
+      let deck = base.deck;
+      const players = [...base.players] as GamePlayer[];
+      const suits = ["hearts", "clubs", "diamonds", "spades"];
+      for (const p of players.filter((pl) => pl.type === "ai" && !pl.folded)) {
+        const guess = suits[Math.floor(Math.random() * suits.length)];
+        const { dealt: botDealt, remaining: botRem } = dealCards(deck, 1);
+        deck = botRem;
+        if (botDealt[0].suit === guess) {
+          const pIdx = players.findIndex((pl) => pl.id === p.id);
+          players[pIdx] = {
+            ...players[pIdx],
+            holeCards: [...players[pIdx].holeCards, botDealt[0]],
+          };
+        }
+      }
       return {
         ...base,
+        players,
+        deck,
         pendingInteraction: { type: "magician-guess", playerId: HERO_ID },
       };
+    }
 
     case "temperance-three-river":
       // Handled in advanceStage when turn ends
@@ -746,16 +785,18 @@ function resolveTemperance(
   chosenCard: StandardCard
 ): StoreGameState {
   const postFlopStart = firstActiveAfter(state.players, state.dealerIndex);
+  // Store hero's personal river choice; communityCards stays at 4 cards
   const next = resetBettingRound(
     {
       ...state,
-      communityCards: [...state.communityCards, chosenCard],
+      temperanceChoices: { ...state.temperanceChoices, [HERO_ID]: chosenCard },
       temperanceCandidates: null,
       pendingInteraction: null,
     },
     postFlopStart
   );
-  return checkPageTrigger(next, [chosenCard]);
+  if (eligiblePlayers(next.players).length <= 1) return advanceStage(next);
+  return next;
 }
 
 function resolveStar(
@@ -807,6 +848,7 @@ function resolveMagician(
   suit: string
 ): StoreGameState {
   // Hero draws top card; if its suit matches guess, hero keeps it
+  // (bots already resolved their guesses in applyArcana)
   const { dealt, remaining } = dealCards(state.deck, 1);
   const drawnCard = dealt[0];
   const correct = drawnCard.suit === suit;
@@ -821,23 +863,7 @@ function resolveMagician(
     };
   }
 
-  // Bots: random suit guess
-  let deck = remaining;
-  for (const p of players.filter((pl) => pl.type === "ai" && !pl.folded)) {
-    const suits = ["hearts", "clubs", "diamonds", "spades"];
-    const guess = suits[Math.floor(Math.random() * suits.length)];
-    const { dealt: botDealt, remaining: botRem } = dealCards(deck, 1);
-    deck = botRem;
-    if (botDealt[0].suit === guess) {
-      const pIdx = players.findIndex((pl) => pl.id === p.id);
-      players[pIdx] = {
-        ...players[pIdx],
-        holeCards: [...players[pIdx].holeCards, botDealt[0]],
-      };
-    }
-  }
-
-  return { ...state, players, deck, pendingInteraction: null };
+  return { ...state, players, deck: remaining, pendingInteraction: null };
 }
 
 function resolveJudgement(
@@ -920,6 +946,12 @@ export function gameReducer(
 
     case "RESOLVE_JUDGEMENT":
       return resolveJudgement(state, action.payload.rejoin);
+
+    case "REVEAL_ARCANA": {
+      if (state.pendingInteraction?.type !== "arcana-reveal") return state;
+      const { arcanaCard } = state.pendingInteraction;
+      return applyArcana({ ...state, pendingInteraction: null }, arcanaCard);
+    }
 
     case "DISMISS_TAROT_READING":
       return { ...state, pendingInteraction: null };

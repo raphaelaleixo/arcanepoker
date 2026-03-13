@@ -123,13 +123,14 @@ export interface ActiveArcana {
 
 /** Which user interaction the game is waiting for before it can proceed */
 export type PendingInteraction =
-  | { type: "chariot-pass"; playerId: string }       // hero picks a card to pass
-  | { type: "temperance-pick"; cards: StandardCard[] } // hero picks 1 of 3 river cards
-  | { type: "star-discard"; playerId: string }        // hero decides whether to swap
-  | { type: "moon-swap"; playerId: string }           // hero decides whether to swap 3rd card
-  | { type: "magician-guess"; playerId: string }      // hero guesses a suit
-  | { type: "judgement-return" }                      // folded players decide
-  | { type: "tarot-reading" };                        // first-win tarot modal
+  | { type: "arcana-reveal"; arcanaCard: ArcanaCard } // hero must click to reveal & apply arcana
+  | { type: "chariot-pass"; playerId: string }        // hero picks a card to pass
+  | { type: "temperance-pick"; playerId: string }     // hero picks 1 of 3 river cards (candidates in state)
+  | { type: "star-discard"; playerId: string }         // hero decides whether to swap
+  | { type: "moon-swap"; playerId: string }            // hero decides whether to swap 3rd card
+  | { type: "magician-guess"; playerId: string }       // hero guesses a suit
+  | { type: "judgement-return"; playerId: string }    // hero decides whether to rejoin
+  | { type: "tarot-reading" };                         // first-win tarot modal
 
 // ─── Extended game state ──────────────────────────────────────────────────────
 

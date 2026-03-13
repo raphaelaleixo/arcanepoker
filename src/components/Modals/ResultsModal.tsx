@@ -1,11 +1,14 @@
+import { useState } from "react";
 import {
   Box,
   Button,
+  Chip,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   Divider,
+  IconButton,
   Stack,
   Typography,
 } from "@mui/material";
@@ -20,6 +23,7 @@ function formatHandRank(rank: string): string {
 
 export function ResultsModal() {
   const { state, dispatch } = useGame();
+  const [minimized, setMinimized] = useState(false);
 
   const isMultipleWinners = state.winnerIds.length > 1;
 
@@ -34,6 +38,26 @@ export function ResultsModal() {
   }
 
   const title = state.isFinalHand ? "Game Over" : "Showdown";
+
+  if (minimized) {
+    return (
+      <Chip
+        label={title}
+        onClick={() => setMinimized(false)}
+        sx={{
+          position: "fixed",
+          bottom: 80,
+          right: 16,
+          zIndex: 1300,
+          bgcolor: "gold.dark",
+          color: "background.paper",
+          fontWeight: "bold",
+          cursor: "pointer",
+          "&:hover": { bgcolor: "gold.main" },
+        }}
+      />
+    );
+  }
 
   return (
     <Dialog
@@ -57,9 +81,21 @@ export function ResultsModal() {
           fontSize: "1.6rem",
           letterSpacing: "0.08em",
           borderBottom: "1px solid rgba(255,215,0,0.2)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          pr: 6,
         }}
       >
         {title}
+        <IconButton
+          size="small"
+          onClick={() => setMinimized(true)}
+          sx={{ position: "absolute", right: 8, top: 8, color: "gold.dark" }}
+          title="Minimize"
+        >
+          &#8722;
+        </IconButton>
       </DialogTitle>
 
       <DialogContent sx={{ py: 3 }}>

@@ -96,6 +96,7 @@ export function createInitialState(): StoreGameState {
     empress6thCardDealt: false,
     moonExtraCards: {},
     temperanceCandidates: null,
+    temperanceChoices: {},
 
     winnerIds: [],
     handResults: [],

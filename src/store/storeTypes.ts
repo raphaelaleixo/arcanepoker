@@ -85,6 +85,8 @@ export interface StoreGameState {
   empress6thCardDealt: boolean;
   moonExtraCards: Record<string, StandardCard>;
   temperanceCandidates: [StandardCard, StandardCard, StandardCard] | null;
+  /** Each active player's chosen river card when Temperance is active. */
+  temperanceChoices: Record<string, StandardCard>;
 
   // ── Results ──────────────────────────────────────────────────────────────────
   winnerIds: string[];
@@ -105,6 +107,7 @@ export type GameAction =
   | { type: "RESOLVE_MOON"; payload: { swap: boolean } }
   | { type: "RESOLVE_MAGICIAN"; payload: { suit: string } }
   | { type: "RESOLVE_JUDGEMENT"; payload: { rejoin: boolean } }
+  | { type: "REVEAL_ARCANA" }
   | { type: "DISMISS_TAROT_READING" }
   | { type: "NEXT_HAND" };
 

@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import {
   Button,
+  Chip,
   CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
+  IconButton,
   Typography,
 } from "@mui/material";
 import { useGame } from "../../store/useGame";
@@ -17,6 +19,7 @@ export function TarotModal() {
   const { state, dispatch } = useGame();
   const [prophecy, setProphecy] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [minimized, setMinimized] = useState(false);
 
   const hero = state.players.find((p) => p.id === HERO_ID_CONST);
 
@@ -62,6 +65,26 @@ export function TarotModal() {
     dispatch({ type: "DISMISS_TAROT_READING" });
   }
 
+  if (minimized) {
+    return (
+      <Chip
+        label="The Cards Speak"
+        onClick={() => setMinimized(false)}
+        sx={{
+          position: "fixed",
+          bottom: 80,
+          right: 16,
+          zIndex: 1300,
+          bgcolor: "secondary.dark",
+          color: "gold.light",
+          fontWeight: "bold",
+          cursor: "pointer",
+          "&:hover": { bgcolor: "secondary.main" },
+        }}
+      />
+    );
+  }
+
   return (
     <Dialog
       open
@@ -84,9 +107,21 @@ export function TarotModal() {
           fontSize: "1.4rem",
           letterSpacing: "0.08em",
           borderBottom: "1px solid rgba(255,215,0,0.2)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          pr: 6,
         }}
       >
         The Cards Speak
+        <IconButton
+          size="small"
+          onClick={() => setMinimized(true)}
+          sx={{ position: "absolute", right: 8, top: 8, color: "gold.dark" }}
+          title="Minimize"
+        >
+          &#8722;
+        </IconButton>
       </DialogTitle>
 
       <DialogContent

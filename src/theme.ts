@@ -26,7 +26,19 @@ export const theme = createTheme({
     redSuit: { main: "#C62828" },
     blackSuit: { main: "#1A1A1A" },
   },
-  typography: { fontFamily: '"Georgia", "Times New Roman", serif' },
+  typography: {
+    fontFamily: ["Rubik"].join(","),
+    h1: {
+      fontFamily: ["Young Serif"].join(","),
+      fontSize: "2em",
+    },
+    subtitle1: {
+      fontSize: "1.5em",
+      fontWeight: 500,
+      fontVariantNumeric: "tabular-nums",
+      textBox: "trim-both cap alphabetic",
+    },
+  },
   components: {
     MuiButton: { defaultProps: { disableElevation: true } },
   },

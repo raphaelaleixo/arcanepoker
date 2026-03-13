@@ -4,14 +4,12 @@ import { PlayerSeat } from "./PlayerSeat";
 import { CommunityArea } from "./CommunityArea";
 import { ActionBar } from "./ActionBar";
 import { TarotModal } from "../Modals/TarotModal";
-import { InteractionModal } from "../Modals/InteractionModal";
-import { ResultsModal } from "../Modals/ResultsModal";
 import { HERO_ID_CONST } from "../../store/initialState";
 
 const BETTING_STAGES = ["pre-flop", "flop", "turn", "river"];
 
 export function PokerTable() {
-  const { state, startGame } = useGame();
+  const { state, dispatch, startGame } = useGame();
 
   const hero = state.players.find((p) => p.id === HERO_ID_CONST);
   const heroIndex = state.players.findIndex((p) => p.id === HERO_ID_CONST);
@@ -146,7 +144,7 @@ export function PokerTable() {
         )}
       </Stack>
 
-      {/* Bottom row: hero + action bar */}
+      {/* Bottom row: hero + action bar / next hand */}
       <Stack direction="column" alignItems="center" spacing={1}>
         {hero && (
           <PlayerSeat
@@ -155,18 +153,54 @@ export function PokerTable() {
             isHero
           />
         )}
-        {isHeroTurn && <ActionBar />}
+        {state.pendingInteraction?.type === "arcana-reveal" ? (
+          <Button
+            variant="contained"
+            size="large"
+            onClick={() => dispatch({ type: "REVEAL_ARCANA" })}
+            sx={{
+              px: 5,
+              py: 1,
+              background: "linear-gradient(135deg, #4a1a6e, #1a0a2e)",
+              border: "1px solid",
+              borderColor: "secondary.main",
+              color: "secondary.light",
+              letterSpacing: "0.08em",
+              "&:hover": {
+                background: "linear-gradient(135deg, #6c3483, #2d0f4e)",
+                borderColor: "secondary.light",
+              },
+            }}
+          >
+            Reveal Arcana
+          </Button>
+        ) : state.stage === "showdown" && state.pendingInteraction === null ? (
+          <Button
+            variant="contained"
+            size="large"
+            onClick={() => dispatch({ type: "NEXT_HAND" })}
+            sx={{
+              px: 5,
+              py: 1,
+              background: "linear-gradient(135deg, #2E7D32, #1B5E20)",
+              border: "1px solid",
+              borderColor: "gold.dark",
+              color: "gold.light",
+              "&:hover": {
+                background: "linear-gradient(135deg, #388E3C, #2E7D32)",
+                borderColor: "gold.main",
+              },
+            }}
+          >
+            {state.isFinalHand ? "View Final Results" : "Next Hand →"}
+          </Button>
+        ) : (
+          isHeroTurn && <ActionBar />
+        )}
       </Stack>
 
       {/* Overlay modals */}
       {state.pendingInteraction?.type === "tarot-reading" && <TarotModal />}
-      {state.pendingInteraction !== null &&
-        state.pendingInteraction.type !== "tarot-reading" && (
-          <InteractionModal />
-        )}
-      {state.stage === "showdown" && state.pendingInteraction === null && (
-        <ResultsModal />
-      )}
     </Box>
   );
 }
