@@ -375,6 +375,7 @@ function startHand(state: StoreGameState): StoreGameState {
     moonExtraCards: {},
     temperanceCandidates: null,
     temperanceChoices: {},
+    priestessRevealedCards: {},
     winnerIds: [],
     handResults: [],
     pendingInteraction: null,
@@ -717,10 +718,24 @@ function applyArcana(
       };
     }
 
-    case "priestess-reveal":
-      // Each player reveals one hole card — handled by UI; no pending interaction needed
-      // Bots reveal their lowest card (effect is visual; state unchanged)
-      return base;
+    case "priestess-reveal": {
+      // Bots each reveal their lower-value hole card
+      const priestessRevealedCards = { ...state.priestessRevealedCards };
+      for (const p of base.players.filter((pl) => pl.type === "ai" && !pl.folded)) {
+        if (p.holeCards.length === 0) continue;
+        const sorted = [...p.holeCards].sort(
+          (a, b) => (CARD_NUMERIC_VALUES[a.value] ?? 0) - (CARD_NUMERIC_VALUES[b.value] ?? 0)
+        );
+        priestessRevealedCards[p.id] = sorted[0];
+      }
+      return {
+        ...base,
+        priestessRevealedCards,
+        pendingInteraction: heroFolded(base)
+          ? null
+          : { type: "priestess-reveal", playerId: HERO_ID },
+      };
+    }
 
     case "magician-extra-card": {
       // Bots guess a random suit immediately
@@ -918,6 +933,20 @@ function resolveJudgement(
   };
 }
 
+function resolvePriestess(
+  state: StoreGameState,
+  card: StandardCard
+): StoreGameState {
+  return {
+    ...state,
+    priestessRevealedCards: {
+      ...state.priestessRevealedCards,
+      [HERO_ID]: card,
+    },
+    pendingInteraction: null,
+  };
+}
+
 // ─── Import for star resolve (numeric value map) ──────────────────────────────
 
 import { CARD_NUMERIC_VALUES } from "../types/game";
@@ -999,6 +1028,9 @@ export function gameReducer(
     case "RESOLVE_JUDGEMENT":
       return resolveJudgement(state, action.payload.rejoin);
 
+    case "RESOLVE_PRIESTESS":
+      return resolvePriestess(state, action.payload.card);
+
     case "REVEAL_ARCANA": {
       if (state.pendingInteraction?.type !== "arcana-reveal") return state;
       const { arcanaCard } = state.pendingInteraction;
@@ -1010,6 +1042,19 @@ export function gameReducer(
 
     case "NEXT_HAND":
       return startHand(prepareNextHand(state));
+
+    case "FORCE_ARCANA": {
+      const VALID_STAGES = ["pre-flop", "flop", "turn", "river"] as const;
+      if (!(VALID_STAGES as readonly string[]).includes(state.stage)) return state;
+      const arcanaCard = { suit: "arcana" as const, value: action.payload.value };
+      const resetState: StoreGameState = {
+        ...state,
+        activeArcana: null,
+        hierophantShield: false,
+        arcanaTriggeredThisRound: false,
+      };
+      return applyArcana(resetState, arcanaCard);
+    }
 
     default:
       return state;

@@ -131,7 +131,8 @@ export type PendingInteraction =
   | { type: "moon-swap"; playerId: string }            // hero decides whether to swap 3rd card
   | { type: "magician-guess"; playerId: string }       // hero guesses a suit
   | { type: "judgement-return"; playerId: string }    // hero decides whether to rejoin
-  | { type: "tarot-reading" };                         // first-win tarot modal
+  | { type: "tarot-reading" }                          // first-win tarot modal
+  | { type: "priestess-reveal"; playerId: string };    // hero picks a hole card to reveal
 
 // ─── Extended game state ──────────────────────────────────────────────────────
 

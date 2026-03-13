@@ -4,6 +4,7 @@ import type {
   GameStage,
   ActionType,
   HumanPlayer,
+  ArcanaValue,
 } from "../types/types";
 import type {
   ActiveArcana,
@@ -86,6 +87,8 @@ export interface StoreGameState {
   temperanceCandidates: [StandardCard, StandardCard, StandardCard] | null;
   /** Each active player's chosen river card when Temperance is active. */
   temperanceChoices: Record<string, StandardCard>;
+  /** Cards each player has chosen to reveal face-up (Priestess effect). */
+  priestessRevealedCards: Record<string, StandardCard>;
 
   // ── Results ──────────────────────────────────────────────────────────────────
   winnerIds: string[];
@@ -108,7 +111,9 @@ export type GameAction =
   | { type: "RESOLVE_JUDGEMENT"; payload: { rejoin: boolean } }
   | { type: "REVEAL_ARCANA" }
   | { type: "RESOLVE_PAGE_CHALLENGE" }
-  | { type: "NEXT_HAND" };
+  | { type: "NEXT_HAND" }
+  | { type: "FORCE_ARCANA"; payload: { value: ArcanaValue } }
+  | { type: "RESOLVE_PRIESTESS"; payload: { card: StandardCard } };
 
 // ─── Arcana value → effect key mapping ───────────────────────────────────────
 
