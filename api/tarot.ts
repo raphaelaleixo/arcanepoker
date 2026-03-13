@@ -57,6 +57,8 @@ export default async function handler(req: Request): Promise<Response> {
   );
 
   if (!geminiRes.ok) {
+    const errBody = await geminiRes.text();
+    console.error("[tarot] Gemini non-200:", geminiRes.status, errBody);
     return Response.json({ error: "Gemini call failed" }, { status: 502 });
   }
 
@@ -64,11 +66,13 @@ export default async function handler(req: Request): Promise<Response> {
   const candidates = data.candidates;
 
   if (!candidates || candidates.length === 0) {
+    console.error("[tarot] Gemini empty candidates:", JSON.stringify(data));
     return Response.json({ error: "Gemini returned no candidates" }, { status: 502 });
   }
 
   const text = candidates[0]?.content?.parts?.[0]?.text;
   if (!text) {
+    console.error("[tarot] Gemini no text:", JSON.stringify(data));
     return Response.json({ error: "Gemini returned no text" }, { status: 502 });
   }
   return Response.json({ prophecy: text } as TarotReadingResponse);
