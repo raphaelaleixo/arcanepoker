@@ -13,6 +13,7 @@ import {
 import type { EvalOptions } from "../engine/handEvaluator";
 import type { StandardCard, ArcanaCard, ActionType, GameStage } from "../types/types";
 import type { ActiveArcana, ArcanaEffectKey } from "../types/game";
+import { CARD_NUMERIC_VALUES } from "../types/game";
 import type {
   StoreGameState,
   GameAction,
@@ -946,10 +947,6 @@ function resolvePriestess(
     pendingInteraction: null,
   };
 }
-
-// ─── Import for star resolve (numeric value map) ──────────────────────────────
-
-import { CARD_NUMERIC_VALUES } from "../types/game";
 
 // ─── Challenge of the Page ────────────────────────────────────────────────────
 
