@@ -22,6 +22,7 @@ const cardSx = {
   position: "absolute",
   height: "100%",
   width: "100%",
+
   backfaceVisibility: "hidden",
   top: 0,
   left: 0,
