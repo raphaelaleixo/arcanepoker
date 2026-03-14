@@ -4,6 +4,7 @@ import { Box } from '@mui/material';
 import type { SxProps } from '@mui/material';
 import type { StandardCardValue, ArcanaValue, Suit, ArcanaSuit } from '../../types/types';
 import { PlayingCard } from './PlayingCard';
+import { useEffect, useState } from 'react';
 
 const dealIn = keyframes`
   from { opacity: 0; transform: translateY(-40px) scale(0.85); }
@@ -19,13 +20,28 @@ interface DealtCardProps {
   sx?: SxProps;
   /** Position in the current deal batch — controls stagger delay (dealIndex × 80ms). Defaults to 0. */
   dealIndex?: number;
+  /**
+   * When set, the card starts face-down on mount and flips after this many ms.
+   * Use this for community cards: revealDelay = dealIndex * 80 + 400
+   */
+  revealDelay?: number;
 }
 
 export function DealtCard({
   dealIndex = 0,
+  revealDelay,
+  flipped,
   sx,
   ...cardProps
 }: DealtCardProps) {
+  const [revealed, setRevealed] = useState(revealDelay === undefined ? (flipped ?? false) : false);
+
+  useEffect(() => {
+    if (revealDelay === undefined) return;
+    const id = setTimeout(() => setRevealed(flipped ?? false), revealDelay);
+    return () => clearTimeout(id);
+  }, [revealDelay, flipped]);
+
   return (
     <Box
       sx={{
@@ -34,7 +50,7 @@ export function DealtCard({
         display: 'inline-block',
       }}
     >
-      <PlayingCard {...cardProps} sx={sx} />
+      <PlayingCard {...cardProps} flipped={revealed} sx={sx} />
     </Box>
   );
 }

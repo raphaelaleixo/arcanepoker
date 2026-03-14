@@ -101,6 +101,7 @@ export function CommunityArea({ sx }: CommunityAreaProps) {
         {Array.from({ length: totalSlots }).map((_, i) => {
           const card = state.communityCards[i];
           if (card) {
+            const di = i < 3 ? i : 0;
             if (i === state.foolCardIndex) {
               return (
                 <DealtCard
@@ -109,7 +110,8 @@ export function CommunityArea({ sx }: CommunityAreaProps) {
                   rank={"0" as ArcanaCard["value"]}
                   suit={"arcana"}
                   flipped
-                  dealIndex={i < 3 ? i : 0}
+                  dealIndex={di}
+                  revealDelay={di * 80 + 400}
                 />
               );
             }
@@ -120,7 +122,8 @@ export function CommunityArea({ sx }: CommunityAreaProps) {
                 rank={card.value}
                 suit={card.suit}
                 flipped
-                dealIndex={i < 3 ? i : 0}
+                dealIndex={di}
+                revealDelay={di * 80 + 400}
               />
             );
           }
