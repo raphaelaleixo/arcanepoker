@@ -3,7 +3,11 @@ import { Box, Button, Slider, Stack, Typography } from "@mui/material";
 import { useGame } from "../../store/useGame";
 import { HERO_ID_CONST } from "../../store/initialState";
 
-export function ActionBar() {
+interface ActionBarProps {
+  isVisible?: boolean;
+}
+
+export function ActionBar({ isVisible = true }: ActionBarProps) {
   const { state, dispatch } = useGame();
 
   const hero = state.players.find((p) => p.id === HERO_ID_CONST);
@@ -25,6 +29,7 @@ export function ActionBar() {
 
   return (
     <ActionBarInner
+      isVisible={isVisible}
       toCall={toCall}
       canCheck={canCheck}
       minRaise={minRaise}
@@ -37,6 +42,7 @@ export function ActionBar() {
 }
 
 interface ActionBarInnerProps {
+  isVisible: boolean;
   toCall: number;
   canCheck: boolean;
   minRaise: number;
@@ -47,6 +53,7 @@ interface ActionBarInnerProps {
 }
 
 function ActionBarInner({
+  isVisible,
   toCall,
   canCheck,
   minRaise,
@@ -118,6 +125,13 @@ function ActionBarInner({
         maxWidth: 600,
       }}
     >
+      <Box
+        sx={{
+          opacity: isVisible ? 1 : 0,
+          pointerEvents: isVisible ? "auto" : "none",
+          transition: "opacity 200ms ease",
+        }}
+      >
       {/* Raise slider */}
       <Box sx={{ px: 1, mb: 1 }}>
         <Stack direction="row" justifyContent="space-between" sx={{ mb: 0.5 }}>
@@ -197,6 +211,7 @@ function ActionBarInner({
           {isAllIn ? `All-In (${heroStack})` : `${toCall === 0 ? "Bet" : "Raise"} ${clampedRaise}`}
         </Button>
       </Stack>
+      </Box>
     </Box>
   );
 }

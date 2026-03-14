@@ -158,7 +158,9 @@ export function PokerTable() {
             isHero
           />
         )}
-        {state.pendingInteraction?.type === "page-challenge" ? (
+
+        {/* Special interaction buttons — rendered above ActionBar when active */}
+        {state.pendingInteraction?.type === "page-challenge" && (
           <Button
             variant="contained"
             size="large"
@@ -179,7 +181,8 @@ export function PokerTable() {
           >
             Challenge of the Page
           </Button>
-        ) : state.pendingInteraction?.type === "arcana-reveal" ? (
+        )}
+        {state.pendingInteraction?.type === "arcana-reveal" && (
           <Button
             variant="contained"
             size="large"
@@ -200,7 +203,8 @@ export function PokerTable() {
           >
             Reveal Arcana
           </Button>
-        ) : state.stage === "showdown" && state.pendingInteraction === null ? (
+        )}
+        {state.stage === "showdown" && state.pendingInteraction === null && (
           <Stack direction="row" spacing={1} alignItems="center">
             {(state.communityCards.length > 0 || state.winnerIds.includes(HERO_ID_CONST)) && (
               <Button
@@ -242,9 +246,10 @@ export function PokerTable() {
               {state.isFinalHand ? "View Final Results" : "Next Hand →"}
             </Button>
           </Stack>
-        ) : (
-          isHeroTurn && <ActionBar />
         )}
+
+        {/* ActionBar: always present to prevent layout shifts */}
+        <ActionBar isVisible={isHeroTurn} />
       </Stack>
 
       {/* Overlay modals */}
