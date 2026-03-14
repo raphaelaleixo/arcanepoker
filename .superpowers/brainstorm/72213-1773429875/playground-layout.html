@@ -1,0 +1,65 @@
+<h2>Playground Mode — How should you access it?</h2>
+<p class="subtitle">Three approaches for a dev-only arcana forcing tool</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0F1A2E;padding:12px;min-height:160px;position:relative;border-radius:6px 6px 0 0;">
+      <!-- Poker table mockup -->
+      <div style="background:#0F3D20;border-radius:8px;padding:8px;height:120px;position:relative;display:flex;align-items:center;justify-content:center;">
+        <div style="color:rgba(255,255,255,0.3);font-size:11px;text-align:center;">[ poker table ]</div>
+        <!-- Floating button -->
+        <div style="position:absolute;bottom:8px;right:8px;background:#4a1a6e;border:1px solid #9b59b6;border-radius:4px;padding:3px 7px;font-size:10px;color:#d7bde2;font-weight:bold;">⚗ DEV</div>
+      </div>
+      <!-- Side drawer hint -->
+      <div style="position:absolute;right:0;top:0;bottom:0;width:60px;background:linear-gradient(90deg,transparent,#1a0a2e);border-radius:0 6px 6px 0;display:flex;align-items:center;justify-content:center;">
+        <div style="color:#9b59b6;font-size:18px;">›</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Corner Button + Side Drawer</h3>
+      <p>A small <strong>⚗ DEV</strong> button fixed to the bottom-right corner. Clicking it opens a right-side drawer listing all 22 arcana with Force buttons. Stays out of the way; always reachable.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0F1A2E;padding:12px;min-height:160px;position:relative;border-radius:6px 6px 0 0;">
+      <div style="background:#0F3D20;border-radius:8px;padding:8px;height:120px;position:relative;display:flex;align-items:center;justify-content:center;">
+        <div style="color:rgba(255,255,255,0.3);font-size:11px;text-align:center;">[ poker table ]</div>
+      </div>
+      <!-- Keyboard hint overlay -->
+      <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(26,10,46,0.97);border:1px solid #9b59b6;border-radius:8px;padding:10px 16px;text-align:center;white-space:nowrap;">
+        <div style="font-size:10px;color:#d7bde2;font-weight:bold;">⚗ ARCANA PLAYGROUND</div>
+        <div style="margin-top:4px;display:flex;gap:4px;justify-content:center;">
+          <kbd style="background:#2d0f4e;border:1px solid #9b59b6;border-radius:3px;padding:2px 5px;font-size:10px;color:#d7bde2;">⌘</kbd>
+          <kbd style="background:#2d0f4e;border:1px solid #9b59b6;border-radius:3px;padding:2px 5px;font-size:10px;color:#d7bde2;">⇧</kbd>
+          <kbd style="background:#2d0f4e;border:1px solid #9b59b6;border-radius:3px;padding:2px 5px;font-size:10px;color:#d7bde2;">P</kbd>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Keyboard Shortcut (⌘⇧P)</h3>
+      <p>Press <strong>⌘⇧P</strong> anywhere to toggle an overlay panel listing all 22 arcana. No visible button; zero UI footprint. Fullscreen overlay closes on Escape or second press. Most dev-tool-like.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0F1A2E;padding:12px;min-height:160px;position:relative;border-radius:6px 6px 0 0;">
+      <div style="background:#0F3D20;border-radius:8px;padding:8px;height:120px;position:relative;display:flex;align-items:center;justify-content:center;">
+        <div style="color:rgba(255,255,255,0.3);font-size:11px;text-align:center;">[ poker table ]</div>
+        <!-- Top bar -->
+        <div style="position:absolute;top:0;left:0;right:0;background:rgba(26,10,46,0.9);border-bottom:1px solid #4a1a6e;padding:3px 8px;display:flex;align-items:center;justify-content:space-between;border-radius:8px 8px 0 0;">
+          <span style="font-size:9px;color:#9b59b6;font-weight:bold;">⚗ DEV MODE</span>
+          <span style="font-size:9px;color:#d7bde2;">Strength ✓</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Dev Banner + Inline Controls</h3>
+      <p>A thin dev banner across the top of the table when playground mode is active (toggled by a URL param <code>?dev=1</code> or a hidden button triple-click). Shows the active arcana and a "Change" link.</p>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:16px;">Click your preferred approach, then let me know in the terminal.</p>

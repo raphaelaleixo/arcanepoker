@@ -53,13 +53,85 @@ case "FORCE_ARCANA":
 |---|---|---|
 | Immediate terminal | Wheel=10, Death=13, Sun=19 | Transitions game state; no lasting `activeArcana` set |
 | Immediate modifier | Tower=16 | Modifies pot, sets `activeArcana` |
-| Visual-only (no interaction) | Priestess=2 | Returns `base` with `activeArcana` set; no `pendingInteraction` |
-| Interactive | Chariot=7, Magician=1, Star=17, Moon=18, Judgement=20, Temperance=14 | Sets `pendingInteraction` → `InteractionModal` opens as the drawer closes |
+| Interactive | Priestess=2, Chariot=7, Magician=1, Star=17, Moon=18, Judgement=20, Temperance=14 | Sets `pendingInteraction` → `InteractionModal` opens as the drawer closes |
 | Evaluation flag | Strength=8, Emperor=4, Fool=0, Hermit=9, Lovers=6, Devil=15, Empress=3, Hierophant=5, World=21 | Sets `activeArcana`; effect applied at showdown or stage transition |
 
 **Known limitation — terminal arcana:** Wheel (10), Death (13), and Sun (19) do not leave a lasting `activeArcana`. The "Active" chip in the drawer will not appear for them after forcing.
 
 **Interactive arcana + drawer close:** For interactive arcana, dispatching `FORCE_ARCANA` causes `pendingInteraction` to be set in the same state update that closes the drawer. The drawer closes and the `InteractionModal` opens in the next render. This is the expected behaviour for a dev tool.
+
+---
+
+## 1b. Priestess (Arcana 2) — Full Interactive Reveal Mechanic
+
+The Priestess is reclassified from visual-only to interactive. When triggered, every active player must choose one of their hole cards to reveal face-up to all other players. The revealed card stays visible for the remainder of the hand.
+
+### New state field (`src/store/storeTypes.ts`)
+
+```typescript
+priestessRevealedCards: Record<string, StandardCard>;  // playerId → revealed card
+```
+
+Reset to `{}` in `startHand` alongside the other per-hand arcana fields.
+
+### New action (`src/store/storeTypes.ts`)
+
+```typescript
+| { type: "RESOLVE_PRIESTESS"; payload: { card: StandardCard } }
+```
+
+### `applyArcana` — `case "priestess-reveal"` (`src/store/gameReducer.ts`)
+
+```
+1. For each active (non-folded) bot:
+   - Bot picks the lower-value of its two hole cards (by CARD_NUMERIC_VALUES)
+   - Store in priestessRevealedCards[bot.id]
+
+2. Set pendingInteraction: { type: "priestess-reveal", playerId: HERO_ID }
+   (skip if hero is folded — no prompt needed)
+
+3. Return updated state with priestessRevealedCards + pendingInteraction
+```
+
+### `resolvePriestess(state, card)` (`src/store/gameReducer.ts`)
+
+```
+- Store card in priestessRevealedCards[HERO_ID]
+- Clear pendingInteraction
+- Return updated state
+```
+
+### `InteractionModal` — `"priestess-reveal"` case
+
+- Title: "The High Priestess: Reveal a Card"
+- Body: "Choose one of your hole cards to reveal to all players."
+- Display hero's hole cards as clickable `<PlayingCard>` components (same pattern as Chariot)
+- Clicking a card dispatches `RESOLVE_PRIESTESS` with that card
+
+Add `"priestess-reveal"` to `dialogTitle()` and remove it from the early-return exclusion list (it is currently excluded alongside `"arcana-reveal"` and `"page-challenge"` — that must be corrected).
+
+### `PlayerSeat` UI
+
+`priestessRevealedCards[player.id]` is passed down (or read via `useGame()`) and the revealed card is rendered face-up next to or below the player's normal hole cards, with a small "Revealed" label.
+
+### Tests
+
+| Test | Assertion |
+|------|-----------|
+| Bot reveal picks lower card | Bot with [A, 2] reveals 2 |
+| Hero resolve stores card | `state.priestessRevealedCards[HERO_ID]` equals chosen card |
+| No prompt when hero folded | `pendingInteraction` is null when hero is folded |
+| `startHand` resets field | `priestessRevealedCards` is `{}` after next hand starts |
+
+### File changes for Priestess
+
+| File | Change |
+|------|--------|
+| `src/store/storeTypes.ts` | Add `priestessRevealedCards` field; add `RESOLVE_PRIESTESS` action |
+| `src/store/gameReducer.ts` | Rewrite `case "priestess-reveal"` in `applyArcana`; add `resolvePriestess()`; handle `RESOLVE_PRIESTESS` in main reducer; reset field in `startHand` |
+| `src/store/initialState.ts` | Add `priestessRevealedCards: {}` to initial state |
+| `src/components/Modals/InteractionModal.tsx` | Add `"priestess-reveal"` case to `dialogTitle()` and content; remove from early-return exclusion |
+| `src/components/Table/PlayerSeat.tsx` | Show revealed card face-up when `priestessRevealedCards[player.id]` is set |
 
 ---
 
