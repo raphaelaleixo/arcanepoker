@@ -1,6 +1,7 @@
 import { Box, Chip, Divider, Stack, Typography } from "@mui/material";
 import type { SxProps } from "@mui/material";
 import { PlayingCard } from "../Card/PlayingCard";
+import { DealtCard } from '../Card/DealtCard';
 import { useGame } from "../../store/useGame";
 import tarot from "../../data/tarot";
 import type { ArcanaCard } from "../../types/types";
@@ -102,22 +103,24 @@ export function CommunityArea({ sx }: CommunityAreaProps) {
           if (card) {
             if (i === state.foolCardIndex) {
               return (
-                <PlayingCard
+                <DealtCard
                   key={i}
                   small
                   rank={"0" as ArcanaCard["value"]}
                   suit={"arcana"}
                   flipped
+                  dealIndex={i < 3 ? i : 0}
                 />
               );
             }
             return (
-              <PlayingCard
+              <DealtCard
                 key={i}
                 small
                 rank={card.value}
                 suit={card.suit}
                 flipped
+                dealIndex={i < 3 ? i : 0}
               />
             );
           }
