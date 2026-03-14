@@ -26,8 +26,6 @@ function dialogTitle(type: string): string {
   switch (type) {
     case "chariot-pass":
       return "The Chariot: Pass a Card";
-    case "temperance-pick":
-      return "Temperance: Choose a River Card";
     case "star-discard":
       return "The Star: Discard or Keep?";
     case "moon-swap":
@@ -52,8 +50,7 @@ export function InteractionModal() {
     pendingInteraction === null ||
     pendingInteraction.type === "tarot-reading" ||
     pendingInteraction.type === "arcana-reveal" ||
-    pendingInteraction.type === "page-challenge" ||
-    pendingInteraction.type === "temperance-pick"
+    pendingInteraction.type === "page-challenge"
   ) {
     return null;
   }
@@ -64,9 +61,6 @@ export function InteractionModal() {
     dispatch({ type: "RESOLVE_CHARIOT", payload: { card } });
   }
 
-  function handleTemperanceCard(card: StandardCard) {
-    dispatch({ type: "RESOLVE_TEMPERANCE", payload: { card } });
-  }
 
   function handleStar(discard: boolean) {
     dispatch({ type: "RESOLVE_STAR", payload: { discard } });
@@ -150,36 +144,6 @@ export function InteractionModal() {
                 <Box
                   key={i}
                   onClick={() => handleChariotCard(card)}
-                  sx={{
-                    cursor: "pointer",
-                    transition: "transform 0.2s",
-                    "&:hover": { transform: "translateY(-8px)" },
-                  }}
-                >
-                  <PlayingCard
-                    rank={card.value}
-                    suit={card.suit}
-                    flipped
-                  />
-                </Box>
-              ))}
-            </Stack>
-          </Box>
-        )}
-
-        {pendingInteraction.type === "temperance-pick" && (
-          <Box>
-            <Typography
-              variant="body2"
-              sx={{ color: "silver.light", textAlign: "center", mb: 2 }}
-            >
-              Choose one card to add to the community as the river card.
-            </Typography>
-            <Stack direction="row" spacing={1} justifyContent="center">
-              {(state.temperanceCandidates ?? []).map((card, i) => (
-                <Box
-                  key={i}
-                  onClick={() => handleTemperanceCard(card)}
                   sx={{
                     cursor: "pointer",
                     transition: "transform 0.2s",
