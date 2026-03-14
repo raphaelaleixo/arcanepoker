@@ -89,6 +89,8 @@ export interface StoreGameState {
   temperanceChoices: Record<string, StandardCard>;
   /** Cards each player has chosen to reveal face-up (Priestess effect). */
   priestessRevealedCards: Record<string, StandardCard>;
+  /** Index of the community card replaced by the Fool (rendered as Fool arcana card). */
+  foolCardIndex: number | null;
 
   // ── Results ──────────────────────────────────────────────────────────────────
   winnerIds: string[];

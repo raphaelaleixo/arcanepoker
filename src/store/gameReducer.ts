@@ -377,6 +377,7 @@ function startHand(state: StoreGameState): StoreGameState {
     temperanceCandidates: null,
     temperanceChoices: {},
     priestessRevealedCards: {},
+    foolCardIndex: null,
     winnerIds: [],
     handResults: [],
     pendingInteraction: null,
@@ -555,7 +556,17 @@ function applyArcana(
     }
 
     // ── Evaluation modifiers (tracked via activeArcana, applied at showdown) ──
-    case "fool-wildcard":
+    case "fool-wildcard": {
+      if (base.communityCards.length === 0) return base;
+      const idx = base.communityCards.length - 1;
+      const replaced = [...base.communityCards];
+      replaced[idx] = { value: "0", suit: "spades" };
+      return {
+        ...base,
+        communityCards: replaced,
+        foolCardIndex: idx,
+      };
+    }
     case "strength-invert":
     case "emperor-kickers":
     case "hermit-hole-only":
@@ -583,6 +594,9 @@ function applyArcana(
       }
 
       // Apply bot passes (hero's pass applied on RESOLVE_CHARIOT)
+      // The card a bot passes TO the hero is deferred into pendingInteraction.receivedCard
+      // so the hero's holeCards stay at 2 during the pick dialog.
+      let heroReceivedCard: StandardCard | undefined;
       for (let i = 0; i < active.length; i++) {
         const giver = active[i];
         if (giver.type !== "ai") continue;
@@ -595,10 +609,15 @@ function applyArcana(
             ...players[gIdx],
             holeCards: players[gIdx].holeCards.filter((c) => c !== card),
           };
-          players[rIdx] = {
-            ...players[rIdx],
-            holeCards: [...players[rIdx].holeCards, card],
-          };
+          if (receiver.id === HERO_ID) {
+            // Defer: add after hero picks their card to pass
+            heroReceivedCard = card;
+          } else {
+            players[rIdx] = {
+              ...players[rIdx],
+              holeCards: [...players[rIdx].holeCards, card],
+            };
+          }
         }
       }
 
@@ -607,7 +626,7 @@ function applyArcana(
         players,
         pendingInteraction: heroFolded(base)
           ? null
-          : { type: "chariot-pass", playerId: HERO_ID },
+          : { type: "chariot-pass", playerId: HERO_ID, receivedCard: heroReceivedCard },
       };
     }
 
@@ -807,9 +826,18 @@ function resolveChariot(
   const hIdx = players.findIndex((p) => p.id === HERO_ID);
   const rIdx = players.findIndex((p) => p.id === receiver.id);
 
+  // Remove the card the hero chose to pass
+  const heroHoleCards = players[hIdx].holeCards.filter((c) => c !== heroCard);
+
+  // Apply the card the hero was supposed to receive (deferred from chariot-pass-left)
+  const receivedCard =
+    state.pendingInteraction?.type === "chariot-pass"
+      ? state.pendingInteraction.receivedCard
+      : undefined;
+
   players[hIdx] = {
     ...players[hIdx],
-    holeCards: players[hIdx].holeCards.filter((c) => c !== heroCard),
+    holeCards: receivedCard ? [...heroHoleCards, receivedCard] : heroHoleCards,
   };
   players[rIdx] = {
     ...players[rIdx],

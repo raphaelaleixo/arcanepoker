@@ -99,6 +99,17 @@ export function CommunityArea({ sx }: CommunityAreaProps) {
         {Array.from({ length: totalSlots }).map((_, i) => {
           const card = state.communityCards[i];
           if (card) {
+            if (i === state.foolCardIndex) {
+              return (
+                <PlayingCard
+                  key={i}
+                  small
+                  rank={"0" as ArcanaCard["value"]}
+                  suit={"arcana"}
+                  flipped
+                />
+              );
+            }
             return (
               <PlayingCard
                 key={i}
