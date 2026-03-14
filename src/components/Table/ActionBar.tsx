@@ -85,26 +85,27 @@ function ActionBarInner({
     }
   }
 
-  function handleRaise() {
-    dispatch({
-      type: "PLAYER_ACTION",
-      payload: {
-        playerId: HERO_ID_CONST,
-        action: "raise",
-        amount: clampedRaise,
-      },
-    });
-  }
-
-  function handleAllIn() {
-    dispatch({
-      type: "PLAYER_ACTION",
-      payload: { playerId: HERO_ID_CONST, action: "all-in" },
-    });
-  }
-
   const callExceedsStack = toCall >= heroStack;
   const sliderDisabled = effectiveMax <= minRaise;
+  const isAllIn = clampedRaise >= effectiveMax;
+
+  function handleRaiseOrAllIn() {
+    if (isAllIn) {
+      dispatch({
+        type: "PLAYER_ACTION",
+        payload: { playerId: HERO_ID_CONST, action: "all-in" },
+      });
+    } else {
+      dispatch({
+        type: "PLAYER_ACTION",
+        payload: {
+          playerId: HERO_ID_CONST,
+          action: "raise",
+          amount: clampedRaise,
+        },
+      });
+    }
+  }
 
   return (
     <Box
@@ -188,22 +189,12 @@ function ActionBarInner({
 
         <Button
           variant="contained"
-          color="primary"
+          color={isAllIn ? "warning" : "primary"}
           size="small"
-          onClick={handleRaise}
+          onClick={handleRaiseOrAllIn}
           disabled={heroStack === 0}
         >
-          {toCall === 0 ? "Bet" : "Raise"} {clampedRaise}
-        </Button>
-
-        <Button
-          variant="contained"
-          color="warning"
-          size="small"
-          onClick={handleAllIn}
-          disabled={heroStack === 0}
-        >
-          All-in ({heroStack})
+          {isAllIn ? `All-In (${heroStack})` : `${toCall === 0 ? "Bet" : "Raise"} ${clampedRaise}`}
         </Button>
       </Stack>
     </Box>
