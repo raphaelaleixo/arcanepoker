@@ -1,5 +1,6 @@
 import { Box, Chip, Stack, Typography } from "@mui/material";
 import { PlayingCard } from "../Card/PlayingCard";
+import { DealtCard } from "../Card/DealtCard";
 import { useGame } from "../../store/useGame";
 import type { GamePlayer } from "../../store/storeTypes";
 
@@ -130,12 +131,13 @@ export function PlayerSeat({ player, playerIndex, isHero = false }: PlayerSeatPr
       <Stack direction="row" spacing={0.5} justifyContent="center" sx={{ mb: 0.5 }}>
         {player.holeCards.length > 0 ? (
           player.holeCards.map((card, i) => (
-            <PlayingCard
+            <DealtCard
               key={i}
               small
               rank={showFaceUp ? card.value : undefined}
               suit={showFaceUp ? card.suit : undefined}
               flipped={showFaceUp}
+              dealIndex={i}
             />
           ))
         ) : (
