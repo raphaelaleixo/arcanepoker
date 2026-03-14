@@ -1,7 +1,7 @@
 import { Box, Chip, Divider, Stack, Typography } from "@mui/material";
 import type { SxProps } from "@mui/material";
 import { PlayingCard } from "../Card/PlayingCard";
-import { DealtCard } from '../Card/DealtCard';
+import { DealtCard } from "../Card/DealtCard";
 import { useGame } from "../../store/useGame";
 import tarot from "../../data/tarot";
 import type { ArcanaCard } from "../../types/types";
