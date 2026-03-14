@@ -1,10 +1,21 @@
 import { Box, Chip, Divider, Stack, Typography } from "@mui/material";
 import type { SxProps } from "@mui/material";
+import { keyframes } from "@emotion/react";
 import { PlayingCard } from "../Card/PlayingCard";
 import { DealtCard } from "../Card/DealtCard";
 import { useGame } from "../../store/useGame";
 import tarot from "../../data/tarot";
 import type { ArcanaCard } from "../../types/types";
+
+const arcanaRiseIn = keyframes`
+  from { opacity: 0; transform: translateY(30px) scale(0.85); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+`;
+
+const arcanaFloatBob = keyframes`
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-5px); }
+`;
 
 function formatHandRank(rank: string): string {
   return rank
@@ -272,12 +283,24 @@ export function CommunityArea({ sx }: CommunityAreaProps) {
           >
             An arcana stirs...
           </Typography>
-          <PlayingCard
-            small
-            rank={pendingArcanaCard.value}
-            suit={pendingArcanaCard.suit}
-            flipped={false}
-          />
+          {/* Outer: rise-in entrance. Inner: continuous bob + glow. */}
+          <Box sx={{ display: "inline-block", animation: `${arcanaRiseIn} 500ms ease-out both` }}>
+            <Box
+              sx={{
+                display: "inline-block",
+                animation: `${arcanaFloatBob} 2.4s ease-in-out 500ms infinite`,
+                borderRadius: 1,
+                boxShadow: "0 0 12px 4px rgba(179, 57, 219, 0.55)",
+              }}
+            >
+              <PlayingCard
+                small
+                rank={pendingArcanaCard.value}
+                suit={pendingArcanaCard.suit}
+                flipped={false}
+              />
+            </Box>
+          </Box>
         </Box>
       )}
 
