@@ -1,0 +1,124 @@
+<h2>Card Deal Animation Style</h2>
+<p class="subtitle">Which animation feel fits Arcane Poker best? Click an option to replay it.</p>
+
+<style>
+  .demo-row {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    align-items: center;
+    height: 80px;
+    margin: 12px 0 6px;
+  }
+
+  .demo-card {
+    width: 36px;
+    height: 50px;
+    border-radius: 5px;
+    background: linear-gradient(135deg, #1a472a, #2d6a4f);
+    border: 1px solid rgba(255,255,255,0.25);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+  }
+
+  /* Option A — Slide + Stagger */
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(-40px) scale(0.85); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .slide-card {
+    animation: slideIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+  .slide-card:nth-child(1) { animation-delay: 0s; }
+  .slide-card:nth-child(2) { animation-delay: 0.08s; }
+
+  /* Option B — Fan from center */
+  @keyframes fanIn {
+    from { opacity: 0; transform: translateX(60px) rotate(15deg) scale(0.7); }
+    to   { opacity: 1; transform: translateX(0) rotate(0deg) scale(1); }
+  }
+  .fan-card {
+    animation: fanIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .fan-card:nth-child(1) { animation-delay: 0s; }
+  .fan-card:nth-child(2) { animation-delay: 0.12s; }
+
+  /* Option C — Pop (scale + fade) */
+  @keyframes popIn {
+    0%   { opacity: 0; transform: scale(0.4); }
+    70%  { opacity: 1; transform: scale(1.08); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+  .pop-card {
+    animation: popIn 0.3s ease-out both;
+  }
+  .pop-card:nth-child(1) { animation-delay: 0s; }
+  .pop-card:nth-child(2) { animation-delay: 0.1s; }
+
+  .option { cursor: pointer; }
+  .option:hover .demo-row .demo-card { animation-play-state: running; }
+  .replay-hint {
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.4);
+    text-align: center;
+    margin-top: 2px;
+  }
+</style>
+
+<div class="options">
+
+  <div class="option" data-choice="a" onclick="replayAndSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Drop &amp; Bounce</h3>
+      <p>Cards drop down from above with a springy overshoot, staggered one after the other. Clean and satisfying.</p>
+      <div class="demo-row" id="demo-a">
+        <div class="demo-card slide-card"></div>
+        <div class="demo-card slide-card"></div>
+      </div>
+      <span class="replay-hint">Click to replay</span>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="replayAndSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Deal from Deck</h3>
+      <p>Cards fly in from the right (dealer position) and rotate into place — mimics a real deal motion.</p>
+      <div class="demo-row" id="demo-b">
+        <div class="demo-card fan-card"></div>
+        <div class="demo-card fan-card"></div>
+      </div>
+      <span class="replay-hint">Click to replay</span>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="replayAndSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Pop In</h3>
+      <p>Cards scale up from nothing with a quick elastic pop — snappy and modern, minimal distraction.</p>
+      <div class="demo-row" id="demo-c">
+        <div class="demo-card pop-card"></div>
+        <div class="demo-card pop-card"></div>
+      </div>
+      <span class="replay-hint">Click to replay</span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function replayAndSelect(el) {
+  // replay animation
+  const demoId = 'demo-' + el.dataset.choice;
+  const demo = document.getElementById(demoId);
+  const cards = demo.querySelectorAll('.demo-card');
+  cards.forEach(c => {
+    c.style.animation = 'none';
+    c.offsetHeight; // reflow
+    c.style.animation = '';
+  });
+  // also call the built-in toggleSelect
+  if (typeof toggleSelect === 'function') toggleSelect(el);
+}
+</script>

@@ -1,0 +1,60 @@
+<h2>Implementation Approaches</h2>
+<p class="subtitle">Three ways to add the Deal animation — each with different trade-offs.</p>
+
+<div class="options">
+
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>DealtCard Wrapper <span style="color:#7fff7f;font-size:0.75em">★ Recommended</span></h3>
+      <p>Create a thin <code>DealtCard</code> wrapper component that adds the Drop & Bounce keyframe on mount. It accepts a <code>dealIndex</code> prop (0, 1, 2…) to compute stagger delay. <code>PlayingCard</code> is untouched — the animation lives entirely in the wrapper.</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul>
+          <li>Zero changes to finalized Card components</li>
+          <li>Animation triggers naturally on React mount</li>
+          <li>Clean, reusable, easy to remove later</li>
+        </ul></div>
+        <div class="cons"><h4>Cons</h4><ul>
+          <li>Extra component in the tree</li>
+        </ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>sx Prop on PlayingCard</h3>
+      <p>Pass the animation as an <code>sx</code> prop directly to each <code>PlayingCard</code> at the call sites in <code>PlayerSeat</code> and <code>CommunityArea</code>. No new component needed.</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul>
+          <li>No new files</li>
+          <li>Minimal code change</li>
+        </ul></div>
+        <div class="cons"><h4>Cons</h4><ul>
+          <li>Animation logic scattered across two files</li>
+          <li>Harder to adjust later</li>
+        </ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Newly-dealt flag in Game State</h3>
+      <p>Track a <code>newlyDealtCardIds</code> set in the store. Cards in this set animate; others don't. A timeout clears the flag after the animation completes.</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul>
+          <li>Most precise control over which cards animate</li>
+          <li>Handles edge cases (e.g. reconnects)</li>
+        </ul></div>
+        <div class="cons"><h4>Cons</h4><ul>
+          <li>Store complexity for a purely visual concern</li>
+          <li>Timeout management is fragile</li>
+        </ul></div>
+      </div>
+    </div>
+  </div>
+
+</div>
