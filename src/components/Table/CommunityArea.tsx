@@ -3,7 +3,7 @@ import type { SxProps } from "@mui/material";
 import { PlayingCard } from "../Card/PlayingCard";
 import { useGame } from "../../store/useGame";
 import tarot from "../../data/tarot";
-import type { ArcanaCard, StandardCard } from "../../types/types";
+import type { ArcanaCard } from "../../types/types";
 
 function formatHandRank(rank: string): string {
   return rank
@@ -53,18 +53,8 @@ function stageColor(
 }
 
 export function CommunityArea({ sx }: CommunityAreaProps) {
-  const { state, dispatch } = useGame();
+  const { state } = useGame();
 
-  const temperancePending = state.pendingInteraction?.type === "temperance-pick";
-  const temperanceCandidates = state.temperanceCandidates;
-  // The hero's chosen river card (set after pick, stays for showdown)
-  const heroTemperanceChoice = state.temperanceChoices[
-    state.players.find((p) => p.type === "human")?.id ?? ""
-  ] ?? null;
-
-  function handleTemperancePick(card: StandardCard) {
-    dispatch({ type: "RESOLVE_TEMPERANCE", payload: { card } });
-  }
 
   const totalSlots =
     state.activeArcana?.effectKey === "empress-sixth-card" ? 6 : 5;
@@ -146,57 +136,6 @@ export function CommunityArea({ sx }: CommunityAreaProps) {
         })}
       </Stack>
 
-      {/* Temperance: three river candidates — visible from pick through showdown */}
-      {temperanceCandidates && (
-        <Box sx={{ textAlign: "center" }}>
-          <Typography
-            variant="caption"
-            sx={{
-              display: "block",
-              color: "secondary.light",
-              fontStyle: "italic",
-              mb: 0.75,
-              letterSpacing: "0.04em",
-            }}
-          >
-            {temperancePending
-              ? "Temperance — Choose your river card"
-              : "Temperance — River options"}
-          </Typography>
-          <Stack direction="row" spacing={1} justifyContent="center">
-            {temperanceCandidates.map((card, i) => {
-              const isChosen =
-                heroTemperanceChoice !== null &&
-                card.value === heroTemperanceChoice.value &&
-                card.suit === heroTemperanceChoice.suit;
-              const isPickable = temperancePending;
-              return (
-                <Box
-                  key={i}
-                  onClick={isPickable ? () => handleTemperancePick(card) : undefined}
-                  sx={{
-                    cursor: isPickable ? "pointer" : "default",
-                    transition: "transform 0.2s, box-shadow 0.2s",
-                    borderRadius: 1,
-                    boxShadow: isChosen
-                      ? "0 0 14px rgba(155,89,182,0.8)"
-                      : "none",
-                    opacity: !temperancePending && !isChosen ? 0.45 : 1,
-                    ...(isPickable && {
-                      "&:hover": {
-                        transform: "translateY(-6px)",
-                        boxShadow: "0 0 12px rgba(155,89,182,0.6)",
-                      },
-                    }),
-                  }}
-                >
-                  <PlayingCard small rank={card.value} suit={card.suit} flipped />
-                </Box>
-              );
-            })}
-          </Stack>
-        </Box>
-      )}
 
       {/* Pot and bet */}
       <Stack direction="row" spacing={2} alignItems="center">

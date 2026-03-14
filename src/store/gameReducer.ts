@@ -3,6 +3,7 @@ import {
   evaluateBestHand,
   compareHands,
   findWinners,
+  combinations,
 } from "../engine/handEvaluator";
 import {
   chariotCardToPass,
@@ -160,31 +161,6 @@ function advanceStage(state: StoreGameState): StoreGameState {
     }
 
     case "turn": {
-      // Temperance: deal 3 river cards; each player picks their personal river card
-      if (state.activeArcana?.effectKey === "temperance-three-river") {
-        const { dealt, remaining } = dealCards(state.deck, 3);
-        const candidates = dealt as [StandardCard, StandardCard, StandardCard];
-        const opts = buildEvalOptions(state);
-
-        // Bots auto-pick the candidate that gives them the best hand
-        const temperanceChoices: Record<string, StandardCard> = {};
-        for (const p of state.players.filter((pl) => !pl.folded && pl.type === "ai")) {
-          temperanceChoices[p.id] = candidates.reduce((best, card) => {
-            const withBest = evaluateBestHand([...p.holeCards, ...state.communityCards, best], opts);
-            const withCard = evaluateBestHand([...p.holeCards, ...state.communityCards, card], opts);
-            return compareHands(withCard, withBest) > 0 ? card : best;
-          }, candidates[0]);
-        }
-
-        return {
-          ...state,
-          stage: "river",
-          deck: remaining,
-          temperanceCandidates: candidates,
-          temperanceChoices,
-          pendingInteraction: { type: "temperance-pick", playerId: HERO_ID },
-        };
-      }
       const { dealt, remaining } = dealCards(state.deck, 1);
       let next = resetBettingRound(
         {
@@ -229,21 +205,24 @@ function evaluateShowdown(state: StoreGameState): StoreGameState {
   const opts = buildEvalOptions(state);
   const isHermit = state.activeArcana?.effectKey === "hermit-hole-only";
 
+  const isTemperance = state.activeArcana?.effectKey === "temperance-three-river";
+
   const handEntries = state.players
     .filter((p) => !p.folded)
     .map((p) => {
-      const available = isHermit
-        ? p.holeCards
-        : [
-            ...p.holeCards,
-            ...state.communityCards,
-            ...(state.temperanceChoices[p.id] ? [state.temperanceChoices[p.id]] : []),
-            // moonExtraCards is excluded here: bots/hero that chose to swap already have
-            // the 3rd card in their holeCards (added in applyArcana / resolveMoon).
-            // Always including it would double-count for those who swapped, and silently
-            // benefit those who chose not to swap.
-          ];
-      return { playerId: p.id, hand: evaluateBestHand(available, opts) };
+      let hand;
+      if (isHermit) {
+        hand = evaluateBestHand(p.holeCards, opts);
+      } else if (isTemperance && state.communityCards.length >= 3) {
+        // Must use both hole cards + exactly 3 of the community cards (Omaha-style)
+        const commCombos = combinations(state.communityCards, 3);
+        hand = commCombos
+          .map((comm) => evaluateBestHand([...p.holeCards, ...comm], opts))
+          .reduce((best, h) => (compareHands(h, best) > 0 ? h : best));
+      } else {
+        hand = evaluateBestHand([...p.holeCards, ...state.communityCards], opts);
+      }
+      return { playerId: p.id, hand };
     });
 
   let winnerIds = findWinners(handEntries);

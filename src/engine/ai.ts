@@ -14,7 +14,7 @@ import type { StandardCard } from "../types/types";
 import type { AIDecision, BotPersonality, ArcanaEffectKey } from "../types/game";
 import { BOT_PERSONALITIES } from "../types/game";
 import type { EvalOptions } from "./handEvaluator";
-import { evaluateBestHand } from "./handEvaluator";
+import { evaluateBestHand, compareHands, combinations } from "./handEvaluator";
 
 // ─── Context passed to the AI per decision ────────────────────────────────────
 
@@ -235,14 +235,19 @@ export function makeAIDecision(ctx: AIContext): AIDecision {
     override.aggressionMultiplier ?? personality.aggressionMultiplier;
   const bluffChance = override.bluffChance ?? personality.bluffChance;
 
-  // Determine available cards (Hermit uses hole cards only)
-  const availableCards =
-    activeArcanaEffect === "hermit-hole-only"
-      ? holeCards
-      : [...holeCards, ...communityCards];
-
-  // Evaluate current hand
-  const hand = evaluateBestHand(availableCards, evalOptions);
+  // Determine available cards based on active arcana
+  let hand;
+  if (activeArcanaEffect === "hermit-hole-only") {
+    hand = evaluateBestHand(holeCards, evalOptions);
+  } else if (activeArcanaEffect === "temperance-three-river" && communityCards.length >= 3) {
+    // Must use both hole cards + exactly 3 of the community cards
+    const commCombos = combinations(communityCards, 3);
+    hand = commCombos
+      .map((comm) => evaluateBestHand([...holeCards, ...comm], evalOptions))
+      .reduce((best, h) => (compareHands(h, best) > 0 ? h : best));
+  } else {
+    hand = evaluateBestHand([...holeCards, ...communityCards], evalOptions);
+  }
   const handStrength = hand.rankValue; // 0–9
 
   // Bluff decision

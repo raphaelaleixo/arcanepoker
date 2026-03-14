@@ -48,7 +48,7 @@ function numVal(card: StandardCard, inverted: boolean): number {
 }
 
 /** All C(n, k) combinations of arr */
-function combinations<T>(arr: T[], k: number): T[][] {
+export function combinations<T>(arr: T[], k: number): T[][] {
   if (k === 0) return [[]];
   if (arr.length < k) return [];
   const [first, ...rest] = arr;

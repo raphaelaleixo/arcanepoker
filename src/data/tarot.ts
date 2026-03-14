@@ -495,7 +495,7 @@ export default {
       tags: ["balance", "harmony", "patience", "moderation"],
       description:
         "Temperance represents balance, harmony, and moderation. It signifies a need to find equilibrium and harmony in your life. This card suggests a need to be patient and adaptable. It's a reminder to seek balance and harmony.",
-      gameEffect: "3 cards are turned face-up in the river",
+      gameEffect: "Players must use both hole cards and exactly 3 of the community cards.",
     },
     "15": {
       fullName: "The Devil",
