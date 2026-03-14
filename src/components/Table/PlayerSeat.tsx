@@ -137,7 +137,7 @@ export function PlayerSeat({ player, playerIndex, isHero = false }: PlayerSeatPr
               rank={showFaceUp ? card.value : undefined}
               suit={showFaceUp ? card.suit : undefined}
               flipped={showFaceUp}
-              dealIndex={i}
+              dealIndex={playerIndex * 2 + i}
             />
           ))
         ) : (
