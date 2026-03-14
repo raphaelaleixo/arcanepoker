@@ -52,7 +52,8 @@ export function InteractionModal() {
     pendingInteraction === null ||
     pendingInteraction.type === "tarot-reading" ||
     pendingInteraction.type === "arcana-reveal" ||
-    pendingInteraction.type === "page-challenge"
+    pendingInteraction.type === "page-challenge" ||
+    pendingInteraction.type === "temperance-pick"
   ) {
     return null;
   }

@@ -474,7 +474,7 @@ export default {
       tags: ["fairness", "truth", "balance", "consequences"],
       description:
         "Justice symbolizes fairness, truth, and consequences. It represents a need to be honest and accountable for your actions. This card suggests a need to be impartial and objective. It's a reminder to seek balance and justice.",
-      gameEffect: "",
+      gameEffect: "Players may bet any amount, even less than the current call amount.",
     },
     "12": {
       fullName: "The Hanged Man",
@@ -509,36 +509,42 @@ export default {
       tags: ["sudden change", "upheaval", "revelation", "chaos"],
       description:
         "The Tower represents sudden change, upheaval, and revelation. It signifies a need to embrace unexpected change and transformation. This card suggests a need to be adaptable and resilient. It's a reminder to trust the process and find strength in chaos.",
+      gameEffect: "Half the pot (rounded up) is destroyed and removed from play.",
     },
     "17": {
       fullName: "The Star",
       tags: ["hope", "inspiration", "faith", "renewal"],
       description:
         "The Star symbolizes hope, inspiration, and renewal. It represents a need to have faith and trust in the universe. This card suggests a need to be optimistic and hopeful. It's a reminder to follow your dreams and embrace new beginnings.",
+      gameEffect: "Each player may discard one hole card and draw a new one from the deck.",
     },
     "18": {
       fullName: "The Moon",
       tags: ["intuition", "fear", "illusions", "subconscious"],
       description:
         "The Moon represents intuition, fear, and illusions. It signifies a need to trust your intuition and confront your fears. This card suggests a need to be aware of your subconscious patterns and beliefs. It's a reminder to trust your gut and seek deeper understanding.",
+      gameEffect: "Each player receives a 3rd hole card and may choose to swap it with one of their original cards at showdown.",
     },
     "19": {
       fullName: "The Sun",
       tags: ["joy", "success", "vitality", "optimism"],
       description:
         "The Sun symbolizes joy, success, and vitality. It represents a time of happiness, abundance, and positive energy. This card suggests a need to embrace your inner light and shine brightly. It's a reminder to be optimistic and grateful.",
+      gameEffect: "The round ends immediately and the pot is split equally among all active players.",
     },
     "20": {
       fullName: "Judgment",
       tags: ["renewal", "reflection", "awakening", "evaluation"],
       description:
         "Judgment symbolizes renewal, reflection, and awakening. It represents a time of self-evaluation and transformation. This card suggests a need to reflect on your past experiences and make positive changes. It's a reminder to embrace new opportunities and move forward with purpose.",
+      gameEffect: "Folded players may pay 1 big blind to rejoin the hand.",
     },
     "21": {
       fullName: "The World",
       tags: ["completion", "achievement", "fulfillment", "harmony"],
       description:
         "The World symbolizes completion, achievement, and fulfillment. It represents a time of reaching your goals and experiencing a sense of wholeness. This card suggests a need to celebrate your accomplishments and embrace harmony. It's a reminder to appreciate your journey and enjoy the present moment.",
+      gameEffect: "This is the final hand of the game.",
     },
   },
 };

@@ -9,8 +9,16 @@ const SMALL_BLIND = 10;
 const HERO_ID = "hero";
 
 /** The four bots in fixed seat order (positions 1–4 around the table). */
+// Array order = dealing order starting left of hero (hero → merchant → swordsman → mystic → wanderer).
+// position field = visual UI slot only (independent of dealing order).
 const BOT_CONFIGS: Pick<GameBot, "id" | "name" | "position" | "personality">[] =
   [
+    {
+      id: "bot-pentacles",
+      name: "The Merchant",
+      position: 3,
+      personality: BOT_PERSONALITIES.pentacles,
+    },
     {
       id: "bot-swords",
       name: "The Swordsman",
@@ -22,12 +30,6 @@ const BOT_CONFIGS: Pick<GameBot, "id" | "name" | "position" | "personality">[] =
       name: "The Mystic",
       position: 2,
       personality: BOT_PERSONALITIES.cups,
-    },
-    {
-      id: "bot-pentacles",
-      name: "The Merchant",
-      position: 3,
-      personality: BOT_PERSONALITIES.pentacles,
     },
     {
       id: "bot-wands",

@@ -25,16 +25,16 @@ describe("buildPrompt", () => {
     expect(prompt).toContain("full-house");
   });
 
-  it("includes hole cards formatted as 'value of suit'", () => {
+  it("includes hole cards as tarot names with keywords", () => {
     const prompt = buildPrompt(makeRequest());
-    expect(prompt).toContain("K of spades");
-    expect(prompt).toContain("7 of hearts");
+    expect(prompt).toContain("King of Swords");
+    expect(prompt).toContain("Seven of Cups");
   });
 
-  it("includes community cards formatted as 'value of suit'", () => {
+  it("includes community cards as tarot names with keywords", () => {
     const prompt = buildPrompt(makeRequest());
-    expect(prompt).toContain("A of diamonds");
-    expect(prompt).toContain("10 of clubs");
+    expect(prompt).toContain("Ace of Pentacles");
+    expect(prompt).toContain("Ten of Wands");
   });
 
   it("renders null activeArcanaName as 'None'", () => {

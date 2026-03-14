@@ -469,6 +469,22 @@ function processPlayerAction(
 
   const newPot = state.potSize + potDelta;
 
+  // Hanged Man: if a player just went all-in and the effect is active, deal them an extra hole card
+  let hangedManDeck = state.deck;
+  const wasAllIn = state.players[playerIdx].isAllIn;
+  if (
+    state.activeArcana?.effectKey === "hanged-man-extra-allin" &&
+    players[playerIdx].isAllIn &&
+    !wasAllIn
+  ) {
+    const { dealt, remaining } = dealCards(hangedManDeck, 1);
+    players[playerIdx] = {
+      ...players[playerIdx],
+      holeCards: [...players[playerIdx].holeCards, dealt[0]],
+    };
+    hangedManDeck = remaining;
+  }
+
   // Check if only one player remains (everyone else folded)
   const activePlayers = players.filter((p) => !p.folded);
   if (activePlayers.length === 1) {
@@ -478,6 +494,7 @@ function processPlayerAction(
   const next: StoreGameState = {
     ...state,
     players,
+    deck: hangedManDeck,
     potSize: newPot,
     currentBet: newCurrentBet,
     roundActors: newRoundActors,
@@ -525,9 +542,54 @@ function applyArcana(
     case "hierophant-persist":
       return { ...base, hierophantShield: true };
 
-    case "wheel-redeal":
-      // Complete redeal maintaining betting structure
-      return startHand({ ...base, stage: state.stage });
+    case "wheel-redeal": {
+      // Collect all in-play cards (deck + hole cards + community) into one shuffled deck
+      const allCards = [
+        ...base.deck,
+        ...base.players.flatMap((p) => p.holeCards),
+        ...base.communityCards,
+      ];
+      let wheelDeck = shuffle(allCards);
+
+      // Re-deal 2 hole cards to every non-folded player, preserving deal order
+      const wheelPlayers = base.players.map((p) => ({ ...p, holeCards: [] as typeof p.holeCards }));
+      const activePosns = wheelPlayers
+        .map((_, i) => i)
+        .filter((i) => !wheelPlayers[i].folded);
+      for (let round = 0; round < 2; round++) {
+        for (const idx of activePosns) {
+          const { dealt, remaining } = dealCards(wheelDeck, 1);
+          wheelPlayers[idx] = {
+            ...wheelPlayers[idx],
+            holeCards: [...wheelPlayers[idx].holeCards, dealt[0]],
+          };
+          wheelDeck = remaining;
+        }
+      }
+
+      // Deal community cards matching the current stage
+      const communityCounts: Partial<Record<typeof base.stage, number>> = {
+        "pre-flop": 0,
+        flop: 3,
+        turn: 4,
+        river: base.empress6thCardDealt ? 6 : 5,
+      };
+      const communityCount = communityCounts[base.stage] ?? 0;
+      const { dealt: newCommunity, remaining: wheelFinalDeck } = dealCards(wheelDeck, communityCount);
+
+      return {
+        ...base,
+        players: wheelPlayers,
+        deck: wheelFinalDeck,
+        communityCards: newCommunity,
+        // Clear card-specific arcana state that referenced the old cards
+        moonExtraCards: {},
+        temperanceCandidates: null,
+        temperanceChoices: {},
+        priestessRevealedCards: {},
+        foolCardIndex: null,
+      };
+    }
 
     case "death-end-now":
       return evaluateShowdown(base);
@@ -788,21 +850,9 @@ function applyArcana(
       // Handled in advanceStage when turn ends
       return base;
 
-    case "hanged-man-extra-allin": {
-      // Any all-in player gets a 3rd hole card
-      let deck = base.deck;
-      const players = [...base.players] as GamePlayer[];
-      for (const p of players.filter((pl) => pl.isAllIn)) {
-        const { dealt, remaining } = dealCards(deck, 1);
-        deck = remaining;
-        const pIdx = players.findIndex((pl) => pl.id === p.id);
-        players[pIdx] = {
-          ...players[pIdx],
-          holeCards: [...p.holeCards, dealt[0]],
-        };
-      }
-      return { ...base, players, deck };
-    }
+    case "hanged-man-extra-allin":
+      // Persistent: extra card is dealt inside processPlayerAction when a player goes all-in
+      return base;
 
     default:
       return base;
@@ -857,7 +907,6 @@ function resolveTemperance(
     {
       ...state,
       temperanceChoices: { ...state.temperanceChoices, [HERO_ID]: chosenCard },
-      temperanceCandidates: null,
       pendingInteraction: null,
     },
     postFlopStart
