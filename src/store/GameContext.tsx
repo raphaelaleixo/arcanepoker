@@ -23,6 +23,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   const startGame = useCallback(() => dispatch({ type: "START_GAME" }), []);
 
+  // Auto-start on mount
+  useEffect(() => {
+    dispatch({ type: "START_GAME" });
+  }, []);
+
   // Auto-run bot turns
   useEffect(() => {
     const activePlayer = state.players[state.activePlayerIndex];
