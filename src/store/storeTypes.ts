@@ -95,6 +95,8 @@ export interface StoreGameState {
   // ── Results ──────────────────────────────────────────────────────────────────
   winnerIds: string[];
   handResults: HandResultEntry[];
+  /** Incremented on every Wheel-of-Fortune redeal; used as a React key seed to replay deal animations. */
+  wheelRound: number;
   /** Total pot distributed at the last showdown (0 during play). Used for "wins XXX" display. */
   potWon: number;
 }

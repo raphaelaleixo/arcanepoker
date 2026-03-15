@@ -24,8 +24,6 @@ const SUIT_BUTTONS: { suit: string; label: string }[] = [
 
 function dialogTitle(type: string): string {
   switch (type) {
-    case "chariot-pass":
-      return "The Chariot: Pass a Card";
     case "star-discard":
       return "The Star: Discard or Keep?";
     case "moon-swap":
@@ -50,17 +48,14 @@ export function InteractionModal() {
     pendingInteraction === null ||
     pendingInteraction.type === "tarot-reading" ||
     pendingInteraction.type === "arcana-reveal" ||
-    pendingInteraction.type === "page-challenge"
+    pendingInteraction.type === "page-challenge" ||
+    pendingInteraction.type === "chariot-pass" ||
+    pendingInteraction.type === "priestess-reveal"
   ) {
     return null;
   }
 
   const hero = state.players.find((p) => p.type === "human");
-
-  function handleChariotCard(card: StandardCard) {
-    dispatch({ type: "RESOLVE_CHARIOT", payload: { card } });
-  }
-
 
   function handleStar(discard: boolean) {
     dispatch({ type: "RESOLVE_STAR", payload: { discard } });
@@ -76,10 +71,6 @@ export function InteractionModal() {
 
   function handleJudgement(rejoin: boolean) {
     dispatch({ type: "RESOLVE_JUDGEMENT", payload: { rejoin } });
-  }
-
-  function handlePriestess(card: StandardCard) {
-    dispatch({ type: "RESOLVE_PRIESTESS", payload: { card } });
   }
 
   const paperSx = {
@@ -131,36 +122,6 @@ export function InteractionModal() {
       </DialogTitle>
 
       <DialogContent sx={{ py: 3 }}>
-        {pendingInteraction.type === "chariot-pass" && hero && (
-          <Box>
-            <Typography
-              variant="body2"
-              sx={{ color: "silver.light", textAlign: "center", mb: 2 }}
-            >
-              Click a card to pass it to the player on your left.
-            </Typography>
-            <Stack direction="row" spacing={1} justifyContent="center">
-              {hero.holeCards.map((card, i) => (
-                <Box
-                  key={i}
-                  onClick={() => handleChariotCard(card)}
-                  sx={{
-                    cursor: "pointer",
-                    transition: "transform 0.2s",
-                    "&:hover": { transform: "translateY(-8px)" },
-                  }}
-                >
-                  <PlayingCard
-                    rank={card.value}
-                    suit={card.suit}
-                    flipped
-                  />
-                </Box>
-              ))}
-            </Stack>
-          </Box>
-        )}
-
         {pendingInteraction.type === "star-discard" && (
           <Typography
             variant="body1"
@@ -218,35 +179,6 @@ export function InteractionModal() {
           </Typography>
         )}
 
-        {pendingInteraction.type === "priestess-reveal" && hero && (
-          <Box>
-            <Typography
-              variant="body2"
-              sx={{ color: "silver.light", textAlign: "center", mb: 2 }}
-            >
-              Choose one of your hole cards to reveal to all players.
-            </Typography>
-            <Stack direction="row" spacing={1} justifyContent="center">
-              {hero.holeCards.map((card, i) => (
-                <Box
-                  key={i}
-                  onClick={() => handlePriestess(card)}
-                  sx={{
-                    cursor: "pointer",
-                    transition: "transform 0.2s",
-                    "&:hover": { transform: "translateY(-8px)" },
-                  }}
-                >
-                  <PlayingCard
-                    rank={card.value}
-                    suit={card.suit}
-                    flipped
-                  />
-                </Box>
-              ))}
-            </Stack>
-          </Box>
-        )}
       </DialogContent>
 
       <DialogActions sx={{ justifyContent: "center", pb: 2, gap: 1 }}>

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Box, Button, Stack, Typography } from "@mui/material";
 import { useGame } from "../../store/useGame";
+import type { StandardCard } from "../../types/types";
 import { PlayerSeat } from "./PlayerSeat";
 import { CommunityArea } from "./CommunityArea";
 import { ActionBar } from "./ActionBar";
@@ -16,6 +17,29 @@ export function PokerTable() {
   const { state, dispatch, startGame } = useGame();
   const [showTarot, setShowTarot] = useState(false);
   const [playgroundOpen, setPlaygroundOpen] = useState(false);
+  const [selectedCard, setSelectedCard] = useState<StandardCard | null>(null);
+
+  const cardPickInteraction =
+    state.pendingInteraction?.type === "priestess-reveal" ||
+    state.pendingInteraction?.type === "chariot-pass"
+      ? state.pendingInteraction.type
+      : null;
+
+  function handleCardPick(card: StandardCard) {
+    setSelectedCard((prev) =>
+      prev?.value === card.value && prev?.suit === card.suit ? null : card
+    );
+  }
+
+  function confirmCardPick() {
+    if (!selectedCard) return;
+    if (cardPickInteraction === "priestess-reveal") {
+      dispatch({ type: "RESOLVE_PRIESTESS", payload: { card: selectedCard } });
+    } else if (cardPickInteraction === "chariot-pass") {
+      dispatch({ type: "RESOLVE_CHARIOT", payload: { card: selectedCard } });
+    }
+    setSelectedCard(null);
+  }
 
   const hero = state.players.find((p) => p.id === HERO_ID_CONST);
   const heroIndex = state.players.findIndex((p) => p.id === HERO_ID_CONST);
@@ -157,6 +181,8 @@ export function PokerTable() {
             player={hero}
             playerIndex={heroIndex}
             isHero
+            onCardClick={cardPickInteraction ? handleCardPick : undefined}
+            selectedCard={cardPickInteraction ? selectedCard : undefined}
           />
         )}
 
@@ -165,7 +191,37 @@ export function PokerTable() {
         <ActionBar
           isVisible={isHeroTurn}
           overlayContent={
-            state.pendingInteraction?.type === "page-challenge" ? (
+            cardPickInteraction ? (
+              <Stack direction="column" alignItems="center" spacing={0.5}>
+                <Typography variant="caption" sx={{ color: "secondary.light", fontSize: "0.7rem", fontStyle: "italic" }}>
+                  {cardPickInteraction === "priestess-reveal"
+                    ? "Click a card to reveal it to all players."
+                    : "Click a card to pass it to the player on your left."}
+                </Typography>
+                <Button
+                  variant="contained"
+                  size="large"
+                  disabled={!selectedCard}
+                  onClick={confirmCardPick}
+                  sx={{
+                    px: 5,
+                    py: 1,
+                    background: "linear-gradient(135deg, #4a1a6e, #1a0a2e)",
+                    border: "1px solid",
+                    borderColor: "secondary.main",
+                    color: "secondary.light",
+                    letterSpacing: "0.08em",
+                    "&:hover": {
+                      background: "linear-gradient(135deg, #6c3483, #2d0f4e)",
+                      borderColor: "secondary.light",
+                    },
+                    "&.Mui-disabled": { opacity: 0.4 },
+                  }}
+                >
+                  Confirm
+                </Button>
+              </Stack>
+            ) : state.pendingInteraction?.type === "page-challenge" ? (
               <Stack direction="column" alignItems="center" spacing={0.5}>
                 <Button
                   variant="contained"

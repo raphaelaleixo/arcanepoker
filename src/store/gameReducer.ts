@@ -573,6 +573,7 @@ function applyArcana(
         players: wheelPlayers,
         deck: wheelFinalDeck,
         communityCards: newCommunity,
+        wheelRound: (base.wheelRound ?? 0) + 1,
         // Clear card-specific arcana state that referenced the old cards
         moonExtraCards: {},
         temperanceCandidates: null,
@@ -793,7 +794,7 @@ function applyArcana(
     }
 
     case "priestess-reveal": {
-      // Bots each reveal their lower-value hole card
+      // Bots each reveal their lower-value hole card immediately
       const priestessRevealedCards = { ...base.priestessRevealedCards };
       for (const p of base.players.filter((pl) => pl.type === "ai" && !pl.folded)) {
         if (p.holeCards.length === 0) continue;

@@ -123,7 +123,7 @@ export function CommunityArea({ sx }: CommunityAreaProps) {
             if (i === state.foolCardIndex) {
               return (
                 <DealtCard
-                  key={i}
+                  key={`${state.wheelRound}-${i}`}
                   small
                   rank={"0" as ArcanaCard["value"]}
                   suit={"arcana"}
@@ -135,7 +135,7 @@ export function CommunityArea({ sx }: CommunityAreaProps) {
             }
             return (
               <DealtCard
-                key={i}
+                key={`${state.wheelRound}-${i}`}
                 small
                 rank={card.value}
                 suit={card.suit}

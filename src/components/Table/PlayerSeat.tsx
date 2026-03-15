@@ -3,11 +3,16 @@ import { PlayingCard } from "../Card/PlayingCard";
 import { DealtCard } from "../Card/DealtCard";
 import { useGame } from "../../store/useGame";
 import type { GamePlayer } from "../../store/storeTypes";
+import type { StandardCard } from "../../types/types";
 
 interface PlayerSeatProps {
   player: GamePlayer;
   playerIndex: number;
   isHero?: boolean;
+  /** When set, hero cards are clickable for selection (Priestess / Chariot). */
+  onCardClick?: (card: StandardCard) => void;
+  /** The currently selected card during an inline card-pick interaction. */
+  selectedCard?: StandardCard | null;
 }
 
 function actionLabel(action: string): string {
@@ -59,7 +64,7 @@ function formatHandRank(rank: string): string {
     .join(" ");
 }
 
-export function PlayerSeat({ player, playerIndex, isHero = false }: PlayerSeatProps) {
+export function PlayerSeat({ player, playerIndex, isHero = false, onCardClick, selectedCard }: PlayerSeatProps) {
   const { state } = useGame();
 
   const isDealer = playerIndex === state.dealerIndex;
@@ -67,7 +72,7 @@ export function PlayerSeat({ player, playerIndex, isHero = false }: PlayerSeatPr
     state.players[state.activePlayerIndex]?.id === player.id &&
     ["pre-flop", "flop", "turn", "river", "empress"].includes(state.stage);
   const isShowdown = state.stage === "showdown";
-  const revealedCard = state.priestessRevealedCards?.[player.id] ?? null;
+  const priestessCard = state.priestessRevealedCards?.[player.id] ?? null;
 
   const showHandResult = isShowdown && !player.folded;
   const handResult = state.handResults.find((r) => r.playerId === player.id);
@@ -113,18 +118,44 @@ export function PlayerSeat({ player, playerIndex, isHero = false }: PlayerSeatPr
       >
         <Stack direction="row" justifyContent="center" alignItems="flex-end">
           {player.holeCards.length > 0 ? (
-            player.holeCards.map((card, i) => (
-              <Box key={i} sx={{ transform: i === 0 ? "rotate(-6deg)" : "rotate(6deg)", transformOrigin: "bottom center", ml: i === 0 ? 0 : -1.5 }}>
-                <DealtCard
-                  small
-                  rank={showFaceUp ? card.value : undefined}
-                  suit={showFaceUp ? card.suit : undefined}
-                  flipped={showFaceUp}
-                  dealIndex={playerIndex * 2 + i}
-                  revealDelay={!isHero ? 200 + playerIndex * 300 + i * 100 : undefined}
-                />
-              </Box>
-            ))
+            player.holeCards.map((card, i) => {
+              const isPriestessRevealed =
+                !showFaceUp &&
+                priestessCard != null &&
+                card.value === priestessCard.value &&
+                card.suit === priestessCard.suit;
+              const faceUp = showFaceUp || isPriestessRevealed;
+              const isSelected =
+                selectedCard != null &&
+                card.value === selectedCard.value &&
+                card.suit === selectedCard.suit;
+              return (
+                <Box
+                  key={`${state.wheelRound}-${i}`}
+                  onClick={onCardClick ? () => onCardClick(card) : undefined}
+                  sx={{
+                    transform: isSelected
+                      ? (i === 0 ? "rotate(-6deg) translateY(-10px)" : "rotate(6deg) translateY(-10px)")
+                      : (i === 0 ? "rotate(-6deg)" : "rotate(6deg)"),
+                    transformOrigin: "bottom center",
+                    ml: i === 0 ? 0 : -1.5,
+                    cursor: onCardClick ? "pointer" : "default",
+                    transition: "transform 0.15s ease",
+                    outline: isSelected ? "2px solid gold" : "none",
+                    borderRadius: 1,
+                  }}
+                >
+                  <DealtCard
+                    small
+                    rank={faceUp ? card.value : undefined}
+                    suit={faceUp ? card.suit : undefined}
+                    flipped={faceUp}
+                    dealIndex={playerIndex * 2 + i}
+                    revealDelay={!isHero ? 200 + playerIndex * 300 + i * 100 : undefined}
+                  />
+                </Box>
+              );
+            })
           ) : (
             <>
               <Box sx={{ transform: "rotate(-6deg)", transformOrigin: "bottom center" }}><PlayingCard small /></Box>
@@ -133,26 +164,6 @@ export function PlayerSeat({ player, playerIndex, isHero = false }: PlayerSeatPr
           )}
         </Stack>
       </Box>
-
-      {/* Priestess revealed card */}
-      {revealedCard && (
-        <Box sx={{ mt: 0.5 }}>
-          <Typography
-            variant="caption"
-            sx={{ color: "secondary.light", fontSize: "0.6rem", display: "block", textAlign: "center" }}
-          >
-            Revealed
-          </Typography>
-          <Stack direction="row" justifyContent="center">
-            <PlayingCard
-              small
-              rank={revealedCard.value}
-              suit={revealedCard.suit}
-              flipped
-            />
-          </Stack>
-        </Box>
-      )}
 
       {/* Action chip / hand rank — shared grid cell, no layout shift */}
       <Box sx={{ display: "grid", mt: 0.5 }}>
