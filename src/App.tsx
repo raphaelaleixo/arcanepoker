@@ -1,10 +1,15 @@
-import { GameProvider } from "./store/GameContext";
-import { PokerTable } from "./components/Table/PokerTable";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { GamePage } from "./pages/GamePage";
+import { HomePage } from "./pages/HomePage";
+import { RulesPage } from "./pages/RulesPage";
 
 export default function App() {
   return (
-    <GameProvider>
-      <PokerTable />
-    </GameProvider>
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path="/game" element={<GamePage />} />
+      <Route path="/rules" element={<RulesPage />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 }
