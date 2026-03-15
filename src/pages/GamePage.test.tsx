@@ -1,7 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import type { ReactNode } from "react";
 import { render, screen } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
 
 // Mock heavy dependencies so routing can be tested in isolation
 vi.mock("../store/GameContext", () => ({
@@ -15,11 +14,7 @@ import { GamePage } from "./GamePage";
 
 describe("GamePage", () => {
   it("renders the poker table", () => {
-    render(
-      <MemoryRouter>
-        <GamePage />
-      </MemoryRouter>
-    );
+    render(<GamePage />);
     expect(screen.getByTestId("poker-table")).toBeInTheDocument();
   });
 });
