@@ -23,12 +23,14 @@ describe("RulesPage", () => {
 
   it("renders the Page Card section", () => {
     renderWithProviders(<RulesPage />);
-    expect(screen.getByText(/the page card/i)).toBeInTheDocument();
+    const matches = screen.getAllByText(/the page card/i);
+    expect(matches.length).toBeGreaterThanOrEqual(1);
   });
 
   it("renders the Major Arcana section", () => {
     renderWithProviders(<RulesPage />);
-    expect(screen.getByText(/major arcana/i)).toBeInTheDocument();
+    const matches = screen.getAllByText(/major arcana/i);
+    expect(matches.length).toBeGreaterThanOrEqual(1);
   });
 
   it("lists The Fool as an Arcana entry", () => {
@@ -38,6 +40,14 @@ describe("RulesPage", () => {
 
   it("lists The World as an Arcana entry", () => {
     renderWithProviders(<RulesPage />);
-    expect(screen.getByText(/the world/i)).toBeInTheDocument();
+    const matches = screen.getAllByText(/the world/i);
+    expect(matches.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("renders all 22 Major Arcana entries", () => {
+    renderWithProviders(<RulesPage />);
+    // Each entry name contains " – " (en-dash), unique to ARCANA rows
+    const entries = screen.getAllByText(/\d+ – /);
+    expect(entries).toHaveLength(22);
   });
 });

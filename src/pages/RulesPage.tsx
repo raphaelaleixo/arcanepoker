@@ -66,7 +66,7 @@ export function RulesPage() {
         </Typography>
 
         <Typography variant="body1" sx={{ color: "silver.light", opacity: 0.8 }}>
-          Arcane Poker follows standard Texas Hold'Em rules with two additions: a 0-value suit card and a 22-card modifier deck.
+          Arcane Poker follows standard Texas Hold'Em rules with two additions: the Page card and the Major Arcana deck.
         </Typography>
 
         {/* Section 1: The Page Card */}
@@ -104,9 +104,9 @@ export function RulesPage() {
           </Typography>
           <Divider sx={{ borderColor: "gold.dark", opacity: 0.4 }} />
           <Typography variant="body1" sx={{ color: "silver.light" }}>
-            A separate 22-card deck runs alongside the playing deck. <strong>Setup:</strong> Card 21 is set
-            aside, the remaining 21 cards are split in half, card 21 is shuffled into the second half, and the first
-            half is placed on top — ensuring card 21 only appears late in the game.
+            A separate 22-card deck runs alongside the playing deck. <strong>Setup:</strong> The World (21) is set
+            aside, the remaining 21 cards are split in half, The World is shuffled into the second half, and the first
+            half is placed on top — ensuring The World only appears late in the game.
           </Typography>
           <Typography variant="body1" sx={{ color: "silver.light" }}>
             A card is drawn only when a Page appears on the board. Its effect modifies the rules for the rest of that
