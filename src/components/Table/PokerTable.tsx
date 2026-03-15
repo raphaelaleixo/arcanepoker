@@ -204,52 +204,56 @@ export function PokerTable() {
             Reveal Arcana
           </Button>
         )}
-        {state.stage === "showdown" && state.pendingInteraction === null && (
-          <Stack direction="row" spacing={1} alignItems="center">
-            {(state.communityCards.length > 0 || state.winnerIds.includes(HERO_ID_CONST)) && (
-              <Button
-                variant="outlined"
-                size="large"
-                onClick={() => setShowTarot(true)}
-                sx={{
-                  px: 3,
-                  py: 1,
-                  borderColor: "secondary.main",
-                  color: "secondary.light",
-                  letterSpacing: "0.05em",
-                  "&:hover": {
-                    borderColor: "secondary.light",
-                    background: "rgba(108,52,131,0.15)",
-                  },
-                }}
-              >
-                Read These Cards
-              </Button>
-            )}
-            <Button
-              variant="contained"
-              size="large"
-              onClick={() => { setShowTarot(false); dispatch({ type: "NEXT_HAND" }); }}
-              sx={{
-                px: 5,
-                py: 1,
-                background: "linear-gradient(135deg, #2E7D32, #1B5E20)",
-                border: "1px solid",
-                borderColor: "gold.dark",
-                color: "gold.light",
-                "&:hover": {
-                  background: "linear-gradient(135deg, #388E3C, #2E7D32)",
-                  borderColor: "gold.main",
-                },
-              }}
-            >
-              {state.isFinalHand ? "View Final Results" : "Next Hand →"}
-            </Button>
-          </Stack>
-        )}
-
-        {/* ActionBar: always present to prevent layout shifts */}
-        <ActionBar isVisible={isHeroTurn} />
+        {/* ActionBar: always present to prevent layout shifts.
+            Showdown buttons appear inside the same area via overlayContent. */}
+        <ActionBar
+          isVisible={isHeroTurn}
+          overlayContent={
+            state.stage === "showdown" && state.pendingInteraction === null ? (
+              <Stack direction="row" spacing={1} alignItems="center">
+                {(state.communityCards.length > 0 || state.winnerIds.includes(HERO_ID_CONST)) && (
+                  <Button
+                    variant="outlined"
+                    size="large"
+                    onClick={() => setShowTarot(true)}
+                    sx={{
+                      px: 3,
+                      py: 1,
+                      borderColor: "secondary.main",
+                      color: "secondary.light",
+                      letterSpacing: "0.05em",
+                      "&:hover": {
+                        borderColor: "secondary.light",
+                        background: "rgba(108,52,131,0.15)",
+                      },
+                    }}
+                  >
+                    Read These Cards
+                  </Button>
+                )}
+                <Button
+                  variant="contained"
+                  size="large"
+                  onClick={() => { setShowTarot(false); dispatch({ type: "NEXT_HAND" }); }}
+                  sx={{
+                    px: 5,
+                    py: 1,
+                    background: "linear-gradient(135deg, #2E7D32, #1B5E20)",
+                    border: "1px solid",
+                    borderColor: "gold.dark",
+                    color: "gold.light",
+                    "&:hover": {
+                      background: "linear-gradient(135deg, #388E3C, #2E7D32)",
+                      borderColor: "gold.main",
+                    },
+                  }}
+                >
+                  {state.isFinalHand ? "View Final Results" : "Next Hand →"}
+                </Button>
+              </Stack>
+            ) : undefined
+          }
+        />
       </Stack>
 
       {/* Overlay modals */}

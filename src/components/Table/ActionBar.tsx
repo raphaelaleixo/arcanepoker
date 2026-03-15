@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
 import { Box, Button, Slider, Stack, Typography } from "@mui/material";
+import type { ReactNode } from "react";
 import { useGame } from "../../store/useGame";
 import { HERO_ID_CONST } from "../../store/initialState";
 
 interface ActionBarProps {
   isVisible?: boolean;
+  /** When provided, fades in over the action buttons in the same fixed container. */
+  overlayContent?: ReactNode;
 }
 
-export function ActionBar({ isVisible = true }: ActionBarProps) {
+export function ActionBar({ isVisible = true, overlayContent }: ActionBarProps) {
   const { state, dispatch } = useGame();
 
   const hero = state.players.find((p) => p.id === HERO_ID_CONST);
@@ -30,6 +33,7 @@ export function ActionBar({ isVisible = true }: ActionBarProps) {
   return (
     <ActionBarInner
       isVisible={isVisible}
+      overlayContent={overlayContent}
       toCall={toCall}
       canCheck={canCheck}
       minRaise={minRaise}
@@ -43,6 +47,7 @@ export function ActionBar({ isVisible = true }: ActionBarProps) {
 
 interface ActionBarInnerProps {
   isVisible: boolean;
+  overlayContent?: ReactNode;
   toCall: number;
   canCheck: boolean;
   minRaise: number;
@@ -54,6 +59,7 @@ interface ActionBarInnerProps {
 
 function ActionBarInner({
   isVisible,
+  overlayContent,
   toCall,
   canCheck,
   minRaise,
@@ -125,10 +131,26 @@ function ActionBarInner({
         maxWidth: 600,
       }}
     >
+      {/* Overlay content (e.g. showdown buttons) — fades in when provided */}
+      {overlayContent !== undefined && (
+        <Box
+          sx={{
+            opacity: overlayContent ? 1 : 0,
+            pointerEvents: overlayContent ? "auto" : "none",
+            transition: "opacity 200ms ease",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          {overlayContent}
+        </Box>
+      )}
+      {/* Action controls — hidden when overlay is active */}
       <Box
         sx={{
-          opacity: isVisible ? 1 : 0,
-          pointerEvents: isVisible ? "auto" : "none",
+          opacity: isVisible && !overlayContent ? 1 : 0,
+          pointerEvents: isVisible && !overlayContent ? "auto" : "none",
           transition: "opacity 200ms ease",
         }}
       >
