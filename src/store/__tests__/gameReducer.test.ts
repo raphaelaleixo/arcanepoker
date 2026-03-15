@@ -67,6 +67,22 @@ describe("FORCE_ARCANA", () => {
   });
 });
 
+// ─── Sun (value=19) — split pot ───────────────────────────────────────────────
+
+describe("Sun arcana (FORCE_ARCANA value=19)", () => {
+  it("goes to showdown and sets potWon without NaN", () => {
+    const state = makePreFlopState();
+    expect(state.potSize).toBeGreaterThan(0);
+    const next = gameReducer(state, { type: "FORCE_ARCANA", payload: { value: "19" as ArcanaValue } });
+    expect(next.stage).toBe("showdown");
+    expect(next.potWon).toBeGreaterThan(0);
+    expect(Number.isNaN(next.potWon)).toBe(false);
+    expect(next.winnerIds.length).toBeGreaterThan(0);
+    const perWinner = Math.floor(next.potWon / next.winnerIds.length);
+    expect(Number.isNaN(perWinner)).toBe(false);
+  });
+});
+
 // ─── Priestess reveal ─────────────────────────────────────────────────────────
 
 describe("Priestess reveal (FORCE_ARCANA value=2)", () => {

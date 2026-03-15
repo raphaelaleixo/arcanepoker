@@ -6,7 +6,7 @@
  *  - In straights, Page connects BEFORE the Ace: Page-A-2-3-4 is valid.
  *  - Strength (Arcana 8): all card values are inverted (2 highest, A lowest, Page stays 0).
  *  - Emperor (Arcana 4): only J, Q, K, Page count as tiebreaker kickers.
- *  - Fool (Arcana 0): Page cards in the available set act as wildcards.
+ *  - Fool (Arcana 0): exactly one Page card acts as a wildcard (the Fool-injected community card).
  */
 
 import type { StandardCard } from "../types/types";
@@ -309,8 +309,14 @@ function evaluateWithFool(
     return bestFromCombos(available, inverted, emperorActive);
   }
 
-  // Build candidate substitution cards: all standard non-Page cards not already in play
-  const inPlay = new Set(nonPages.map((c) => `${c.suit}-${c.value}`));
+  // Exactly ONE Page acts as the Fool wildcard — the Fool arcana injects a single
+  // wildcard Page into community cards. Any additional natural Pages the players
+  // hold remain as ordinary value-0 cards.
+  const extraPages = pages.slice(1);
+  const base = [...nonPages, ...extraPages];
+
+  // Build candidate substitution cards: all standard non-Page cards not already in base
+  const inPlay = new Set(base.map((c) => `${c.suit}-${c.value}`));
   const candidates: StandardCard[] = [];
   for (const suit of SUITS) {
     for (const value of ALL_VALUES) {
@@ -322,21 +328,10 @@ function evaluateWithFool(
 
   let best: EvaluatedHand | null = null;
 
-  function tryBest(substituted: StandardCard[]): void {
-    const hand = [...nonPages, ...substituted];
+  for (const c of candidates) {
+    const hand = [...base, c];
     const result = bestFromCombos(hand, inverted, emperorActive);
     if (!best || compareHands(result, best) > 0) best = result;
-  }
-
-  if (pages.length === 1) {
-    for (const c of candidates) tryBest([c]);
-  } else {
-    // 2+ wildcards: try all pairs from candidates (O ≈ 48² / 2 ≈ 1128)
-    for (let i = 0; i < candidates.length; i++) {
-      for (let j = i + 1; j < candidates.length; j++) {
-        tryBest([candidates[i], candidates[j]]);
-      }
-    }
   }
 
   return best!;

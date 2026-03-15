@@ -73,8 +73,9 @@ export function PlayerSeat({ player, playerIndex, isHero = false }: PlayerSeatPr
   const handResult = state.handResults.find((r) => r.playerId === player.id);
   const isWinner = state.winnerIds.includes(player.id);
 
-  // Show cards face up: hero always, everyone at showdown (if not folded)
-  const showFaceUp = isHero || (isShowdown && !player.folded);
+  // Show cards face up: hero always, non-folded players at a real showdown.
+  // If a player won because everyone else folded (handResult absent), keep cards hidden — it may be a bluff.
+  const showFaceUp = isHero || (isShowdown && !player.folded && !!handResult);
 
   return (
     <Box

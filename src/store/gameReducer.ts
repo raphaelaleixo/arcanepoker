@@ -260,6 +260,7 @@ function evaluateShowdown(state: StoreGameState): StoreGameState {
     stage: "showdown",
     players: newPlayers,
     potSize: 0,
+    potWon: state.potSize,
     winnerIds,
     handResults,
     pendingInteraction: pageChallengePending ? { type: "page-challenge" as const } : null,
@@ -285,6 +286,7 @@ function goToLastPlayerWins(
     stage: "showdown",
     players: updated,
     potSize: 0,
+    potWon: pot,
     winnerIds: [winnerId],
     handResults: [],
     pendingInteraction: winnerHasPage ? { type: "page-challenge" as const } : null,
@@ -359,6 +361,7 @@ function startHand(state: StoreGameState): StoreGameState {
     foolCardIndex: null,
     winnerIds: [],
     handResults: [],
+    potWon: 0,
     pendingInteraction: null,
   };
 }
@@ -585,6 +588,7 @@ function applyArcana(
         stage: "showdown",
         players: newPlayers,
         potSize: 0,
+        potWon: base.potSize,
         winnerIds: active.map((p) => p.id),
         handResults: [],
         pendingInteraction: null,

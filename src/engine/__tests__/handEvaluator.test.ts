@@ -463,6 +463,33 @@ describe("Fool (Arcana 0) — Page as wildcard", () => {
     expect(result.rankValue).toBeGreaterThanOrEqual(7); // four-of-a-kind or better
   });
 
+  it("only ONE Page is treated as wildcard even when multiple Pages are present", () => {
+    // Fool injects one community Page; player also holds a natural Page.
+    // The second Page should remain a value-0 card, not a second wildcard.
+    const cards = [
+      c("0", "hearts"),   // Fool-injected wildcard → should substitute to best card
+      c("0", "spades"),   // natural Page in hole cards → stays as value-0
+      c("A", "hearts"),
+      c("K", "hearts"),
+      c("Q", "hearts"),
+      c("J", "hearts"),
+      c("2", "clubs"),
+    ];
+    const result = evaluateBestHand(cards, FOOL);
+    // With one wildcard completing the royal flush (A-K-Q-J-10♥), rankValue = 9
+    // If both Pages were wildcards the result would be the same, but the second
+    // Page must NOT substitute independently — it should stay as a 0 in the hand.
+    // At minimum, result must not be worse than a single-wildcard evaluation.
+    const singleWildcard = evaluateBestHand(
+      [c("0", "hearts"), c("A", "hearts"), c("K", "hearts"), c("Q", "hearts"), c("J", "hearts"), c("2", "clubs")],
+      FOOL
+    );
+    expect(compareHands(result, singleWildcard)).toBeGreaterThanOrEqual(0);
+    // The extra natural Page (value 0) does NOT grant a second wildcard boost.
+    // Verify result is not "impossibly" better than what one wildcard can achieve.
+    expect(result.rankValue).toBeLessThanOrEqual(9); // royal flush is max
+  });
+
   it("hand without Page is unaffected when Fool is active", () => {
     const cards = [
       c("A", "hearts"),

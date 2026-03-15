@@ -17,12 +17,6 @@ const arcanaFloatBob = keyframes`
   50%       { transform: translateY(-5px); }
 `;
 
-function formatHandRank(rank: string): string {
-  return rank
-    .split("-")
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-    .join(" ");
-}
 
 interface CommunityAreaProps {
   sx?: SxProps;
@@ -163,85 +157,48 @@ export function CommunityArea({ sx }: CommunityAreaProps) {
       </Stack>
 
 
-      {/* Pot and bet */}
-      <Stack direction="row" spacing={2} alignItems="center">
-        <Typography
-          variant="body2"
-          sx={{ color: "gold.main", fontWeight: "bold" }}
-        >
-          Pot: {state.potSize}
-        </Typography>
-        {state.currentBet > 0 && (
-          <Typography variant="body2" sx={{ color: "silver.light" }}>
-            Bet: {state.currentBet}
-          </Typography>
+      {/* Pot / bet / winner — same row, winner replaces pot info at showdown */}
+      <Stack direction="row" spacing={2} alignItems="center" justifyContent="center" sx={{ minHeight: 24 }}>
+        {state.stage === "showdown" ? (
+          (() => {
+            const perWinner = state.winnerIds.length > 0 ? Math.floor((state.potWon || 0) / state.winnerIds.length) : 0;
+            const heroId = state.players.find((p) => p.type === "human")?.id;
+            if (state.winnerIds.length > 1) {
+              return (
+                <Typography variant="body2" sx={{ color: "gold.main", fontWeight: "bold" }}>
+                  Split Pot — {perWinner} each
+                </Typography>
+              );
+            }
+            if (state.winnerIds.length === 1) {
+              const isHero = state.winnerIds[0] === heroId;
+              const name = isHero ? "You" : state.players.find((p) => p.id === state.winnerIds[0])?.name;
+              const verb = isHero ? "win" : "wins";
+              return (
+                <Typography variant="body2" sx={{ color: "gold.main", fontWeight: "bold" }}>
+                  {name} {verb} {perWinner}!
+                </Typography>
+              );
+            }
+            return null;
+          })()
+        ) : (
+          <>
+            <Typography variant="body2" sx={{ color: "gold.main", fontWeight: "bold" }}>
+              Pot: {state.potSize}
+            </Typography>
+            {state.currentBet > 0 && (
+              <Typography variant="body2" sx={{ color: "silver.light" }}>
+                Bet: {state.currentBet}
+              </Typography>
+            )}
+          </>
         )}
       </Stack>
 
-      {/* Challenge of the Page */}
-      {state.pendingInteraction?.type === "page-challenge" && (
-        <Box
-          sx={{
-            border: "1px solid",
-            borderColor: "gold.dark",
-            borderRadius: 2,
-            p: 1,
-            maxWidth: 260,
-            background: "rgba(123,63,0,0.25)",
-            textAlign: "center",
-          }}
-        >
-          <Typography
-            variant="caption"
-            sx={{ display: "block", color: "gold.main", fontWeight: "bold", fontSize: "0.75rem" }}
-          >
-            Challenge of the Page
-          </Typography>
-          <Typography
-            variant="caption"
-            sx={{ display: "block", color: "silver.light", fontSize: "0.65rem", fontStyle: "italic", mt: 0.25 }}
-          >
-            The winner holds a Page — all others pay {state.bigBlind} chips.
-          </Typography>
-        </Box>
-      )}
 
-      {/* Unified arcana + winner area — CSS grid stack so height never shifts */}
+      {/* Unified arcana area — CSS grid stack so height never shifts */}
       <Box sx={{ display: "grid", width: "100%" }}>
-
-      {/* Winner headline — same grid cell as arcana, fades in at showdown */}
-      <Box
-        sx={{
-          gridArea: "1 / 1",
-          opacity: state.stage === "showdown" && state.pendingInteraction === null && !arcanaCardToShow ? 1 : 0,
-          pointerEvents: state.stage === "showdown" && state.pendingInteraction === null && !arcanaCardToShow ? "auto" : "none",
-          transition: "opacity 300ms ease",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: 0.5,
-        }}
-      >
-        {state.winnerIds.length > 1 ? (
-          <Typography variant="body1" sx={{ color: "gold.main", fontWeight: "bold" }}>
-            Split Pot
-          </Typography>
-        ) : state.winnerIds.length === 1 ? (
-          <Box sx={{ textAlign: "center" }}>
-            <Typography variant="body1" sx={{ color: "gold.main", fontWeight: "bold" }}>
-              {state.players.find((p) => p.id === state.winnerIds[0])?.name} Wins!
-            </Typography>
-            {state.handResults.find((r) => r.playerId === state.winnerIds[0]) && (
-              <Typography variant="caption" sx={{ color: "silver.light", fontStyle: "italic" }}>
-                {formatHandRank(
-                  state.handResults.find((r) => r.playerId === state.winnerIds[0])!.rankName
-                )}
-              </Typography>
-            )}
-          </Box>
-        ) : null}
-      </Box>
 
       {/* Arcana card + description — same grid cell, fades in when active */}
       <Stack

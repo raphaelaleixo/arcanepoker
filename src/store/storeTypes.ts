@@ -95,6 +95,8 @@ export interface StoreGameState {
   // ── Results ──────────────────────────────────────────────────────────────────
   winnerIds: string[];
   handResults: HandResultEntry[];
+  /** Total pot distributed at the last showdown (0 during play). Used for "wins XXX" display. */
+  potWon: number;
 }
 
 // ─── Actions ──────────────────────────────────────────────────────────────────

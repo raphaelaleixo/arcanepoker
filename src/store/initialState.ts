@@ -103,5 +103,6 @@ export function createInitialState(): StoreGameState {
 
     winnerIds: [],
     handResults: [],
+    potWon: 0,
   };
 }

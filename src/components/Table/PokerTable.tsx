@@ -160,35 +160,38 @@ export function PokerTable() {
           />
         )}
 
-        {/* Special interaction buttons — rendered above ActionBar when active */}
-        {state.pendingInteraction?.type === "page-challenge" && (
-          <Button
-            variant="contained"
-            size="large"
-            onClick={() => dispatch({ type: "RESOLVE_PAGE_CHALLENGE" })}
-            sx={{
-              px: 5,
-              py: 1,
-              background: "linear-gradient(135deg, #7B3F00, #3E1F00)",
-              border: "1px solid",
-              borderColor: "gold.main",
-              color: "gold.light",
-              letterSpacing: "0.08em",
-              "&:hover": {
-                background: "linear-gradient(135deg, #A0522D, #5C2E00)",
-                borderColor: "gold.light",
-              },
-            }}
-          >
-            Challenge of the Page
-          </Button>
-        )}
         {/* ActionBar: always present to prevent layout shifts.
-            Showdown and arcana-reveal buttons appear inside the same area via overlayContent. */}
+            Showdown, arcana-reveal, and page-challenge buttons appear inside the same area via overlayContent. */}
         <ActionBar
           isVisible={isHeroTurn}
           overlayContent={
-            state.pendingInteraction?.type === "arcana-reveal" ? (
+            state.pendingInteraction?.type === "page-challenge" ? (
+              <Stack direction="column" alignItems="center" spacing={0.5}>
+                <Button
+                  variant="contained"
+                  size="large"
+                  onClick={() => dispatch({ type: "RESOLVE_PAGE_CHALLENGE" })}
+                  sx={{
+                    px: 5,
+                    py: 1,
+                    background: "linear-gradient(135deg, #7B3F00, #3E1F00)",
+                    border: "1px solid",
+                    borderColor: "gold.main",
+                    color: "gold.light",
+                    letterSpacing: "0.08em",
+                    "&:hover": {
+                      background: "linear-gradient(135deg, #A0522D, #5C2E00)",
+                      borderColor: "gold.light",
+                    },
+                  }}
+                >
+                  Challenge of the Page
+                </Button>
+                <Typography variant="caption" sx={{ color: "silver.light", fontSize: "0.65rem", fontStyle: "italic" }}>
+                  The winner holds a Page — all others pay {state.bigBlind} chips.
+                </Typography>
+              </Stack>
+            ) : state.pendingInteraction?.type === "arcana-reveal" ? (
               <Button
                 variant="contained"
                 size="large"
