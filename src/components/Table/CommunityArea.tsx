@@ -83,6 +83,17 @@ export function CommunityArea({ sx }: CommunityAreaProps) {
         ]
       : null;
 
+  // Pre-fetch from pending card so the description box has stable dimensions before reveal
+  const displayArcanaData =
+    arcanaData ??
+    (pendingArcanaCard
+      ? (tarot.arcana as Record<string, { fullName: string; gameEffect?: string }>)[
+          pendingArcanaCard.value
+        ]
+      : null);
+
+  const arcanaCardToShow = pendingArcanaCard ?? state.activeArcana?.card ?? null;
+
   return (
     <Box
       sx={{
@@ -274,45 +285,29 @@ export function CommunityArea({ sx }: CommunityAreaProps) {
         </Box>
       )}
 
-      {/* Arcana pending reveal — face-down card */}
-      {pendingArcanaCard && (
-        <Box sx={{ textAlign: "center" }}>
-          <Typography
-            variant="caption"
-            sx={{ display: "block", color: "secondary.light", fontStyle: "italic", mb: 0.75 }}
-          >
-            An arcana stirs...
-          </Typography>
-          {/* Outer: rise-in entrance. Inner: continuous bob + glow. */}
-          <Box sx={{ display: "inline-block", animation: `${arcanaRiseIn} 500ms ease-out both` }}>
+      {/* Unified arcana area — same block for pending and active, no layout shift */}
+      {arcanaCardToShow && displayArcanaData && (
+        <Stack direction="row" spacing={1.5} alignItems="center" justifyContent="center">
+          {/* Card: single instance — flipped changes false→true, PlayingCard's CSS transition animates the flip */}
+          <Box sx={{ display: "inline-block", animation: pendingArcanaCard ? `${arcanaRiseIn} 500ms ease-out both` : undefined }}>
             <Box
               sx={{
                 display: "inline-block",
-                animation: `${arcanaFloatBob} 2.4s ease-in-out 500ms infinite`,
                 borderRadius: 1,
-                boxShadow: "0 0 12px 4px rgba(179, 57, 219, 0.55)",
+                animation: pendingArcanaCard ? `${arcanaFloatBob} 2.4s ease-in-out 500ms infinite` : undefined,
+                boxShadow: pendingArcanaCard ? "0 0 12px 4px rgba(179, 57, 219, 0.55)" : undefined,
               }}
             >
               <PlayingCard
                 small
-                rank={pendingArcanaCard.value}
-                suit={pendingArcanaCard.suit}
-                flipped={false}
+                rank={arcanaCardToShow.value}
+                suit={arcanaCardToShow.suit}
+                flipped={!pendingArcanaCard}
               />
             </Box>
           </Box>
-        </Box>
-      )}
 
-      {/* Active Arcana — face-up card + chip */}
-      {state.activeArcana && arcanaData && (
-        <Stack direction="row" spacing={1.5} alignItems="center" justifyContent="center">
-          <PlayingCard
-            small
-            rank={state.activeArcana.card.value}
-            suit={state.activeArcana.card.suit}
-            flipped
-          />
+          {/* Description box: fixed size, CSS grid stack inside so height never changes */}
           <Box
             sx={{
               border: "1px solid",
@@ -320,35 +315,57 @@ export function CommunityArea({ sx }: CommunityAreaProps) {
               borderRadius: 2,
               p: 1,
               maxWidth: 180,
+              minWidth: 120,
               background: "rgba(108,52,131,0.2)",
               textAlign: "center",
             }}
           >
-            <Typography
-              variant="caption"
-              sx={{
-                display: "block",
-                color: "secondary.main",
-                fontWeight: "bold",
-                fontSize: "0.75rem",
-              }}
-            >
-              {arcanaData.fullName}
-            </Typography>
-            {arcanaData.gameEffect && (
-              <Typography
-                variant="caption"
+            <Box sx={{ display: "grid" }}>
+              {/* "An arcana stirs..." — visible when pending */}
+              <Box
                 sx={{
-                  display: "block",
-                  color: "silver.light",
-                  fontSize: "0.65rem",
-                  fontStyle: "italic",
-                  mt: 0.25,
+                  gridArea: "1 / 1",
+                  opacity: pendingArcanaCard ? 1 : 0,
+                  pointerEvents: pendingArcanaCard ? "auto" : "none",
+                  transition: "opacity 300ms ease",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
               >
-                {arcanaData.gameEffect}
-              </Typography>
-            )}
+                <Typography
+                  variant="caption"
+                  sx={{ color: "secondary.light", fontStyle: "italic" }}
+                >
+                  An arcana stirs...
+                </Typography>
+              </Box>
+
+              {/* Arcana name + effect — visible when revealed */}
+              <Box
+                sx={{
+                  gridArea: "1 / 1",
+                  opacity: pendingArcanaCard ? 0 : 1,
+                  pointerEvents: pendingArcanaCard ? "none" : "auto",
+                  transition: "opacity 300ms ease",
+                }}
+              >
+                <Typography
+                  variant="caption"
+                  sx={{ display: "block", color: "secondary.main", fontWeight: "bold", fontSize: "0.75rem" }}
+                >
+                  {displayArcanaData.fullName}
+                </Typography>
+                {displayArcanaData.gameEffect && (
+                  <Typography
+                    variant="caption"
+                    sx={{ display: "block", color: "silver.light", fontSize: "0.65rem", fontStyle: "italic", mt: 0.25 }}
+                  >
+                    {displayArcanaData.gameEffect}
+                  </Typography>
+                )}
+              </Box>
+            </Box>
           </Box>
         </Stack>
       )}
