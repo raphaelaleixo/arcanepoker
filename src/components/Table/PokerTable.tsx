@@ -8,6 +8,7 @@ import { TarotModal } from "../Modals/TarotModal";
 import { InteractionModal } from "../Modals/InteractionModal";
 import { HERO_ID_CONST } from "../../store/initialState";
 import { PlaygroundDrawer } from "../Dev/PlaygroundDrawer";
+import { DealerChip } from "./DealerChip";
 
 const BETTING_STAGES = ["pre-flop", "flop", "turn", "river"];
 
@@ -258,6 +259,7 @@ export function PokerTable() {
       {/* Overlay modals */}
       {showTarot && <TarotModal onClose={() => setShowTarot(false)} />}
       <InteractionModal />
+      <DealerChip />
       <Button
         size="small"
         variant="outlined"

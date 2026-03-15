@@ -1,4 +1,4 @@
-import { Box, Chip, Divider, Stack, Typography } from "@mui/material";
+import { Box, Chip, Stack, Typography } from "@mui/material";
 import type { SxProps } from "@mui/material";
 import { keyframes } from "@emotion/react";
 import { PlayingCard } from "../Card/PlayingCard";
@@ -104,8 +104,6 @@ export function CommunityArea({ sx }: CommunityAreaProps) {
         gap: 1.5,
         p: 2,
         borderRadius: 3,
-        border: "1px solid rgba(255,255,255,0.1)",
-        background: "rgba(0,0,0,0.35)",
         minWidth: { xs: "100%", md: 320 },
         ...sx,
       }}
@@ -180,83 +178,6 @@ export function CommunityArea({ sx }: CommunityAreaProps) {
         )}
       </Stack>
 
-      {/* Showdown results */}
-      {state.stage === "showdown" && state.pendingInteraction === null && (
-        <Box sx={{ width: "100%", mt: 1 }}>
-          <Divider sx={{ borderColor: "rgba(255,215,0,0.2)", mb: 1.5 }} />
-          {/* Winner headline */}
-          <Box sx={{ textAlign: "center", mb: 1 }}>
-            {state.winnerIds.length > 1 ? (
-              <Typography
-                variant="body1"
-                sx={{ color: "gold.main", fontWeight: "bold" }}
-              >
-                Split Pot
-              </Typography>
-            ) : state.winnerIds.length === 1 ? (
-              <Box>
-                <Typography
-                  variant="body1"
-                  sx={{ color: "gold.main", fontWeight: "bold" }}
-                >
-                  {state.players.find((p) => p.id === state.winnerIds[0])?.name} Wins!
-                </Typography>
-                {state.handResults.find((r) => r.playerId === state.winnerIds[0]) && (
-                  <Typography
-                    variant="caption"
-                    sx={{ color: "silver.light", fontStyle: "italic" }}
-                  >
-                    {formatHandRank(
-                      state.handResults.find((r) => r.playerId === state.winnerIds[0])!.rankName
-                    )}
-                  </Typography>
-                )}
-              </Box>
-            ) : null}
-          </Box>
-          {/* Per-player results */}
-          <Stack spacing={0.5}>
-            {state.players
-              .filter((p) => !p.folded)
-              .map((player) => {
-                const result = state.handResults.find((r) => r.playerId === player.id);
-                const isWinner = state.winnerIds.includes(player.id);
-                return (
-                  <Box
-                    key={player.id}
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      px: 1,
-                      py: 0.5,
-                      borderRadius: 1,
-                      border: "1px solid",
-                      borderColor: isWinner ? "gold.dark" : "rgba(255,255,255,0.08)",
-                      background: isWinner ? "rgba(255,215,0,0.08)" : "rgba(0,0,0,0.2)",
-                    }}
-                  >
-                    <Typography
-                      variant="caption"
-                      sx={{ color: isWinner ? "gold.main" : "silver.light", fontWeight: isWinner ? "bold" : "normal" }}
-                    >
-                      {player.name}{isWinner && " ★"}
-                    </Typography>
-                    {result && (
-                      <Typography
-                        variant="caption"
-                        sx={{ color: isWinner ? "gold.light" : "rgba(255,255,255,0.5)", fontStyle: "italic" }}
-                      >
-                        {formatHandRank(result.rankName)}
-                      </Typography>
-                    )}
-                  </Box>
-                );
-              })}
-          </Stack>
-        </Box>
-      )}
-
       {/* Challenge of the Page */}
       {state.pendingInteraction?.type === "page-challenge" && (
         <Box
@@ -285,13 +206,51 @@ export function CommunityArea({ sx }: CommunityAreaProps) {
         </Box>
       )}
 
-      {/* Unified arcana area — always rendered to reserve space, fades in when active */}
+      {/* Unified arcana + winner area — CSS grid stack so height never shifts */}
+      <Box sx={{ display: "grid", width: "100%" }}>
+
+      {/* Winner headline — same grid cell as arcana, fades in at showdown */}
+      <Box
+        sx={{
+          gridArea: "1 / 1",
+          opacity: state.stage === "showdown" && state.pendingInteraction === null && !arcanaCardToShow ? 1 : 0,
+          pointerEvents: state.stage === "showdown" && state.pendingInteraction === null && !arcanaCardToShow ? "auto" : "none",
+          transition: "opacity 300ms ease",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 0.5,
+        }}
+      >
+        {state.winnerIds.length > 1 ? (
+          <Typography variant="body1" sx={{ color: "gold.main", fontWeight: "bold" }}>
+            Split Pot
+          </Typography>
+        ) : state.winnerIds.length === 1 ? (
+          <Box sx={{ textAlign: "center" }}>
+            <Typography variant="body1" sx={{ color: "gold.main", fontWeight: "bold" }}>
+              {state.players.find((p) => p.id === state.winnerIds[0])?.name} Wins!
+            </Typography>
+            {state.handResults.find((r) => r.playerId === state.winnerIds[0]) && (
+              <Typography variant="caption" sx={{ color: "silver.light", fontStyle: "italic" }}>
+                {formatHandRank(
+                  state.handResults.find((r) => r.playerId === state.winnerIds[0])!.rankName
+                )}
+              </Typography>
+            )}
+          </Box>
+        ) : null}
+      </Box>
+
+      {/* Arcana card + description — same grid cell, fades in when active */}
       <Stack
         direction="row"
         spacing={1.5}
         alignItems="center"
         justifyContent="center"
         sx={{
+          gridArea: "1 / 1",
           opacity: arcanaCardToShow ? 1 : 0,
           pointerEvents: arcanaCardToShow ? "auto" : "none",
           transition: "opacity 400ms ease",
@@ -377,6 +336,8 @@ export function CommunityArea({ sx }: CommunityAreaProps) {
             </Box>
           </Box>
       </Stack>
+
+      </Box>
     </Box>
   );
 }

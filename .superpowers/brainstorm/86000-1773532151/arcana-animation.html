@@ -1,0 +1,139 @@
+<h2>Arcana Pending Card Animation</h2>
+<p class="subtitle">Three styles for when "An arcana stirs..." appears. Click each to replay.</p>
+
+<style>
+  .demo-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    margin: 10px 0 4px;
+  }
+  .demo-label {
+    font-size: 0.7rem;
+    color: #b39ddb;
+    font-style: italic;
+  }
+  .demo-card {
+    width: 36px;
+    height: 50px;
+    border-radius: 5px;
+    background: linear-gradient(135deg, #2d1b69, #4a148c);
+    border: 1px solid rgba(179,157,219,0.5);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.6);
+  }
+
+  /* Option A — Slow float down + purple glow pulse */
+  @keyframes arcanaFloat {
+    from { opacity: 0; transform: translateY(-30px) scale(0.8); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  @keyframes arcanaPulse {
+    0%, 100% { box-shadow: 0 0 6px 2px rgba(179,57,219,0.4); }
+    50%       { box-shadow: 0 0 18px 6px rgba(179,57,219,0.9); }
+  }
+  .float-card {
+    animation: arcanaFloat 600ms cubic-bezier(0.22, 1, 0.36, 1) both,
+               arcanaPulse 1.8s ease-in-out 600ms infinite;
+  }
+
+  /* Option B — Materialise (fade + scale, no vertical motion) */
+  @keyframes materialise {
+    0%   { opacity: 0; transform: scale(0.5) rotate(-8deg); filter: blur(4px); }
+    60%  { opacity: 1; transform: scale(1.05) rotate(1deg); filter: blur(0); }
+    100% { opacity: 1; transform: scale(1) rotate(0deg); filter: blur(0); }
+  }
+  @keyframes shimmer {
+    0%, 100% { border-color: rgba(179,157,219,0.3); }
+    50%       { border-color: rgba(179,157,219,1); }
+  }
+  .mat-card {
+    animation: materialise 700ms cubic-bezier(0.34, 1.56, 0.64, 1) both,
+               shimmer 2s ease-in-out 700ms infinite;
+  }
+
+  /* Option C — Rise from below + continuous float */
+  @keyframes riseIn {
+    from { opacity: 0; transform: translateY(30px) scale(0.85); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  @keyframes floatBob {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(-4px); }
+  }
+  .rise-card-wrap {
+    animation: riseIn 500ms ease-out both;
+  }
+  .rise-card-inner {
+    animation: floatBob 2.4s ease-in-out 500ms infinite;
+    box-shadow: 0 0 10px 3px rgba(179,57,219,0.5);
+  }
+
+  .replay-hint { font-size: 0.65rem; color: rgba(255,255,255,0.35); text-align: center; }
+</style>
+
+<div class="options">
+
+  <div class="option" data-choice="a" onclick="replayAndSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Float Down + Glow Pulse</h3>
+      <p>Drops in from above slowly (600ms), then pulses with a purple glow indefinitely while waiting for the player to act.</p>
+      <div class="demo-wrap" id="demo-a">
+        <span class="demo-label">An arcana stirs...</span>
+        <div class="demo-card float-card"></div>
+      </div>
+      <span class="replay-hint">Click to replay</span>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="replayAndSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Materialise + Border Shimmer</h3>
+      <p>Card fades in with a slight spin and blur, as if conjured from nothing. Then the border shimmers indefinitely.</p>
+      <div class="demo-wrap" id="demo-b">
+        <span class="demo-label">An arcana stirs...</span>
+        <div class="demo-card mat-card"></div>
+      </div>
+      <span class="replay-hint">Click to replay</span>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="replayAndSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Rise Up + Gentle Bob</h3>
+      <p>Card rises from below, then bobs up and down slowly — a hovering, unsettled feeling while the arcana waits to be revealed.</p>
+      <div class="demo-wrap" id="demo-c">
+        <span class="demo-label">An arcana stirs...</span>
+        <div class="rise-card-wrap" id="rise-wrap-c">
+          <div class="demo-card rise-card-inner"></div>
+        </div>
+      </div>
+      <span class="replay-hint">Click to replay</span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function replayAndSelect(el) {
+  const choice = el.dataset.choice;
+  if (choice === 'a') {
+    const card = document.querySelector('#demo-a .demo-card');
+    card.style.animation = 'none'; card.offsetHeight;
+    card.style.animation = '';
+  } else if (choice === 'b') {
+    const card = document.querySelector('#demo-b .demo-card');
+    card.style.animation = 'none'; card.offsetHeight;
+    card.style.animation = '';
+  } else if (choice === 'c') {
+    const wrap = document.getElementById('rise-wrap-c');
+    const inner = wrap.querySelector('.demo-card');
+    wrap.style.animation = 'none'; wrap.offsetHeight; wrap.style.animation = '';
+    inner.style.animation = 'none'; inner.offsetHeight; inner.style.animation = '';
+  }
+  if (typeof toggleSelect === 'function') toggleSelect(el);
+}
+</script>

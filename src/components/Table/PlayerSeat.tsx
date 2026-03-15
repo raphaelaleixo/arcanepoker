@@ -52,6 +52,13 @@ function actionColor(
   }
 }
 
+function formatHandRank(rank: string): string {
+  return rank
+    .split("-")
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
+}
+
 export function PlayerSeat({ player, playerIndex, isHero = false }: PlayerSeatProps) {
   const { state } = useGame();
 
@@ -62,6 +69,10 @@ export function PlayerSeat({ player, playerIndex, isHero = false }: PlayerSeatPr
   const isShowdown = state.stage === "showdown";
   const revealedCard = state.priestessRevealedCards?.[player.id] ?? null;
 
+  const showHandResult = isShowdown && !player.folded;
+  const handResult = state.handResults.find((r) => r.playerId === player.id);
+  const isWinner = state.winnerIds.includes(player.id);
+
   // Show cards face up: hero always, everyone at showdown (if not folded)
   const showFaceUp = isHero || (isShowdown && !player.folded);
 
@@ -69,47 +80,14 @@ export function PlayerSeat({ player, playerIndex, isHero = false }: PlayerSeatPr
     <Box
       sx={{
         position: "relative",
-        border: "2px solid",
-        borderColor: isActive ? "gold.main" : "rgba(255,255,255,0.15)",
         borderRadius: 2,
         p: 1.5,
         minWidth: { xs: 140, sm: 160 },
         maxWidth: 200,
-        background: player.folded
-          ? "rgba(0,0,0,0.6)"
-          : "rgba(15,61,32,0.85)",
-        boxShadow: isActive
-          ? "0 0 16px 4px rgba(255,215,0,0.4)"
-          : "rgba(0,0,0,0.4) 0px 4px 12px",
         opacity: player.folded ? 0.55 : 1,
-        transition: "border-color 0.3s, box-shadow 0.3s, opacity 0.3s",
+        transition: "opacity 0.3s",
       }}
     >
-      {/* Dealer chip */}
-      {isDealer && (
-        <Box
-          sx={{
-            position: "absolute",
-            top: -10,
-            right: -10,
-            width: 22,
-            height: 22,
-            borderRadius: "50%",
-            background: "linear-gradient(135deg, #FFD700, #B8860B)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: "0.65rem",
-            fontWeight: "bold",
-            color: "#000",
-            border: "1px solid #B8860B",
-            zIndex: 1,
-          }}
-        >
-          D
-        </Box>
-      )}
-
       {/* Player name and stack */}
       <Typography
         variant="caption"
@@ -124,29 +102,35 @@ export function PlayerSeat({ player, playerIndex, isHero = false }: PlayerSeatPr
           textOverflow: "ellipsis",
         }}
       >
-        {player.name} &mdash; &#9824; {player.stack}
+        {player.name}{isWinner ? " ★" : ""} &mdash; &#9824; {player.stack}
       </Typography>
 
-      {/* Cards */}
-      <Stack direction="row" spacing={0.5} justifyContent="center" sx={{ mb: 0.5 }}>
-        {player.holeCards.length > 0 ? (
-          player.holeCards.map((card, i) => (
-            <DealtCard
-              key={i}
-              small
-              rank={showFaceUp ? card.value : undefined}
-              suit={showFaceUp ? card.suit : undefined}
-              flipped={showFaceUp}
-              dealIndex={playerIndex * 2 + i}
-            />
-          ))
-        ) : (
-          <>
-            <PlayingCard small />
-            <PlayingCard small />
-          </>
-        )}
-      </Stack>
+      {/* Cards — data-dealer-anchor lets DealerChip find this element by player id */}
+      <Box
+        data-dealer-anchor={player.id}
+        sx={{ position: "relative", display: "flex", justifyContent: "center", mb: 0.5 }}
+      >
+        <Stack direction="row" justifyContent="center" alignItems="flex-end">
+          {player.holeCards.length > 0 ? (
+            player.holeCards.map((card, i) => (
+              <Box key={i} sx={{ transform: i === 0 ? "rotate(-6deg)" : "rotate(6deg)", transformOrigin: "bottom center", ml: i === 0 ? 0 : -1.5 }}>
+                <DealtCard
+                  small
+                  rank={showFaceUp ? card.value : undefined}
+                  suit={showFaceUp ? card.suit : undefined}
+                  flipped={showFaceUp}
+                  dealIndex={playerIndex * 2 + i}
+                />
+              </Box>
+            ))
+          ) : (
+            <>
+              <Box sx={{ transform: "rotate(-6deg)", transformOrigin: "bottom center" }}><PlayingCard small /></Box>
+              <Box sx={{ transform: "rotate(6deg)", transformOrigin: "bottom center", ml: -1.5 }}><PlayingCard small /></Box>
+            </>
+          )}
+        </Stack>
+      </Box>
 
       {/* Priestess revealed card */}
       {revealedCard && (
@@ -168,45 +152,72 @@ export function PlayerSeat({ player, playerIndex, isHero = false }: PlayerSeatPr
         </Box>
       )}
 
-      {/* Action badge */}
-      {player.currentAction && (
-        <Box sx={{ display: "flex", justifyContent: "center", mt: 0.5 }}>
-          <Chip
-            label={actionLabel(player.currentAction)}
-            color={actionColor(player.currentAction)}
-            size="small"
-            sx={{ fontSize: "0.65rem", height: 18 }}
-          />
-        </Box>
-      )}
-
-      {/* All-in badge */}
-      {player.isAllIn && (
-        <Box sx={{ display: "flex", justifyContent: "center", mt: 0.5 }}>
-          <Chip
-            label="ALL-IN"
-            color="warning"
-            size="small"
-            sx={{ fontSize: "0.65rem", height: 18, fontWeight: "bold" }}
-          />
-        </Box>
-      )}
-
-      {/* Current bet indicator */}
-      {player.currentBet > 0 && (
-        <Typography
-          variant="caption"
+      {/* Action chip / hand rank — shared grid cell, no layout shift */}
+      <Box sx={{ display: "grid", mt: 0.5 }}>
+        {/* Action chip — fades out at showdown */}
+        <Box
           sx={{
-            display: "block",
-            textAlign: "center",
-            color: "gold.main",
-            fontSize: "0.65rem",
-            mt: 0.25,
+            gridArea: "1 / 1",
+            display: "flex",
+            justifyContent: "center",
+            opacity: showHandResult ? 0 : 1,
+            pointerEvents: showHandResult ? "none" : "auto",
+            transition: "opacity 250ms ease",
           }}
         >
-          Bet: {player.currentBet}
-        </Typography>
-      )}
+          <Chip
+            label={player.currentAction ? actionLabel(player.currentAction) : "\u00A0"}
+            color={player.currentAction ? actionColor(player.currentAction) : "default"}
+            size="small"
+            sx={{
+              fontSize: "0.65rem",
+              height: 18,
+              visibility: player.currentAction ? "visible" : "hidden",
+            }}
+          />
+        </Box>
+
+        {/* Hand rank — fades in at showdown */}
+        <Box
+          sx={{
+            gridArea: "1 / 1",
+            display: "flex",
+            justifyContent: "center",
+            opacity: showHandResult ? 1 : 0,
+            pointerEvents: showHandResult ? "auto" : "none",
+            transition: "opacity 250ms ease",
+          }}
+        >
+          <Typography
+            variant="caption"
+            sx={{
+              color: isWinner ? "gold.light" : "silver.light",
+              fontSize: "0.65rem",
+              fontStyle: "italic",
+              textAlign: "center",
+              visibility: handResult ? "visible" : "hidden",
+            }}
+          >
+            {handResult ? formatHandRank(handResult.rankName) : "\u00A0"}
+          </Typography>
+        </Box>
+      </Box>
+
+      {/* Bet / All-In — always occupies space, visible only when applicable */}
+      <Typography
+        variant="caption"
+        sx={{
+          display: "block",
+          textAlign: "center",
+          color: "gold.main",
+          fontSize: "0.65rem",
+          mt: 0.25,
+          visibility: (player.currentBet > 0 || player.isAllIn) && !showHandResult ? "visible" : "hidden",
+        }}
+      >
+        {player.currentBet > 0 ? `Bet: ${player.currentBet}` : "\u00A0"}
+        {player.isAllIn ? " · All-In" : ""}
+      </Typography>
     </Box>
   );
 }
