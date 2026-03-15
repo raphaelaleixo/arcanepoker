@@ -12,8 +12,6 @@ import {
   Typography,
 } from "@mui/material";
 import { useGame } from "../../store/useGame";
-import { PlayingCard } from "../Card/PlayingCard";
-import type { StandardCard } from "../../types/types";
 
 const SUIT_BUTTONS: { suit: string; label: string }[] = [
   { suit: "hearts", label: "\u2665 Hearts" },
@@ -54,8 +52,6 @@ export function InteractionModal() {
   ) {
     return null;
   }
-
-  const hero = state.players.find((p) => p.type === "human");
 
   function handleStar(discard: boolean) {
     dispatch({ type: "RESOLVE_STAR", payload: { discard } });

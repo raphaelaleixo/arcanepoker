@@ -67,10 +67,6 @@ function formatHandRank(rank: string): string {
 export function PlayerSeat({ player, playerIndex, isHero = false, onCardClick, selectedCard }: PlayerSeatProps) {
   const { state } = useGame();
 
-  const isDealer = playerIndex === state.dealerIndex;
-  const isActive =
-    state.players[state.activePlayerIndex]?.id === player.id &&
-    ["pre-flop", "flop", "turn", "river", "empress"].includes(state.stage);
   const isShowdown = state.stage === "showdown";
   const priestessCard = state.priestessRevealedCards?.[player.id] ?? null;
 
