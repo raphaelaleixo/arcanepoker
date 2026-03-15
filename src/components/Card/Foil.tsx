@@ -1,4 +1,4 @@
-import { Box, keyframes, SxProps } from "@mui/material";
+import { Box, GlobalStyles, keyframes, SxProps } from "@mui/material";
 
 const animateFoil = keyframes`
     from {
@@ -102,11 +102,25 @@ interface FoilProps {
 
 export const Foil = ({ sx }: FoilProps) => {
   return (
-    <Box
-      sx={{
-        ...foilStyles,
-        ...sx,
-      }}
-    />
+    <>
+      <GlobalStyles styles={`
+        @property --posx {
+          syntax: '<percentage>';
+          inherits: false;
+          initial-value: 50%;
+        }
+        @property --posy {
+          syntax: '<percentage>';
+          inherits: false;
+          initial-value: 50%;
+        }
+      `} />
+      <Box
+        sx={{
+          ...foilStyles,
+          ...sx,
+        }}
+      />
+    </>
   );
 };

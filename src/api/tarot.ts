@@ -21,6 +21,11 @@ const MOCK_PROPHECIES = [
 export async function requestTarotReading(
   request: TarotReadingRequest
 ): Promise<TarotReadingResponse> {
+  const totalCards = request.heroHoleCards.length + request.communityCards.length;
+  if (totalCards < 7) {
+    return { prophecy: "We need more revealed cards to make the reading." };
+  }
+
   try {
     const res = await fetch("/api/tarot", {
       method: "POST",

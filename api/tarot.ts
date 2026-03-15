@@ -2,8 +2,6 @@ import type { TarotReadingRequest, TarotReadingResponse } from "../src/types/gam
 
 declare const process: { env: Record<string, string | undefined> };
 
-export const config = { runtime: "edge" };
-
 // Compact tarot meanings per suit+value — mirrors src/data/tarot.ts
 const TAROT_LOOKUP: Record<string, Record<string, { name: string; keywords: string }>> = {
   hearts: {
@@ -72,35 +70,96 @@ const TAROT_LOOKUP: Record<string, Record<string, { name: string; keywords: stri
   },
 };
 
-function cardToTarot(c: { value: string; suit: string }): string {
-  const info = TAROT_LOOKUP[c.suit]?.[c.value];
-  return info ? `${info.name} (${info.keywords})` : `${c.value} of ${c.suit}`;
+// Major Arcana keywords lookup — keyed by full name
+const ARCANA_LOOKUP: Record<string, { keywords: string }> = {
+  "The Fool":           { keywords: "beginnings, innocence, spontaneity" },
+  "The Magician":       { keywords: "willpower, skill, resourcefulness" },
+  "The High Priestess": { keywords: "intuition, mystery, the subconscious" },
+  "The Empress":        { keywords: "fertility, abundance, creativity" },
+  "The Emperor":        { keywords: "authority, structure, stability" },
+  "The Hierophant":     { keywords: "tradition, guidance, conformity" },
+  "The Lovers":         { keywords: "love, harmony, choices" },
+  "The Chariot":        { keywords: "determination, victory, control" },
+  "Strength":           { keywords: "courage, patience, inner strength" },
+  "The Hermit":         { keywords: "solitude, introspection, inner guidance" },
+  "Wheel of Fortune":   { keywords: "fate, cycles, turning points" },
+  "Justice":            { keywords: "fairness, truth, karmic balance" },
+  "The Hanged Man":     { keywords: "surrender, sacrifice, new perspective" },
+  "Death":              { keywords: "endings, transition, transformation" },
+  "Temperance":         { keywords: "balance, moderation, patience" },
+  "The Devil":          { keywords: "bondage, materialism, shadow self" },
+  "The Tower":          { keywords: "disruption, revelation, sudden change" },
+  "The Star":           { keywords: "hope, inspiration, serenity" },
+  "The Moon":           { keywords: "illusion, fear, the subconscious" },
+  "The Sun":            { keywords: "joy, success, vitality" },
+  "Judgement":          { keywords: "renewal, reckoning, absolution" },
+  "The World":          { keywords: "completion, integration, accomplishment" },
+};
+
+type ReadingSlot =
+  | { value: string; suit: string }
+  | { _arcana: true; name: string; keywords: string };
+
+function slotToTarot(slot: ReadingSlot): string {
+  if ("_arcana" in slot) {
+    return `${slot.name} (${slot.keywords})`;
+  }
+  const info = TAROT_LOOKUP[slot.suit]?.[slot.value];
+  return info ? `${info.name} (${info.keywords})` : `${slot.value} of ${slot.suit}`;
 }
+
+const HORSESHOE_POSITIONS = ["Past", "Present", "Hidden", "Obstacle", "External", "Advice", "Outcome"] as const;
 
 export function buildPrompt(request: TarotReadingRequest): string {
   const { heroHoleCards, communityCards, handRank, activeArcanaName } = request;
 
-  const holeCardStr = heroHoleCards.map(cardToTarot).join("\n  • ");
-  const communityStr = communityCards.map(cardToTarot).join("\n  • ");
-  const arcanaStr = activeArcanaName ?? "None";
+  // Assemble spread: hole cards first (max 2), then community — truncate to 7
+  const combined = [...heroHoleCards.slice(0, 2), ...communityCards];
+  const seven = combined.slice(0, 7);
 
-  // Pull the key themes from hole cards to weave into the reading
-  const holeThemes = heroHoleCards
-    .map((c) => TAROT_LOOKUP[c.suit]?.[c.value]?.keywords)
-    .filter(Boolean)
-    .join("; ");
+  // Arcana substitution: replace any Page (value "0") with the summoned Arcana
+  const arcanaInfo = activeArcanaName ? ARCANA_LOOKUP[activeArcanaName] : null;
+  const slots: ReadingSlot[] = seven.map((card) => {
+    if (card.value === "0" && arcanaInfo && activeArcanaName) {
+      return { _arcana: true, name: activeArcanaName, keywords: arcanaInfo.keywords };
+    }
+    return card;
+  });
 
-  return `You are a mystical tarot reader presiding over a game of Arcane Poker.
-A hand has just concluded. Deliver a dramatic, mystical one-paragraph reading that interprets the specific tarot symbolism of the cards that appeared.
+  const spreadLines = slots
+    .map((slot, i) => `Card ${i + 1} (${HORSESHOE_POSITIONS[i]}): ${slotToTarot(slot)}`)
+    .join("\n");
 
-Player's hole cards:
-  • ${holeCardStr}
-Community cards:
-  • ${communityStr}
+  return `You are a mystical tarot oracle presiding over a game of Arcane Poker. A hand has just concluded.
+
+Deliver a Horseshoe spread reading using exactly these 7 cards:
+${spreadLines}
+
 Hand formed: ${handRank}
-Active Major Arcana: ${arcanaStr}
+Active Major Arcana: ${activeArcanaName ?? "None"}
 
-Draw meaning from the tarot nature of these specific cards — the themes of ${holeThemes} are woven into this moment. Do not speak of winning or losing. Keep it under 80 words. Speak in a mystical, arcane tone. No bullet points.`;
+Return the reading in this EXACT format — use the card names in parentheses, bold the key themes with **, and end with a "The Big Picture" summary paragraph:
+
+Past (Card Name): [one sentence with **bolded key theme**].
+Present (Card Name): [one sentence with **bolded key theme**].
+Hidden (Card Name): [one sentence with **bolded key theme**].
+Obstacle (Card Name): [one sentence with **bolded key theme**].
+External (Card Name): [one sentence with **bolded key theme**].
+Advice (Card Name): [one sentence with **bolded key theme**].
+Outcome (Card Name): [one sentence with **bolded key theme**].
+The Big Picture: [A summary connecting the key themes, with each theme bolded using **].
+
+Speak in a mystical, arcane tone. Do not speak of winning or losing.
+
+EXAMPLE:
+Past (8 of Pentacles): You've put in the **hard work** to build a solid foundation.
+Present (4 of Cups): You're currently **stagnant** and ignoring a new opportunity.
+Hidden (High Priestess): Your **intuition** knows the answer even if your head doesn't.
+Obstacle (9 of Swords): **Anxiety** and overthinking are your only real enemies.
+External (King of Wands): A **bold mentor** is ready to back your vision.
+Advice (The Chariot): Stop hesitating and **take control** of the reins.
+Outcome (The Sun): Success and **total clarity** await if you move forward.
+The Big Picture: Your **hard work** (8 of Pentacles) has led to **boredom** (4 of Cups), but if you conquer your **fear** (9 of Swords) and **take charge** (The Chariot), you'll find **complete success** (The Sun).`;
 }
 
 export default async function handler(req: Request): Promise<Response> {
@@ -116,27 +175,39 @@ export default async function handler(req: Request): Promise<Response> {
   }
 
   if (
-    !Array.isArray(body.heroHoleCards) || body.heroHoleCards.length === 0 ||
-    !Array.isArray(body.communityCards) || body.communityCards.length === 0 ||
+    !Array.isArray(body.heroHoleCards) ||
+    !Array.isArray(body.communityCards) ||
     !body.handRank
   ) {
     return Response.json({ error: "Invalid request body" }, { status: 400 });
   }
 
-  const apiKey = process.env.GEMINI_API_KEY;
+  const apiKey = process.env.GEMINI_API_KEY?.trim();
   if (!apiKey) {
     console.error("GEMINI_API_KEY is not set");
     return Response.json({ error: "Server configuration error" }, { status: 500 });
   }
 
-  const geminiRes = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ contents: [{ parts: [{ text: buildPrompt(body) }] }] }),
-    }
-  );
+  const abort = new AbortController();
+  const abortTimer = setTimeout(() => abort.abort(), 15_000);
+
+  let geminiRes: Response;
+  try {
+    geminiRes = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ contents: [{ parts: [{ text: buildPrompt(body) }] }] }),
+        signal: abort.signal,
+      }
+    );
+  } catch (err) {
+    clearTimeout(abortTimer);
+    console.error("[tarot] Gemini fetch error:", err);
+    return Response.json({ error: "Gemini request failed" }, { status: 502 });
+  }
+  clearTimeout(abortTimer);
 
   if (!geminiRes.ok) {
     const errBody = await geminiRes.text();

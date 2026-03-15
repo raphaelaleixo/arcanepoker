@@ -2,12 +2,15 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { requestTarotReading } from "../tarot";
 import type { TarotReadingRequest } from "../../types/game";
 
+// 7 total cards (2 hole + 5 community) — passes the pre-validation gate
 const MOCK_REQUEST: TarotReadingRequest = {
   heroHoleCards: [{ value: "A", suit: "spades" }, { value: "K", suit: "spades" }],
   communityCards: [
     { value: "Q", suit: "spades" },
     { value: "J", suit: "spades" },
     { value: "10", suit: "spades" },
+    { value: "9", suit: "hearts" },
+    { value: "8", suit: "diamonds" },
   ],
   handRank: "royal-flush",
   activeArcanaName: null,
@@ -18,6 +21,20 @@ beforeEach(() => {
 });
 
 describe("requestTarotReading", () => {
+  it("returns the 'more cards' message without calling fetch when total cards < 7", async () => {
+    const mockFetch = vi.fn();
+    vi.stubGlobal("fetch", mockFetch);
+
+    const result = await requestTarotReading({
+      ...MOCK_REQUEST,
+      communityCards: [{ value: "Q", suit: "spades" }, { value: "J", suit: "spades" }], // 2+2 = 4 < 7
+    });
+
+    expect(result.prophecy).toBe("We need more revealed cards to make the reading.");
+    expect(mockFetch).not.toHaveBeenCalled();
+  });
+
+
   it("returns the prophecy from the API on success", async () => {
     vi.stubGlobal(
       "fetch",
