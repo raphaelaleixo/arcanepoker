@@ -131,29 +131,17 @@ function ActionBarInner({
         maxWidth: 600,
       }}
     >
-      {/* Overlay content (e.g. showdown buttons) — fades in when provided */}
-      {overlayContent !== undefined && (
+      {/* Grid stack: overlay and action controls occupy the same cell so height never changes */}
+      <Box sx={{ display: "grid" }}>
+        {/* Action controls */}
         <Box
           sx={{
-            opacity: overlayContent ? 1 : 0,
-            pointerEvents: overlayContent ? "auto" : "none",
+            gridArea: "1 / 1",
+            opacity: isVisible && !overlayContent ? 1 : 0,
+            pointerEvents: isVisible && !overlayContent ? "auto" : "none",
             transition: "opacity 200ms ease",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
           }}
         >
-          {overlayContent}
-        </Box>
-      )}
-      {/* Action controls — hidden when overlay is active */}
-      <Box
-        sx={{
-          opacity: isVisible && !overlayContent ? 1 : 0,
-          pointerEvents: isVisible && !overlayContent ? "auto" : "none",
-          transition: "opacity 200ms ease",
-        }}
-      >
       {/* Raise slider */}
       <Box sx={{ px: 1, mb: 1 }}>
         <Stack direction="row" justifyContent="space-between" sx={{ mb: 0.5 }}>
@@ -233,6 +221,22 @@ function ActionBarInner({
           {isAllIn ? `All-In (${heroStack})` : `${toCall === 0 ? "Bet" : "Raise"} ${clampedRaise}`}
         </Button>
       </Stack>
+        </Box>
+
+        {/* Overlay content (e.g. showdown buttons) — same grid cell, fades in when provided */}
+        <Box
+          sx={{
+            gridArea: "1 / 1",
+            opacity: overlayContent ? 1 : 0,
+            pointerEvents: overlayContent ? "auto" : "none",
+            transition: "opacity 200ms ease",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          {overlayContent}
+        </Box>
       </Box>
     </Box>
   );
