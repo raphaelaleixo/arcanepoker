@@ -13,7 +13,7 @@ import { GameContext } from "./context";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const BETTING_STAGES = new Set(["pre-flop", "flop", "turn", "river"]);
+const BETTING_STAGES = new Set(["pre-flop", "flop", "turn", "river", "empress"]);
 const BOT_THINK_MS = 700;
 
 // ─── Provider ─────────────────────────────────────────────────────────────────

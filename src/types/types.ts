@@ -125,6 +125,7 @@ export type GameStage =
   | "flop"
   | "turn"
   | "river"
+  | "empress"
   | "showdown"
   | "results";
 

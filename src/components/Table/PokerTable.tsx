@@ -10,7 +10,7 @@ import { HERO_ID_CONST } from "../../store/initialState";
 import { PlaygroundDrawer } from "../Dev/PlaygroundDrawer";
 import { DealerChip } from "./DealerChip";
 
-const BETTING_STAGES = ["pre-flop", "flop", "turn", "river"];
+const BETTING_STAGES = ["pre-flop", "flop", "turn", "river", "empress"];
 
 export function PokerTable() {
   const { state, dispatch, startGame } = useGame();

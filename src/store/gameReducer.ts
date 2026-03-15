@@ -177,7 +177,7 @@ function advanceStage(state: StoreGameState): StoreGameState {
     }
 
     case "river": {
-      // Empress: deal 6th community card (no additional betting)
+      // Empress: deal 6th community card then open a dedicated betting round
       if (
         state.activeArcana?.effectKey === "empress-sixth-card" &&
         !state.empress6thCardDealt
@@ -189,10 +189,19 @@ function advanceStage(state: StoreGameState): StoreGameState {
           deck: remaining,
           empress6thCardDealt: true,
         };
-        return evaluateShowdown(checkPageTrigger(withSixth, dealt));
+        const withPageCheck = checkPageTrigger(withSixth, dealt);
+        let next = resetBettingRound(
+          { ...withPageCheck, stage: "empress" },
+          postFlopStart
+        );
+        if (eligiblePlayers(next.players).length <= 1) return advanceStage(next);
+        return next;
       }
       return evaluateShowdown(state);
     }
+
+    case "empress":
+      return evaluateShowdown(state);
 
     default:
       return state;
@@ -1101,7 +1110,7 @@ export function gameReducer(
       return startHand(prepareNextHand(state));
 
     case "FORCE_ARCANA": {
-      const VALID_STAGES = ["pre-flop", "flop", "turn", "river"] as const;
+      const VALID_STAGES = ["pre-flop", "flop", "turn", "river", "empress"] as const;
       if (!(VALID_STAGES as readonly GameStage[]).includes(state.stage)) return state;
       const arcanaCard = { suit: "arcana" as const, value: action.payload.value };
       const resetState: StoreGameState = {

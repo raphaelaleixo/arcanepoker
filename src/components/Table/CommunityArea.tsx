@@ -32,6 +32,8 @@ function stagePill(stage: string): string {
       return "Turn";
     case "river":
       return "River";
+    case "empress":
+      return "Empress";
     case "showdown":
       return "Showdown";
     default:
@@ -51,6 +53,8 @@ function stageColor(
       return "warning";
     case "river":
       return "secondary";
+    case "empress":
+      return "error";
     case "showdown":
       return "success";
     default:

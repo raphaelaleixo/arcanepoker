@@ -65,7 +65,7 @@ export function PlayerSeat({ player, playerIndex, isHero = false }: PlayerSeatPr
   const isDealer = playerIndex === state.dealerIndex;
   const isActive =
     state.players[state.activePlayerIndex]?.id === player.id &&
-    ["pre-flop", "flop", "turn", "river"].includes(state.stage);
+    ["pre-flop", "flop", "turn", "river", "empress"].includes(state.stage);
   const isShowdown = state.stage === "showdown";
   const revealedCard = state.priestessRevealedCards?.[player.id] ?? null;
 
