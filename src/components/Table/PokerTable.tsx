@@ -182,34 +182,33 @@ export function PokerTable() {
             Challenge of the Page
           </Button>
         )}
-        {state.pendingInteraction?.type === "arcana-reveal" && (
-          <Button
-            variant="contained"
-            size="large"
-            onClick={() => dispatch({ type: "REVEAL_ARCANA" })}
-            sx={{
-              px: 5,
-              py: 1,
-              background: "linear-gradient(135deg, #4a1a6e, #1a0a2e)",
-              border: "1px solid",
-              borderColor: "secondary.main",
-              color: "secondary.light",
-              letterSpacing: "0.08em",
-              "&:hover": {
-                background: "linear-gradient(135deg, #6c3483, #2d0f4e)",
-                borderColor: "secondary.light",
-              },
-            }}
-          >
-            Reveal Arcana
-          </Button>
-        )}
         {/* ActionBar: always present to prevent layout shifts.
-            Showdown buttons appear inside the same area via overlayContent. */}
+            Showdown and arcana-reveal buttons appear inside the same area via overlayContent. */}
         <ActionBar
           isVisible={isHeroTurn}
           overlayContent={
-            state.stage === "showdown" && state.pendingInteraction === null ? (
+            state.pendingInteraction?.type === "arcana-reveal" ? (
+              <Button
+                variant="contained"
+                size="large"
+                onClick={() => dispatch({ type: "REVEAL_ARCANA" })}
+                sx={{
+                  px: 5,
+                  py: 1,
+                  background: "linear-gradient(135deg, #4a1a6e, #1a0a2e)",
+                  border: "1px solid",
+                  borderColor: "secondary.main",
+                  color: "secondary.light",
+                  letterSpacing: "0.08em",
+                  "&:hover": {
+                    background: "linear-gradient(135deg, #6c3483, #2d0f4e)",
+                    borderColor: "secondary.light",
+                  },
+                }}
+              >
+                Reveal Arcana
+              </Button>
+            ) : state.stage === "showdown" && state.pendingInteraction === null ? (
               <Stack direction="row" spacing={1} alignItems="center">
                 {(state.communityCards.length > 0 || state.winnerIds.includes(HERO_ID_CONST)) && (
                   <Button
