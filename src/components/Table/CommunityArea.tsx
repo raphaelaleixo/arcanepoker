@@ -376,7 +376,6 @@ export function CommunityArea({ sx }: CommunityAreaProps) {
               </Box>
             </Box>
           </Box>
-        </Stack>
       </Stack>
     </Box>
   );
