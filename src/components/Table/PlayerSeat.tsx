@@ -120,6 +120,7 @@ export function PlayerSeat({ player, playerIndex, isHero = false }: PlayerSeatPr
                   suit={showFaceUp ? card.suit : undefined}
                   flipped={showFaceUp}
                   dealIndex={playerIndex * 2 + i}
+                  revealDelay={!isHero ? 200 + playerIndex * 300 + i * 100 : undefined}
                 />
               </Box>
             ))
