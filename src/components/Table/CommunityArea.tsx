@@ -285,9 +285,18 @@ export function CommunityArea({ sx }: CommunityAreaProps) {
         </Box>
       )}
 
-      {/* Unified arcana area — same block for pending and active, no layout shift */}
-      {arcanaCardToShow && displayArcanaData && (
-        <Stack direction="row" spacing={1.5} alignItems="center" justifyContent="center">
+      {/* Unified arcana area — always rendered to reserve space, fades in when active */}
+      <Stack
+        direction="row"
+        spacing={1.5}
+        alignItems="center"
+        justifyContent="center"
+        sx={{
+          opacity: arcanaCardToShow ? 1 : 0,
+          pointerEvents: arcanaCardToShow ? "auto" : "none",
+          transition: "opacity 400ms ease",
+        }}
+      >
           {/* Card: single instance — flipped changes false→true, PlayingCard's CSS transition animates the flip */}
           <Box sx={{ display: "inline-block", animation: pendingArcanaCard ? `${arcanaRiseIn} 500ms ease-out both` : undefined }}>
             <Box
@@ -300,9 +309,9 @@ export function CommunityArea({ sx }: CommunityAreaProps) {
             >
               <PlayingCard
                 small
-                rank={arcanaCardToShow.value}
-                suit={arcanaCardToShow.suit}
-                flipped={!pendingArcanaCard}
+                rank={arcanaCardToShow?.value}
+                suit={arcanaCardToShow?.suit}
+                flipped={!!arcanaCardToShow && !pendingArcanaCard}
               />
             </Box>
           </Box>
@@ -354,9 +363,9 @@ export function CommunityArea({ sx }: CommunityAreaProps) {
                   variant="caption"
                   sx={{ display: "block", color: "secondary.main", fontWeight: "bold", fontSize: "0.75rem" }}
                 >
-                  {displayArcanaData.fullName}
+                  {displayArcanaData?.fullName}
                 </Typography>
-                {displayArcanaData.gameEffect && (
+                {displayArcanaData?.gameEffect && (
                   <Typography
                     variant="caption"
                     sx={{ display: "block", color: "silver.light", fontSize: "0.65rem", fontStyle: "italic", mt: 0.25 }}
@@ -368,7 +377,7 @@ export function CommunityArea({ sx }: CommunityAreaProps) {
             </Box>
           </Box>
         </Stack>
-      )}
+      </Stack>
     </Box>
   );
 }
