@@ -1,0 +1,101 @@
+/**
+ * Renders the action chip, hand rank label, and bet/all-in line for a player seat.
+ * Pure presentational — receives all data as props from PlayerSeat.
+ */
+import { Box, Chip, Typography } from "@mui/material";
+import { actionLabel, actionColor, formatHandRank } from "../../utils/cardUtils";
+
+interface PlayerStatusBarProps {
+  currentAction: string | null;
+  currentBet: number;
+  isAllIn: boolean;
+  /** Present at showdown if this player's hand was evaluated. */
+  handResult: { rankName: string } | undefined;
+  isWinner: boolean;
+  /** True when the stage is showdown and the player has not folded. Controls the cross-fade. */
+  showHandResult: boolean;
+}
+
+export function PlayerStatusBar({
+  currentAction,
+  currentBet,
+  isAllIn,
+  handResult,
+  isWinner,
+  showHandResult,
+}: PlayerStatusBarProps) {
+  return (
+    <>
+      {/*
+        CSS grid stack: action chip and hand rank occupy gridArea "1/1" so they
+        share the same space. Opacity transitions swap between them without any
+        layout shift — the container height never changes.
+      */}
+      <Box sx={{ display: "grid", mt: 0.5 }}>
+        {/* Action chip — fades out at showdown */}
+        <Box
+          sx={{
+            gridArea: "1 / 1",
+            display: "flex",
+            justifyContent: "center",
+            opacity: showHandResult ? 0 : 1,
+            pointerEvents: showHandResult ? "none" : "auto",
+            transition: "opacity 250ms ease",
+          }}
+        >
+          <Chip
+            label={currentAction ? actionLabel(currentAction) : "\u00A0"}
+            color={currentAction ? actionColor(currentAction) : "default"}
+            size="small"
+            sx={{
+              fontSize: "0.65rem",
+              height: 18,
+              visibility: currentAction ? "visible" : "hidden",
+            }}
+          />
+        </Box>
+
+        {/* Hand rank — fades in at showdown */}
+        <Box
+          sx={{
+            gridArea: "1 / 1",
+            display: "flex",
+            justifyContent: "center",
+            opacity: showHandResult ? 1 : 0,
+            pointerEvents: showHandResult ? "auto" : "none",
+            transition: "opacity 250ms ease",
+          }}
+        >
+          <Typography
+            variant="caption"
+            sx={{
+              color: isWinner ? "gold.light" : "silver.light",
+              fontSize: "0.65rem",
+              fontStyle: "italic",
+              textAlign: "center",
+              visibility: handResult ? "visible" : "hidden",
+            }}
+          >
+            {handResult ? formatHandRank(handResult.rankName) : "\u00A0"}
+          </Typography>
+        </Box>
+      </Box>
+
+      {/* Bet / All-In — always occupies space, visible only when applicable */}
+      <Typography
+        variant="caption"
+        sx={{
+          display: "block",
+          textAlign: "center",
+          color: "gold.main",
+          fontSize: "0.65rem",
+          mt: 0.25,
+          visibility: (currentBet > 0 || isAllIn) && !showHandResult ? "visible" : "hidden",
+        }}
+      >
+        {currentBet > 0 ? `Bet: ${currentBet}` : "\u00A0"}
+        {isAllIn ? " · All-In" : ""}
+      </Typography>
+    </>
+  );
+}
