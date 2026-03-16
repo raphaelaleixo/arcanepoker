@@ -35,6 +35,7 @@ export function CommunityCards({
       {Array.from({ length: totalSlots }).map((_, i) => {
         const card = communityCards[i];
         if (card) {
+          // Turn/river cards are dealt individually, so each resets stagger to 0.
           const di = i < 3 ? i : 0;
           // Fool substitution: render this slot as The Fool arcana face
           // rather than the card's true value.
