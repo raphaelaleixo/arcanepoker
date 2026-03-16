@@ -127,7 +127,8 @@ export type GameStage =
   | "river"
   | "empress"
   | "showdown"
-  | "results";
+  | "results"
+  | "game-over";
 
 // --- Game State ---
 export interface GameState {
