@@ -1,8 +1,17 @@
+/**
+ * The hero's action control panel.
+ * Derives game state, owns the raiseAmount slider state, and composes
+ * RaiseSlider + ActionButtons. Uses a CSS grid stack to cross-fade between
+ * action controls and overlayContent (e.g. showdown buttons, arcana prompts).
+ * ActionBarInner is deleted — all logic lives directly in ActionBar.
+ */
 import { useEffect, useState } from "react";
-import { Box, Button, Slider, Stack, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 import type { ReactNode } from "react";
 import { useGame } from "../../store/useGame";
 import { HERO_ID_CONST } from "../../store/initialState";
+import { RaiseSlider } from "./RaiseSlider";
+import { ActionButtons } from "./ActionButtons";
 
 interface ActionBarProps {
   isVisible?: boolean;
@@ -15,107 +24,46 @@ export function ActionBar({ isVisible = true, overlayContent }: ActionBarProps) 
 
   const hero = state.players.find((p) => p.id === HERO_ID_CONST);
 
+  // The Devil arcana doubles the minimum raise to 4× the current bet.
+  const devilActive = state.activeArcana?.effectKey === "devil-double-raise";
+  const toCall = hero ? state.currentBet - hero.currentBet : 0;
+  const canCheck = toCall === 0;
+  const minRaiseCalc = hero
+    ? devilActive
+      ? state.currentBet * 4
+      : Math.max(state.currentBet * 2, hero.currentBet + state.bigBlind)
+    : state.bigBlind;
+  const minRaise = Math.max(minRaiseCalc, state.bigBlind);
+  const effectiveMax = hero ? Math.max(minRaise, hero.stack + hero.currentBet) : minRaise;
+  const callExceedsStack = hero ? toCall >= hero.stack : false;
+
+  const [raiseAmount, setRaiseAmount] = useState<number>(minRaise);
+  useEffect(() => { setRaiseAmount(minRaise); }, [minRaise]);
+
   if (!hero) return null;
 
-  const toCall = state.currentBet - hero.currentBet;
-  const canCheck = toCall === 0;
-
-  const devilActive =
-    state.activeArcana?.effectKey === "devil-double-raise";
-
-  const minRaiseCalc = devilActive
-    ? state.currentBet * 4
-    : Math.max(state.currentBet * 2, hero.currentBet + state.bigBlind);
-
-  const minRaise = Math.max(minRaiseCalc, state.bigBlind);
-  const maxRaise = hero.stack + hero.currentBet;
-
-  return (
-    <ActionBarInner
-      isVisible={isVisible}
-      overlayContent={overlayContent}
-      toCall={toCall}
-      canCheck={canCheck}
-      minRaise={minRaise}
-      maxRaise={maxRaise}
-      heroStack={hero.stack}
-      bigBlind={state.bigBlind}
-      dispatch={dispatch}
-    />
-  );
-}
-
-interface ActionBarInnerProps {
-  isVisible: boolean;
-  overlayContent?: ReactNode;
-  toCall: number;
-  canCheck: boolean;
-  minRaise: number;
-  maxRaise: number;
-  heroStack: number;
-  bigBlind: number;
-  dispatch: ReturnType<typeof useGame>["dispatch"];
-}
-
-function ActionBarInner({
-  isVisible,
-  overlayContent,
-  toCall,
-  canCheck,
-  minRaise,
-  maxRaise,
-  heroStack,
-  bigBlind,
-  dispatch,
-}: ActionBarInnerProps) {
-  const [raiseAmount, setRaiseAmount] = useState<number>(minRaise);
-
-  useEffect(() => {
-    setRaiseAmount(minRaise);
-  }, [minRaise]);
-
-  const effectiveMax = Math.max(minRaise, maxRaise);
   const clampedRaise = Math.min(Math.max(raiseAmount, minRaise), effectiveMax);
-
-  function handleFold() {
-    dispatch({
-      type: "PLAYER_ACTION",
-      payload: { playerId: HERO_ID_CONST, action: "fold" },
-    });
-  }
-
-  function handleCheckOrCall() {
-    if (canCheck) {
-      dispatch({
-        type: "PLAYER_ACTION",
-        payload: { playerId: HERO_ID_CONST, action: "check" },
-      });
-    } else {
-      dispatch({
-        type: "PLAYER_ACTION",
-        payload: { playerId: HERO_ID_CONST, action: "call" },
-      });
-    }
-  }
-
-  const callExceedsStack = toCall >= heroStack;
   const sliderDisabled = effectiveMax <= minRaise;
   const isAllIn = clampedRaise >= effectiveMax;
 
+  function handleFold() {
+    dispatch({ type: "PLAYER_ACTION", payload: { playerId: HERO_ID_CONST, action: "fold" } });
+  }
+
+  function handleCheckOrCall() {
+    dispatch({
+      type: "PLAYER_ACTION",
+      payload: { playerId: HERO_ID_CONST, action: canCheck ? "check" : "call" },
+    });
+  }
+
   function handleRaiseOrAllIn() {
     if (isAllIn) {
-      dispatch({
-        type: "PLAYER_ACTION",
-        payload: { playerId: HERO_ID_CONST, action: "all-in" },
-      });
+      dispatch({ type: "PLAYER_ACTION", payload: { playerId: HERO_ID_CONST, action: "all-in" } });
     } else {
       dispatch({
         type: "PLAYER_ACTION",
-        payload: {
-          playerId: HERO_ID_CONST,
-          action: "raise",
-          amount: clampedRaise,
-        },
+        payload: { playerId: HERO_ID_CONST, action: "raise", amount: clampedRaise },
       });
     }
   }
@@ -131,7 +79,10 @@ function ActionBarInner({
         maxWidth: 600,
       }}
     >
-      {/* Grid stack: overlay and action controls occupy the same cell so height never changes */}
+      {/*
+        CSS grid stack: action controls and overlayContent share gridArea "1/1".
+        Opacity transitions swap between them with no layout shift.
+      */}
       <Box sx={{ display: "grid" }}>
         {/* Action controls */}
         <Box
@@ -142,88 +93,28 @@ function ActionBarInner({
             transition: "opacity 200ms ease",
           }}
         >
-      {/* Raise slider */}
-      <Box sx={{ px: 1, mb: 1 }}>
-        <Stack direction="row" justifyContent="space-between" sx={{ mb: 0.5 }}>
-          <Typography variant="caption" sx={{ color: "silver.light" }}>
-            Raise amount
-          </Typography>
-          <Typography
-            variant="caption"
-            sx={{ color: "gold.main", fontWeight: "bold" }}
-          >
-            {clampedRaise}
-          </Typography>
-        </Stack>
-        <Slider
-          value={clampedRaise}
-          min={minRaise}
-          max={effectiveMax}
-          step={bigBlind}
-          disabled={sliderDisabled}
-          onChange={(_e, v) => setRaiseAmount(v as number)}
-          sx={{
-            color: "gold.main",
-            "& .MuiSlider-thumb": {
-              borderColor: "gold.dark",
-            },
-          }}
-        />
-      </Box>
-
-      {/* Action buttons */}
-      <Stack direction="row" spacing={1} justifyContent="center">
-        <Button
-          variant="contained"
-          color="error"
-          size="small"
-          onClick={handleFold}
-        >
-          Fold
-        </Button>
-
-        {canCheck ? (
-          <Button
-            variant="contained"
-            color="success"
-            size="small"
-            onClick={handleCheckOrCall}
-          >
-            Check
-          </Button>
-        ) : callExceedsStack ? (
-          <Button
-            variant="contained"
-            color="info"
-            size="small"
-            onClick={handleCheckOrCall}
-          >
-            All-in {heroStack}
-          </Button>
-        ) : (
-          <Button
-            variant="contained"
-            color="info"
-            size="small"
-            onClick={handleCheckOrCall}
-          >
-            Call {toCall}
-          </Button>
-        )}
-
-        <Button
-          variant="contained"
-          color={isAllIn ? "warning" : "primary"}
-          size="small"
-          onClick={handleRaiseOrAllIn}
-          disabled={heroStack === 0}
-        >
-          {isAllIn ? `All-In (${heroStack})` : `${toCall === 0 ? "Bet" : "Raise"} ${clampedRaise}`}
-        </Button>
-      </Stack>
+          <RaiseSlider
+            value={clampedRaise}
+            minRaise={minRaise}
+            maxRaise={effectiveMax}
+            bigBlind={state.bigBlind}
+            disabled={sliderDisabled}
+            onChange={setRaiseAmount}
+          />
+          <ActionButtons
+            canCheck={canCheck}
+            callExceedsStack={callExceedsStack}
+            heroStack={hero.stack}
+            toCall={toCall}
+            isAllIn={isAllIn}
+            clampedRaise={clampedRaise}
+            onFold={handleFold}
+            onCheckOrCall={handleCheckOrCall}
+            onRaiseOrAllIn={handleRaiseOrAllIn}
+          />
         </Box>
 
-        {/* Overlay content (e.g. showdown buttons) — same grid cell, fades in when provided */}
+        {/* Overlay content — same grid cell, fades in when provided */}
         <Box
           sx={{
             gridArea: "1 / 1",
