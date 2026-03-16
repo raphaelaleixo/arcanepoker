@@ -1,47 +1,60 @@
+/**
+ * Modal dialog for arcana interactions that require a multi-choice decision.
+ * Supports minimize to a chip so the player can see the table state first.
+ *
+ * Interactions handled here (multi-choice, minimize-able):
+ *   star-discard, moon-swap, magician-guess, judgement-return
+ *
+ * Interactions handled inline on the table (ActionBar overlay):
+ *   priestess-reveal, chariot-pass, arcana-reveal, page-challenge
+ */
 import { useState } from "react";
 import {
-  Box,
-  Button,
   Chip,
   Dialog,
-  DialogActions,
   DialogContent,
   DialogTitle,
   IconButton,
-  Stack,
-  Typography,
 } from "@mui/material";
 import { useGame } from "../../store/useGame";
+import { StarDiscardContent } from "./StarDiscardContent";
+import { MoonSwapContent } from "./MoonSwapContent";
+import { MagicianGuessContent } from "./MagicianGuessContent";
+import { JudgementReturnContent } from "./JudgementReturnContent";
 
-const SUIT_BUTTONS: { suit: string; label: string }[] = [
-  { suit: "hearts", label: "\u2665 Hearts" },
-  { suit: "clubs", label: "\u2663 Clubs" },
-  { suit: "diamonds", label: "\u2666 Diamonds" },
-  { suit: "spades", label: "\u2660 Spades" },
-];
-
+/** Maps interaction type to a dialog title string. Also used for the minimized chip label. */
 function dialogTitle(type: string): string {
   switch (type) {
-    case "star-discard":
-      return "The Star: Discard or Keep?";
-    case "moon-swap":
-      return "The Moon: Swap for 3rd Card?";
-    case "magician-guess":
-      return "The Magician: Guess a Suit";
-    case "judgement-return":
-      return "Judgement: Rejoin the Hand?";
-    case "priestess-reveal":
-      return "The High Priestess: Reveal a Card";
-    default:
-      return "Choose";
+    case "star-discard":     return "The Star: Discard or Keep?";
+    case "moon-swap":        return "The Moon: Swap for 3rd Card?";
+    case "magician-guess":   return "The Magician: Guess a Suit";
+    case "judgement-return": return "Judgement: Rejoin the Hand?";
+    // Inline types retained so the minimized chip still gets a label if needed.
+    case "priestess-reveal": return "The High Priestess: Reveal a Card";
+    default:                 return "Choose";
   }
 }
+
+const paperSx = {
+  background: "linear-gradient(135deg, #0F3D20 0%, #1a0a2e 100%)",
+  border: "1px solid",
+  borderColor: "secondary.dark",
+  boxShadow: "0 0 40px rgba(155,89,182,0.2)",
+};
+
+const titleSx = {
+  color: "secondary.main",
+  fontFamily: '"Georgia", "Times New Roman", serif',
+  textAlign: "center",
+  borderBottom: "1px solid rgba(155,89,182,0.2)",
+};
 
 export function InteractionModal() {
   const { state, dispatch } = useGame();
   const { pendingInteraction } = state;
   const [minimized, setMinimized] = useState(false);
 
+  // These interaction types are handled inline on the table or in TableOverlayContent.
   if (
     pendingInteraction === null ||
     pendingInteraction.type === "tarot-reading" ||
@@ -52,36 +65,6 @@ export function InteractionModal() {
   ) {
     return null;
   }
-
-  function handleStar(discard: boolean) {
-    dispatch({ type: "RESOLVE_STAR", payload: { discard } });
-  }
-
-  function handleMoon(swap: boolean) {
-    dispatch({ type: "RESOLVE_MOON", payload: { swap } });
-  }
-
-  function handleMagician(suit: string) {
-    dispatch({ type: "RESOLVE_MAGICIAN", payload: { suit } });
-  }
-
-  function handleJudgement(rejoin: boolean) {
-    dispatch({ type: "RESOLVE_JUDGEMENT", payload: { rejoin } });
-  }
-
-  const paperSx = {
-    background: "linear-gradient(135deg, #0F3D20 0%, #1a0a2e 100%)",
-    border: "1px solid",
-    borderColor: "secondary.dark",
-    boxShadow: "0 0 40px rgba(155,89,182,0.2)",
-  };
-
-  const titleSx = {
-    color: "secondary.main",
-    fontFamily: '"Georgia", "Times New Roman", serif',
-    textAlign: "center",
-    borderBottom: "1px solid rgba(155,89,182,0.2)",
-  };
 
   if (minimized) {
     return (
@@ -105,7 +88,9 @@ export function InteractionModal() {
 
   return (
     <Dialog open maxWidth="sm" fullWidth PaperProps={{ sx: paperSx }}>
-      <DialogTitle sx={{ ...titleSx, display: "flex", alignItems: "center", justifyContent: "center", pr: 6 }}>
+      <DialogTitle
+        sx={{ ...titleSx, display: "flex", alignItems: "center", justifyContent: "center", pr: 6 }}
+      >
         {dialogTitle(pendingInteraction.type)}
         <IconButton
           size="small"
@@ -119,122 +104,30 @@ export function InteractionModal() {
 
       <DialogContent sx={{ py: 3 }}>
         {pendingInteraction.type === "star-discard" && (
-          <Typography
-            variant="body1"
-            sx={{ color: "silver.light", textAlign: "center" }}
-          >
-            Discard your lowest card and draw a new one?
-          </Typography>
+          <StarDiscardContent
+            onDiscard={() => dispatch({ type: "RESOLVE_STAR", payload: { discard: true } })}
+            onKeep={() => dispatch({ type: "RESOLVE_STAR", payload: { discard: false } })}
+          />
         )}
-
         {pendingInteraction.type === "moon-swap" && (
-          <Typography
-            variant="body1"
-            sx={{ color: "silver.light", textAlign: "center" }}
-          >
-            Swap one of your hole cards for a 3rd card dealt to you?
-          </Typography>
+          <MoonSwapContent
+            onSwap={() => dispatch({ type: "RESOLVE_MOON", payload: { swap: true } })}
+            onKeep={() => dispatch({ type: "RESOLVE_MOON", payload: { swap: false } })}
+          />
         )}
-
         {pendingInteraction.type === "magician-guess" && (
-          <Box>
-            <Typography
-              variant="body2"
-              sx={{ color: "silver.light", textAlign: "center", mb: 2 }}
-            >
-              Guess the suit of the top card. If correct, you keep it as an extra hole card.
-            </Typography>
-            <Stack direction="row" spacing={1} justifyContent="center" flexWrap="wrap">
-              {SUIT_BUTTONS.map(({ suit, label }) => (
-                <Button
-                  key={suit}
-                  variant="outlined"
-                  onClick={() => handleMagician(suit)}
-                  sx={{
-                    color: suit === "hearts" || suit === "diamonds" ? "redSuit.main" : "silver.light",
-                    borderColor: suit === "hearts" || suit === "diamonds" ? "redSuit.main" : "silver.dark",
-                    "&:hover": {
-                      borderColor: "gold.main",
-                      color: "gold.main",
-                    },
-                  }}
-                >
-                  {label}
-                </Button>
-              ))}
-            </Stack>
-          </Box>
+          <MagicianGuessContent
+            onGuess={(suit) => dispatch({ type: "RESOLVE_MAGICIAN", payload: { suit } })}
+          />
         )}
-
         {pendingInteraction.type === "judgement-return" && (
-          <Typography
-            variant="body1"
-            sx={{ color: "silver.light", textAlign: "center" }}
-          >
-            Pay 1 big blind ({state.bigBlind} chips) to rejoin the hand with new cards?
-          </Typography>
+          <JudgementReturnContent
+            bigBlind={state.bigBlind}
+            onRejoin={() => dispatch({ type: "RESOLVE_JUDGEMENT", payload: { rejoin: true } })}
+            onSitOut={() => dispatch({ type: "RESOLVE_JUDGEMENT", payload: { rejoin: false } })}
+          />
         )}
-
       </DialogContent>
-
-      <DialogActions sx={{ justifyContent: "center", pb: 2, gap: 1 }}>
-        {pendingInteraction.type === "star-discard" && (
-          <>
-            <Button
-              variant="contained"
-              color="warning"
-              onClick={() => handleStar(true)}
-            >
-              Discard
-            </Button>
-            <Button
-              variant="outlined"
-              onClick={() => handleStar(false)}
-              sx={{ color: "silver.light", borderColor: "silver.dark" }}
-            >
-              Keep
-            </Button>
-          </>
-        )}
-
-        {pendingInteraction.type === "moon-swap" && (
-          <>
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={() => handleMoon(true)}
-            >
-              Swap
-            </Button>
-            <Button
-              variant="outlined"
-              onClick={() => handleMoon(false)}
-              sx={{ color: "silver.light", borderColor: "silver.dark" }}
-            >
-              Keep
-            </Button>
-          </>
-        )}
-
-        {pendingInteraction.type === "judgement-return" && (
-          <>
-            <Button
-              variant="contained"
-              color="success"
-              onClick={() => handleJudgement(true)}
-            >
-              Rejoin
-            </Button>
-            <Button
-              variant="outlined"
-              color="error"
-              onClick={() => handleJudgement(false)}
-            >
-              Sit Out
-            </Button>
-          </>
-        )}
-      </DialogActions>
     </Dialog>
   );
 }
