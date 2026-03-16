@@ -18,7 +18,12 @@ import { requestTarotReading } from "../../api/tarot";
 import { HERO_ID_CONST } from "../../store/initialState";
 import tarot from "../../data/tarot";
 import { PlayingCard } from "../Card/PlayingCard";
-import type { ArcanaValue, ArcanaSuit, StandardCardValue, Suit } from "../../types/types";
+import type {
+  ArcanaValue,
+  ArcanaSuit,
+  StandardCardValue,
+  Suit,
+} from "../../types/types";
 
 interface TarotModalProps {
   onClose: () => void;
@@ -34,15 +39,18 @@ export function TarotModal({ onClose }: TarotModalProps) {
 
   const arcanaName =
     state.activeArcana != null
-      ? (tarot.arcana as Record<string, { fullName: string }>)[
+      ? ((tarot.arcana as Record<string, { fullName: string }>)[
           state.activeArcana.card.value
-        ]?.fullName ?? null
+        ]?.fullName ?? null)
       : null;
 
   const arcanaCard = state.activeArcana?.card ?? null;
 
   let arcanaSubstituted = false;
-  function communityCardDisplayProps(card: { value: string; suit: string }): { rank: ArcanaValue | StandardCardValue; suit: ArcanaSuit | Suit } {
+  function communityCardDisplayProps(card: { value: string; suit: string }): {
+    rank: ArcanaValue | StandardCardValue;
+    suit: ArcanaSuit | Suit;
+  } {
     if (card.value === "0" && arcanaCard && !arcanaSubstituted) {
       arcanaSubstituted = true;
       return { rank: arcanaCard.value, suit: arcanaCard.suit };
@@ -50,7 +58,10 @@ export function TarotModal({ onClose }: TarotModalProps) {
     return { rank: card.value as StandardCardValue, suit: card.suit as Suit };
   }
 
-  function holeCardDisplayProps(card: { value: string; suit: string }): { rank: StandardCardValue; suit: Suit } {
+  function holeCardDisplayProps(card: { value: string; suit: string }): {
+    rank: StandardCardValue;
+    suit: Suit;
+  } {
     return { rank: card.value as StandardCardValue, suit: card.suit as Suit };
   }
 
@@ -99,20 +110,18 @@ export function TarotModal({ onClose }: TarotModalProps) {
         </Box>
       ) : (
         part
-      )
+      ),
     );
     return (
       <Typography
         key={key}
         variant="body1"
         sx={{
-          fontStyle: "italic",
           color: isBigPicture ? "gold.light" : "silver.light",
           textAlign: "left",
           lineHeight: 1.8,
-          fontFamily: '"Georgia", "Times New Roman", serif',
           fontSize: isBigPicture ? "0.95rem" : "0.9rem",
-          mt: isBigPicture ? 1.5 : 0,
+          mt: isBigPicture ? 1.5 : 1,
           borderTop: isBigPicture ? "1px solid rgba(255,215,0,0.2)" : "none",
           pt: isBigPicture ? 1.5 : 0,
         }}
@@ -163,7 +172,7 @@ export function TarotModal({ onClose }: TarotModalProps) {
       <DialogTitle
         sx={{
           color: "gold.main",
-          fontFamily: '"Georgia", "Times New Roman", serif',
+          fontFamily: 'Young Serif, "Georgia", serif',
           textAlign: "center",
           fontSize: "1.4rem",
           letterSpacing: "0.08em",
@@ -174,7 +183,7 @@ export function TarotModal({ onClose }: TarotModalProps) {
           pr: 6,
         }}
       >
-        The Cards Speak
+        Your Cards Speak
         <IconButton
           size="small"
           onClick={() => setMinimized(true)}
@@ -191,7 +200,13 @@ export function TarotModal({ onClose }: TarotModalProps) {
           py: 3,
         }}
       >
-        <Stack direction="row" justifyContent="center" alignItems="flex-end" gap={2} sx={{ mb: 2 }}>
+        <Stack
+          direction="row"
+          justifyContent="center"
+          alignItems="flex-end"
+          gap={2}
+          sx={{ my: 2, py: 0 }}
+        >
           <Stack direction="row" alignItems="flex-end">
             {(hero?.holeCards ?? []).map((card, i) => (
               <Box
@@ -206,10 +221,19 @@ export function TarotModal({ onClose }: TarotModalProps) {
               </Box>
             ))}
           </Stack>
-          <Divider orientation="vertical" flexItem sx={{ borderColor: "rgba(255,215,0,0.2)" }} />
+          <Divider
+            orientation="vertical"
+            flexItem
+            sx={{ borderColor: "rgba(255,215,0,0.2)" }}
+          />
           <Stack direction="row" alignItems="flex-end" gap={0.5}>
             {state.communityCards.map((card, i) => (
-              <PlayingCard key={i} small {...communityCardDisplayProps(card)} flipped />
+              <PlayingCard
+                key={i}
+                small
+                {...communityCardDisplayProps(card)}
+                flipped
+              />
             ))}
           </Stack>
         </Stack>
@@ -222,7 +246,11 @@ export function TarotModal({ onClose }: TarotModalProps) {
               ?.replace(/\/n/g, "\n\n")
               .split("\n")
               .map((line, i) =>
-                line.trim() ? parseLine(line, i) : <Box key={i} sx={{ height: 12 }} />
+                line.trim() ? (
+                  parseLine(line, i)
+                ) : (
+                  <Box key={i} sx={{ height: 12 }} />
+                ),
               )}
           </Box>
         )}
