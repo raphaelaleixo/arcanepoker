@@ -189,7 +189,7 @@ export default async function handler(req: Request): Promise<Response> {
   }
 
   const abort = new AbortController();
-  const abortTimer = setTimeout(() => abort.abort(), 15_000);
+  const abortTimer = setTimeout(() => abort.abort(), 8_000);
 
   let geminiRes: Response;
   try {
@@ -198,7 +198,10 @@ export default async function handler(req: Request): Promise<Response> {
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ contents: [{ parts: [{ text: buildPrompt(body) }] }] }),
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: buildPrompt(body) }] }],
+          generationConfig: { thinkingConfig: { thinkingBudget: 0 } },
+        }),
         signal: abort.signal,
       }
     );
