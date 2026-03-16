@@ -13,6 +13,7 @@ import { CommunityArea } from "./CommunityArea";
 import { ActionBar } from "./ActionBar";
 import { TarotModal } from "../Modals/TarotModal";
 import { InteractionModal } from "../Modals/InteractionModal";
+import { GameOverModal } from "../Modals/GameOverModal";
 import { HERO_ID_CONST } from "../../store/initialState";
 import { PlaygroundDrawer } from "../Dev/PlaygroundDrawer";
 import { DealerChip } from "./DealerChip";
@@ -99,8 +100,8 @@ export function PokerTable() {
         justifyContent="center"
         alignItems="center"
       >
-        {bot1 && <PlayerSeat player={bot1} playerIndex={state.players.indexOf(bot1)} />}
-        {bot2 && <PlayerSeat player={bot2} playerIndex={state.players.indexOf(bot2)} />}
+        {bot1 && <PlayerSeat player={bot1} playerIndex={state.players.indexOf(bot1)} isActive={activePlayer?.id === bot1.id} />}
+        {bot2 && <PlayerSeat player={bot2} playerIndex={state.players.indexOf(bot2)} isActive={activePlayer?.id === bot2.id} />}
       </Stack>
 
       {/* Middle row: bot3 | community area | bot4 */}
@@ -111,9 +112,9 @@ export function PokerTable() {
         justifyContent="center"
         flex={1}
       >
-        {bot3 && <PlayerSeat player={bot3} playerIndex={state.players.indexOf(bot3)} />}
+        {bot3 && <PlayerSeat player={bot3} playerIndex={state.players.indexOf(bot3)} isActive={activePlayer?.id === bot3.id} />}
         <CommunityArea sx={{ flex: 1 }} />
-        {bot4 && <PlayerSeat player={bot4} playerIndex={state.players.indexOf(bot4)} />}
+        {bot4 && <PlayerSeat player={bot4} playerIndex={state.players.indexOf(bot4)} isActive={activePlayer?.id === bot4.id} />}
       </Stack>
 
       {/* Bottom row: hero seat */}
@@ -123,6 +124,7 @@ export function PokerTable() {
             player={hero}
             playerIndex={heroIndex}
             isHero
+            isActive={activePlayer?.id === hero.id}
             onCardClick={cardPickInteraction ? handleCardPick : undefined}
             selectedCard={cardPickInteraction ? selectedCard : undefined}
           />
@@ -144,6 +146,7 @@ export function PokerTable() {
       {/* Overlay modals */}
       {showTarot && <TarotModal onClose={() => setShowTarot(false)} />}
       <InteractionModal />
+      <GameOverModal />
       <DealerChip />
       <Button
         size="small"
