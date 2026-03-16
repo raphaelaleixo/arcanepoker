@@ -15,16 +15,27 @@ declare module "@mui/material/styles" {
   }
 }
 
-export const theme = createTheme({
+let theme = createTheme({
   palette: {
-    mode: "dark",
-    background: { default: "#0A2F1A", paper: "#0F3D20" },
-    primary: { main: "#2E7D32" },
-    secondary: { main: "#9B59B6", dark: "#6C3483" },
-    gold: { light: "#FFF8DC", main: "#FFD700", dark: "#B8860B" },
-    silver: { light: "#F5F5F5", main: "#C0C0C0", dark: "#808080" },
-    redSuit: { main: "#C62828" },
-    blackSuit: { main: "#1A1A1A" },
+    text: {
+      secondary: "#ffffff",
+    },
+    primary: {
+      main: "#14b8a6",
+    },
+    secondary: {
+      main: "#84cc16",
+    },
+    error: {
+      main: "#ef4444",
+    },
+    success: {
+      main: "#22c55e",
+    },
+    warning: {
+      main: "#f59e0b",
+    },
+    tonalOffset: 0.2,
   },
   typography: {
     fontFamily: ["Rubik"].join(","),
@@ -39,7 +50,41 @@ export const theme = createTheme({
       textBox: "trim-both cap alphabetic",
     },
   },
-  components: {
-    MuiButton: { defaultProps: { disableElevation: true } },
+});
+
+theme = createTheme(theme, {
+  palette: {
+    redSuit: theme.palette.augmentColor({
+      color: {
+        main: "#e11d48",
+      },
+      name: "redSuit",
+    }),
+    blackSuit: theme.palette.augmentColor({
+      color: {
+        main: "#0f172a",
+      },
+      name: "blackSuit",
+    }),
+    blueSuit: theme.palette.augmentColor({
+      color: {
+        main: "#8b5cf6",
+      },
+      name: "blueSuit",
+    }),
+    gold: theme.palette.augmentColor({
+      color: {
+        main: "#E7BF9C",
+      },
+      name: "gold",
+    }),
+    silver: theme.palette.augmentColor({
+      color: {
+        main: "#CCCCCC",
+      },
+      name: "silver",
+    }),
   },
 });
+
+export { theme };

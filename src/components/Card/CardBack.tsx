@@ -27,6 +27,7 @@ export const CardBack: FC<PlayingCard> = ({ small = false, sx }) => {
         display: "flex",
         flexDirection: "column",
         p: small ? "8px 4px" : "12px 8px",
+        color: "white",
         boxShadow: `inset 0 0 0 ${small ? "3px" : "4px"}`,
         userSelect: "none",
         ...sx,

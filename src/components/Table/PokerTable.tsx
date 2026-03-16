@@ -27,7 +27,7 @@ export function PokerTable() {
 
   function handleCardPick(card: StandardCard) {
     setSelectedCard((prev) =>
-      prev?.value === card.value && prev?.suit === card.suit ? null : card
+      prev?.value === card.value && prev?.suit === card.suit ? null : card,
     );
   }
 
@@ -60,7 +60,7 @@ export function PokerTable() {
     <Box
       sx={{
         minHeight: "100vh",
-        background: "radial-gradient(ellipse at center, #0F3D20 0%, #0A2F1A 70%, #061a0f 100%)",
+        backgroundImage: "linear-gradient(to bottom, #252525 0%, black 100%)",
         display: "flex",
         flexDirection: "column",
         p: { xs: 1, sm: 2 },
@@ -77,16 +77,10 @@ export function PokerTable() {
         alignItems="center"
       >
         {bot1 && (
-          <PlayerSeat
-            player={bot1}
-            playerIndex={state.players.indexOf(bot1)}
-          />
+          <PlayerSeat player={bot1} playerIndex={state.players.indexOf(bot1)} />
         )}
         {bot2 && (
-          <PlayerSeat
-            player={bot2}
-            playerIndex={state.players.indexOf(bot2)}
-          />
+          <PlayerSeat player={bot2} playerIndex={state.players.indexOf(bot2)} />
         )}
       </Stack>
 
@@ -99,17 +93,11 @@ export function PokerTable() {
         flex={1}
       >
         {bot3 && (
-          <PlayerSeat
-            player={bot3}
-            playerIndex={state.players.indexOf(bot3)}
-          />
+          <PlayerSeat player={bot3} playerIndex={state.players.indexOf(bot3)} />
         )}
         <CommunityArea sx={{ flex: 1 }} />
         {bot4 && (
-          <PlayerSeat
-            player={bot4}
-            playerIndex={state.players.indexOf(bot4)}
-          />
+          <PlayerSeat player={bot4} playerIndex={state.players.indexOf(bot4)} />
         )}
       </Stack>
 
@@ -132,7 +120,14 @@ export function PokerTable() {
           overlayContent={
             cardPickInteraction ? (
               <Stack direction="column" alignItems="center" spacing={0.5}>
-                <Typography variant="caption" sx={{ color: "secondary.light", fontSize: "0.7rem", fontStyle: "italic" }}>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: "secondary.light",
+                    fontSize: "0.7rem",
+                    fontStyle: "italic",
+                  }}
+                >
                   {cardPickInteraction === "priestess-reveal"
                     ? "Click a card to reveal it to all players."
                     : "Click a card to pass it to the player on your left."}
@@ -182,8 +177,16 @@ export function PokerTable() {
                 >
                   Challenge of the Page
                 </Button>
-                <Typography variant="caption" sx={{ color: "silver.light", fontSize: "0.65rem", fontStyle: "italic" }}>
-                  The winner holds a Page — all others pay {state.bigBlind} chips.
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: "silver.light",
+                    fontSize: "0.65rem",
+                    fontStyle: "italic",
+                  }}
+                >
+                  The winner holds a Page — all others pay {state.bigBlind}{" "}
+                  chips.
                 </Typography>
               </Stack>
             ) : state.pendingInteraction?.type === "arcana-reveal" ? (
@@ -207,9 +210,11 @@ export function PokerTable() {
               >
                 Reveal Arcana
               </Button>
-            ) : state.stage === "showdown" && state.pendingInteraction === null ? (
+            ) : state.stage === "showdown" &&
+              state.pendingInteraction === null ? (
               <Stack direction="row" spacing={1} alignItems="center">
-                {(state.communityCards.length > 0 || state.winnerIds.includes(HERO_ID_CONST)) && (
+                {(state.communityCards.length > 0 ||
+                  state.winnerIds.includes(HERO_ID_CONST)) && (
                   <Button
                     variant="outlined"
                     size="large"
@@ -232,7 +237,10 @@ export function PokerTable() {
                 <Button
                   variant="contained"
                   size="large"
-                  onClick={() => { setShowTarot(false); dispatch({ type: "NEXT_HAND" }); }}
+                  onClick={() => {
+                    setShowTarot(false);
+                    dispatch({ type: "NEXT_HAND" });
+                  }}
                   sx={{
                     px: 5,
                     py: 1,
@@ -279,7 +287,10 @@ export function PokerTable() {
       >
         ⚗ DEV
       </Button>
-      <PlaygroundDrawer open={playgroundOpen} onClose={() => setPlaygroundOpen(false)} />
+      <PlaygroundDrawer
+        open={playgroundOpen}
+        onClose={() => setPlaygroundOpen(false)}
+      />
     </Box>
   );
 }
