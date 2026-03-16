@@ -1,0 +1,56 @@
+import { describe, it, expect } from 'vitest';
+import { render } from '@testing-library/react';
+import { ActionButtons } from '../ActionButtons';
+
+describe('ActionButtons', () => {
+  it('renders check button when canCheck is true', () => {
+    const { getByText } = render(
+      <ActionButtons
+        canCheck={true}
+        callExceedsStack={false}
+        heroStack={500}
+        toCall={0}
+        isAllIn={false}
+        clampedRaise={40}
+        onFold={() => {}}
+        onCheckOrCall={() => {}}
+        onRaiseOrAllIn={() => {}}
+      />
+    );
+    expect(getByText('Check')).not.toBeNull();
+  });
+
+  it('renders call button with amount when there is a bet to call', () => {
+    const { getByText } = render(
+      <ActionButtons
+        canCheck={false}
+        callExceedsStack={false}
+        heroStack={500}
+        toCall={50}
+        isAllIn={false}
+        clampedRaise={100}
+        onFold={() => {}}
+        onCheckOrCall={() => {}}
+        onRaiseOrAllIn={() => {}}
+      />
+    );
+    expect(getByText('Call 50')).not.toBeNull();
+  });
+
+  it('renders all-in button when callExceedsStack', () => {
+    const { getByText } = render(
+      <ActionButtons
+        canCheck={false}
+        callExceedsStack={true}
+        heroStack={30}
+        toCall={200}
+        isAllIn={false}
+        clampedRaise={200}
+        onFold={() => {}}
+        onCheckOrCall={() => {}}
+        onRaiseOrAllIn={() => {}}
+      />
+    );
+    expect(getByText('All-in 30')).not.toBeNull();
+  });
+});
