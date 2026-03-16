@@ -2,12 +2,11 @@
  * The central area of the poker table: stage pill, community cards,
  * pot/bet display, and the active Major Arcana card.
  */
-import { Box, Chip } from "@mui/material";
+import { Box } from "@mui/material";
 import type { SxProps } from "@mui/material";
 import { useGame } from "../../store/useGame";
 import tarot from "../../data/tarot";
 import type { ArcanaCard } from "../../types/types";
-import { stagePill, stageColor } from "../../utils/stageUtils";
 import { CommunityCards } from "./CommunityCards";
 import { PotDisplay } from "./PotDisplay";
 import { ArcanaDisplay } from "./ArcanaDisplay";
@@ -60,13 +59,6 @@ export function CommunityArea({ sx }: CommunityAreaProps) {
         ...sx,
       }}
     >
-      <Chip
-        label={stagePill(state.stage)}
-        color={stageColor(state.stage)}
-        size="small"
-        sx={{ fontWeight: "bold", letterSpacing: "0.05em" }}
-      />
-
       <CommunityCards
         communityCards={state.communityCards}
         totalSlots={totalSlots}

@@ -4,16 +4,23 @@
  * Calls useGame() directly; each seat independently subscribes to state.
  */
 import { Box, Typography } from "@mui/material";
+import { keyframes } from "@emotion/react";
 import { useGame } from "../../store/useGame";
 import type { GamePlayer } from "../../store/storeTypes";
 import type { StandardCard } from "../../types/types";
 import { PlayerCards } from "./PlayerCards";
 import { PlayerStatusBar } from "./PlayerStatusBar";
 
+const pulse = keyframes`
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50% { transform: scale(1.7); opacity: 0.3; }
+`;
+
 interface PlayerSeatProps {
   player: GamePlayer;
   playerIndex: number;
   isHero?: boolean;
+  isActive?: boolean;
   /** When set, hero cards are clickable for selection (Priestess / Chariot). */
   onCardClick?: (card: StandardCard) => void;
   /** The currently selected card during an inline card-pick interaction. */
@@ -24,6 +31,7 @@ export function PlayerSeat({
   player,
   playerIndex,
   isHero = false,
+  isActive = false,
   onCardClick,
   selectedCard,
 }: PlayerSeatProps) {
@@ -52,6 +60,21 @@ export function PlayerSeat({
         transition: "opacity 0.3s",
       }}
     >
+      {isActive && !player.folded && (
+        <Box
+          sx={{
+            position: "absolute",
+            top: 6,
+            right: 6,
+            width: 7,
+            height: 7,
+            borderRadius: "50%",
+            bgcolor: "gold.main",
+            opacity: 0.85,
+            animation: `${pulse} 1.4s ease-in-out infinite`,
+          }}
+        />
+      )}
       {/* Player name and stack */}
       <Typography
         variant="caption"
