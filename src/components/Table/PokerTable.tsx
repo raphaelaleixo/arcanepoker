@@ -1,5 +1,11 @@
+/**
+ * Top-level layout component for the poker table.
+ * Arranges player seats, the community area, and the action bar.
+ * Manages card-pick state (Priestess / Chariot interactions) and
+ * delegates all overlay UI to TableOverlayContent.
+ */
 import { useState } from "react";
-import { Box, Button, Stack, Typography } from "@mui/material";
+import { Box, Button, Stack } from "@mui/material";
 import { useGame } from "../../store/useGame";
 import type { StandardCard } from "../../types/types";
 import { PlayerSeat } from "./PlayerSeat";
@@ -10,6 +16,7 @@ import { InteractionModal } from "../Modals/InteractionModal";
 import { HERO_ID_CONST } from "../../store/initialState";
 import { PlaygroundDrawer } from "../Dev/PlaygroundDrawer";
 import { DealerChip } from "./DealerChip";
+import { TableOverlayContent } from "./TableOverlayContent";
 
 const BETTING_STAGES = ["pre-flop", "flop", "turn", "river", "empress"];
 
@@ -49,12 +56,28 @@ export function PokerTable() {
     BETTING_STAGES.includes(state.stage) &&
     state.pendingInteraction === null;
 
-  // Players by position index in the players array
-  // Position 0 = hero, positions 1-4 = bots
   const bot1 = state.players.find((p) => p.position === 1);
   const bot2 = state.players.find((p) => p.position === 2);
   const bot3 = state.players.find((p) => p.position === 3);
   const bot4 = state.players.find((p) => p.position === 4);
+
+  // Call as a plain function (not JSX) so it can return undefined.
+  // If constructed as <TableOverlayContent .../> it would always be a
+  // ReactElement (truthy), making ActionBar's overlay guard permanently on.
+  const overlayContent = TableOverlayContent({
+    cardPickInteraction,
+    selectedCard,
+    stage: state.stage,
+    pendingInteraction: state.pendingInteraction,
+    winnerIds: state.winnerIds,
+    communityCards: state.communityCards,
+    bigBlind: state.bigBlind,
+    isFinalHand: state.isFinalHand,
+    onConfirmCardPick: confirmCardPick,
+    onNextHand: () => { setShowTarot(false); dispatch({ type: "NEXT_HAND" }); },
+    onShowTarot: () => setShowTarot(true),
+    dispatch,
+  });
 
   return (
     <Box
@@ -76,15 +99,11 @@ export function PokerTable() {
         justifyContent="center"
         alignItems="center"
       >
-        {bot1 && (
-          <PlayerSeat player={bot1} playerIndex={state.players.indexOf(bot1)} />
-        )}
-        {bot2 && (
-          <PlayerSeat player={bot2} playerIndex={state.players.indexOf(bot2)} />
-        )}
+        {bot1 && <PlayerSeat player={bot1} playerIndex={state.players.indexOf(bot1)} />}
+        {bot2 && <PlayerSeat player={bot2} playerIndex={state.players.indexOf(bot2)} />}
       </Stack>
 
-      {/* Middle row: bot3 | community | bot4 */}
+      {/* Middle row: bot3 | community area | bot4 */}
       <Stack
         direction={{ xs: "column", md: "row" }}
         spacing={1}
@@ -92,16 +111,12 @@ export function PokerTable() {
         justifyContent="center"
         flex={1}
       >
-        {bot3 && (
-          <PlayerSeat player={bot3} playerIndex={state.players.indexOf(bot3)} />
-        )}
+        {bot3 && <PlayerSeat player={bot3} playerIndex={state.players.indexOf(bot3)} />}
         <CommunityArea sx={{ flex: 1 }} />
-        {bot4 && (
-          <PlayerSeat player={bot4} playerIndex={state.players.indexOf(bot4)} />
-        )}
+        {bot4 && <PlayerSeat player={bot4} playerIndex={state.players.indexOf(bot4)} />}
       </Stack>
 
-      {/* Bottom of table grid: hero seat */}
+      {/* Bottom row: hero seat */}
       <Stack direction="row" justifyContent="center">
         {hero && (
           <PlayerSeat
@@ -114,7 +129,7 @@ export function PokerTable() {
         )}
       </Stack>
 
-      {/* Separate actions area */}
+      {/* Action bar */}
       <Box
         sx={{
           borderTop: "1px solid rgba(255,255,255,0.08)",
@@ -123,151 +138,7 @@ export function PokerTable() {
           justifyContent: "center",
         }}
       >
-        <ActionBar
-          isVisible={isHeroTurn}
-          overlayContent={
-            cardPickInteraction ? (
-              <Stack direction="column" alignItems="center" spacing={0.5}>
-                <Typography
-                  variant="caption"
-                  sx={{
-                    color: "secondary.light",
-                    fontSize: "0.7rem",
-                    fontStyle: "italic",
-                  }}
-                >
-                  {cardPickInteraction === "priestess-reveal"
-                    ? "Click a card to reveal it to all players."
-                    : "Click a card to pass it to the player on your left."}
-                </Typography>
-                <Button
-                  variant="contained"
-                  size="large"
-                  disabled={!selectedCard}
-                  onClick={confirmCardPick}
-                  sx={{
-                    px: 5,
-                    py: 1,
-                    background: "linear-gradient(135deg, #4a1a6e, #1a0a2e)",
-                    border: "1px solid",
-                    borderColor: "secondary.main",
-                    color: "secondary.light",
-                    letterSpacing: "0.08em",
-                    "&:hover": {
-                      background: "linear-gradient(135deg, #6c3483, #2d0f4e)",
-                      borderColor: "secondary.light",
-                    },
-                    "&.Mui-disabled": { opacity: 0.4 },
-                  }}
-                >
-                  Confirm
-                </Button>
-              </Stack>
-            ) : state.pendingInteraction?.type === "page-challenge" ? (
-              <Stack direction="column" alignItems="center" spacing={0.5}>
-                <Button
-                  variant="contained"
-                  size="large"
-                  onClick={() => dispatch({ type: "RESOLVE_PAGE_CHALLENGE" })}
-                  sx={{
-                    px: 5,
-                    py: 1,
-                    background: "linear-gradient(135deg, #7B3F00, #3E1F00)",
-                    border: "1px solid",
-                    borderColor: "gold.main",
-                    color: "gold.light",
-                    letterSpacing: "0.08em",
-                    "&:hover": {
-                      background: "linear-gradient(135deg, #A0522D, #5C2E00)",
-                      borderColor: "gold.light",
-                    },
-                  }}
-                >
-                  Challenge of the Page
-                </Button>
-                <Typography
-                  variant="caption"
-                  sx={{
-                    color: "silver.light",
-                    fontSize: "0.65rem",
-                    fontStyle: "italic",
-                  }}
-                >
-                  The winner holds a Page — all others pay {state.bigBlind}{" "}
-                  chips.
-                </Typography>
-              </Stack>
-            ) : state.pendingInteraction?.type === "arcana-reveal" ? (
-              <Button
-                variant="contained"
-                size="large"
-                onClick={() => dispatch({ type: "REVEAL_ARCANA" })}
-                sx={{
-                  px: 5,
-                  py: 1,
-                  background: "linear-gradient(135deg, #4a1a6e, #1a0a2e)",
-                  border: "1px solid",
-                  borderColor: "secondary.main",
-                  color: "secondary.light",
-                  letterSpacing: "0.08em",
-                  "&:hover": {
-                    background: "linear-gradient(135deg, #6c3483, #2d0f4e)",
-                    borderColor: "secondary.light",
-                  },
-                }}
-              >
-                Reveal Arcana
-              </Button>
-            ) : state.stage === "showdown" &&
-              state.pendingInteraction === null ? (
-              <Stack direction="row" spacing={1} alignItems="center">
-                {(state.communityCards.length > 0 ||
-                  state.winnerIds.includes(HERO_ID_CONST)) && (
-                  <Button
-                    variant="outlined"
-                    size="large"
-                    onClick={() => setShowTarot(true)}
-                    sx={{
-                      px: 3,
-                      py: 1,
-                      borderColor: "secondary.main",
-                      color: "secondary.light",
-                      letterSpacing: "0.05em",
-                      "&:hover": {
-                        borderColor: "secondary.light",
-                        background: "rgba(108,52,131,0.15)",
-                      },
-                    }}
-                  >
-                    Read These Cards
-                  </Button>
-                )}
-                <Button
-                  variant="contained"
-                  size="large"
-                  onClick={() => {
-                    setShowTarot(false);
-                    dispatch({ type: "NEXT_HAND" });
-                  }}
-                  sx={{
-                    px: 5,
-                    py: 1,
-                    background: "linear-gradient(135deg, #2E7D32, #1B5E20)",
-                    border: "1px solid",
-                    borderColor: "gold.dark",
-                    color: "gold.light",
-                    "&:hover": {
-                      background: "linear-gradient(135deg, #388E3C, #2E7D32)",
-                      borderColor: "gold.main",
-                    },
-                  }}
-                >
-                  {state.isFinalHand ? "View Final Results" : "Next Hand →"}
-                </Button>
-              </Stack>
-            ) : undefined
-          }
-        />
+        <ActionBar isVisible={isHeroTurn} overlayContent={overlayContent} />
       </Box>
 
       {/* Overlay modals */}
@@ -295,10 +166,7 @@ export function PokerTable() {
       >
         ⚗ DEV
       </Button>
-      <PlaygroundDrawer
-        open={playgroundOpen}
-        onClose={() => setPlaygroundOpen(false)}
-      />
+      <PlaygroundDrawer open={playgroundOpen} onClose={() => setPlaygroundOpen(false)} />
     </Box>
   );
 }
