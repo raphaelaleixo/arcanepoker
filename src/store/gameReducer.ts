@@ -1048,7 +1048,7 @@ function resolvePageChallenge(state: StoreGameState): StoreGameState {
 
 function prepareNextHand(state: StoreGameState): StoreGameState {
   const heroAlive = state.players.some(
-    (p) => p.id === HERO_ID_CONST && p.stack > 0,
+    (p) => p.id === HERO_ID && p.stack > 0,
   );
   const isGameOver = state.isFinalHand || !heroAlive;
 
