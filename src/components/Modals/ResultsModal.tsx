@@ -13,13 +13,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useGame } from "../../store/useGame";
-
-function formatHandRank(rank: string): string {
-  return rank
-    .split("-")
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-    .join(" ");
-}
+import { formatHandRank } from "../../utils/cardUtils";
 
 export function ResultsModal() {
   const { state, dispatch } = useGame();
