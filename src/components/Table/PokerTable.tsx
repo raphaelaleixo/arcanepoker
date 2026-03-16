@@ -101,8 +101,8 @@ export function PokerTable() {
         )}
       </Stack>
 
-      {/* Bottom row: hero + action bar / next hand */}
-      <Stack direction="column" alignItems="center" spacing={1}>
+      {/* Bottom of table grid: hero seat */}
+      <Stack direction="row" justifyContent="center">
         {hero && (
           <PlayerSeat
             player={hero}
@@ -112,9 +112,17 @@ export function PokerTable() {
             selectedCard={cardPickInteraction ? selectedCard : undefined}
           />
         )}
+      </Stack>
 
-        {/* ActionBar: always present to prevent layout shifts.
-            Showdown, arcana-reveal, and page-challenge buttons appear inside the same area via overlayContent. */}
+      {/* Separate actions area */}
+      <Box
+        sx={{
+          borderTop: "1px solid rgba(255,255,255,0.08)",
+          pt: 2,
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
         <ActionBar
           isVisible={isHeroTurn}
           overlayContent={
@@ -260,7 +268,7 @@ export function PokerTable() {
             ) : undefined
           }
         />
-      </Stack>
+      </Box>
 
       {/* Overlay modals */}
       {showTarot && <TarotModal onClose={() => setShowTarot(false)} />}

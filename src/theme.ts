@@ -43,6 +43,14 @@ let theme = createTheme({
       fontFamily: ["Young Serif"].join(","),
       fontSize: "2em",
     },
+    h3: {
+      fontFamily: ["Young Serif"].join(","),
+      fontSize: "1.75em",
+    },
+    h5: {
+      fontFamily: ["Young Serif"].join(","),
+      fontSize: "1.25em",
+    },
     subtitle1: {
       fontSize: "1.5em",
       fontWeight: 500,
