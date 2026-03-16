@@ -17,13 +17,14 @@ import {
   IconButton,
 } from "@mui/material";
 import { useGame } from "../../store/useGame";
+import type { PendingInteraction } from "../../types/game";
 import { StarDiscardContent } from "./StarDiscardContent";
 import { MoonSwapContent } from "./MoonSwapContent";
 import { MagicianGuessContent } from "./MagicianGuessContent";
 import { JudgementReturnContent } from "./JudgementReturnContent";
 
 /** Maps interaction type to a dialog title string. Also used for the minimized chip label. */
-function dialogTitle(type: string): string {
+function dialogTitle(type: PendingInteraction["type"]): string {
   switch (type) {
     case "star-discard":     return "The Star: Discard or Keep?";
     case "moon-swap":        return "The Moon: Swap for 3rd Card?";
@@ -61,7 +62,8 @@ export function InteractionModal() {
     pendingInteraction.type === "arcana-reveal" ||
     pendingInteraction.type === "page-challenge" ||
     pendingInteraction.type === "chariot-pass" ||
-    pendingInteraction.type === "priestess-reveal"
+    pendingInteraction.type === "priestess-reveal" ||
+    pendingInteraction.type === "temperance-pick"
   ) {
     return null;
   }
