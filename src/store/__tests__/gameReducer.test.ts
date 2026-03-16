@@ -138,6 +138,48 @@ describe("RESOLVE_PRIESTESS", () => {
   });
 });
 
+describe("NEXT_HAND → game-over transitions", () => {
+  function makeShowdownState(overrides: Partial<StoreGameState> = {}): StoreGameState {
+    // Use START_GAME to get a fully initialised state, then force showdown.
+    const base = gameReducer(createInitialState(), { type: "START_GAME" });
+    return {
+      ...base,
+      stage: "showdown",
+      winnerIds: [],
+      handResults: [],
+      potWon: 0,
+      ...overrides,
+    };
+  }
+
+  it("transitions to game-over when hero stack is 0", () => {
+    const state = makeShowdownState();
+    const players = state.players.map((p) =>
+      p.id === "hero" ? { ...p, stack: 0 } : p,
+    );
+    const next = gameReducer({ ...state, players }, { type: "NEXT_HAND" });
+    expect(next.stage).toBe("game-over");
+  });
+
+  it("transitions to game-over when isFinalHand is true", () => {
+    const state = makeShowdownState({ isFinalHand: true });
+    const next = gameReducer(state, { type: "NEXT_HAND" });
+    expect(next.stage).toBe("game-over");
+  });
+
+  it("preserves all players in state on game-over so standings are available", () => {
+    const state = makeShowdownState({ isFinalHand: true });
+    const next = gameReducer(state, { type: "NEXT_HAND" });
+    expect(next.players.length).toBe(state.players.length);
+  });
+
+  it("continues normally when hero is alive and isFinalHand is false", () => {
+    const state = makeShowdownState();
+    const next = gameReducer(state, { type: "NEXT_HAND" });
+    expect(next.stage).not.toBe("game-over");
+  });
+});
+
 describe("startHand resets priestessRevealedCards", () => {
   it("clears priestessRevealedCards on NEXT_HAND", () => {
     const base = makePreFlopState();

@@ -1047,10 +1047,18 @@ function resolvePageChallenge(state: StoreGameState): StoreGameState {
 // ─── Next hand prep ───────────────────────────────────────────────────────────
 
 function prepareNextHand(state: StoreGameState): StoreGameState {
+  const heroAlive = state.players.some(
+    (p) => p.id === HERO_ID_CONST && p.stack > 0,
+  );
+  const isGameOver = state.isFinalHand || !heroAlive;
+
+  if (isGameOver) {
+    // Preserve players with current stacks so the modal can show final standings.
+    return { ...state, stage: "game-over" };
+  }
+
   const n = state.players.length;
   const newDealer = (state.dealerIndex + 1) % n;
-
-  // Remove busted players (stack = 0)
   const activePlayers = state.players.filter((p) => p.stack > 0);
 
   return {
@@ -1060,7 +1068,6 @@ function prepareNextHand(state: StoreGameState): StoreGameState {
     handNumber: state.handNumber + 1,
     activeArcana: null,
     arcanaTriggeredThisRound: false,
-    // hierophantShield intentionally preserved across hands per spec
   };
 }
 
@@ -1107,8 +1114,10 @@ export function gameReducer(
     case "RESOLVE_PAGE_CHALLENGE":
       return resolvePageChallenge(state);
 
-    case "NEXT_HAND":
-      return startHand(prepareNextHand(state));
+    case "NEXT_HAND": {
+      const prepared = prepareNextHand(state);
+      return prepared.stage === "game-over" ? prepared : startHand(prepared);
+    }
 
     case "FORCE_ARCANA": {
       const VALID_STAGES = ["pre-flop", "flop", "turn", "river", "empress"] as const;
