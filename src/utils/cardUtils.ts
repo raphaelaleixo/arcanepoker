@@ -1,6 +1,6 @@
 /**
  * Shared display helpers for player actions.
- * Used by PlayerSeat and PlayerStatusBar.
+ * Used by PlayerSeat and its sub-components.
  */
 
 /** Maps a player action string to a human-readable display label. */
