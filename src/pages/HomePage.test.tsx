@@ -22,13 +22,13 @@ describe("HomePage", () => {
 
   it("has a Play link pointing to /game", () => {
     renderWithProviders(<HomePage />);
-    const playLink = screen.getByRole("link", { name: /play/i });
+    const playLink = screen.getByRole("link", { name: /start new game/i });
     expect(playLink).toHaveAttribute("href", "/game");
   });
 
   it("has a Rules link pointing to /rules", () => {
     renderWithProviders(<HomePage />);
-    const rulesLink = screen.getByRole("link", { name: /rules/i });
+    const rulesLink = screen.getByRole("link", { name: /learn to play/i });
     expect(rulesLink).toHaveAttribute("href", "/rules");
   });
 });

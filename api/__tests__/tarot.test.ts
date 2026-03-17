@@ -77,11 +77,14 @@ describe("buildPrompt", () => {
     expect(prompt).toContain("Active Major Arcana: The Tower");
   });
 
-  it("substitutes a Page card with the active Arcana when one is set", () => {
+  it("substitutes a Page card in community cards with the active Arcana when one is set", () => {
     const prompt = buildPrompt(makeRequest({
-      heroHoleCards: [
+      communityCards: [
         { value: "0", suit: "cups" },
-        { value: "7", suit: "hearts" },
+        { value: "10", suit: "clubs" },
+        { value: "3", suit: "hearts" },
+        { value: "5", suit: "spades" },
+        { value: "9", suit: "diamonds" },
       ],
       activeArcanaName: "The Tower",
     }));

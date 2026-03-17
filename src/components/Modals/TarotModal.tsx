@@ -27,9 +27,10 @@ import type {
 
 interface TarotModalProps {
   onClose: () => void;
+  onNextHand: () => void;
 }
 
-export function TarotModal({ onClose }: TarotModalProps) {
+export function TarotModal({ onClose, onNextHand }: TarotModalProps) {
   const { state } = useGame();
   const [prophecy, setProphecy] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -133,6 +134,7 @@ export function TarotModal({ onClose }: TarotModalProps) {
 
   function handleContinue() {
     onClose();
+    onNextHand();
   }
 
   if (minimized) {
@@ -272,7 +274,7 @@ export function TarotModal({ onClose }: TarotModalProps) {
             },
           }}
         >
-          Continue
+          Next Hand
         </Button>
       </DialogActions>
     </Dialog>

@@ -193,14 +193,14 @@ function evaluateFive(
     rankName = "full-house";
     rankValue = 6;
     kickers = groupKickers(groups, inverted, emperorActive);
-  } else if (flush) {
-    rankName = "flush";
-    rankValue = 5;
-    kickers = cardKickers(sorted, inverted, emperorActive);
   } else if (straight) {
     rankName = "straight";
-    rankValue = 4;
+    rankValue = 5;
     kickers = [straightTop(desc)];
+  } else if (flush) {
+    rankName = "flush";
+    rankValue = 4;
+    kickers = cardKickers(sorted, inverted, emperorActive);
   } else if (counts[0] === 3) {
     rankName = "three-of-a-kind";
     rankValue = 3;

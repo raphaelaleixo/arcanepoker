@@ -93,7 +93,7 @@ describe("Standard hand recognition", () => {
     ];
     const result = evaluateBestHand(cards, OPT);
     expect(result.rankName).toBe("flush");
-    expect(result.rankValue).toBe(5);
+    expect(result.rankValue).toBe(4);
   });
 
   it("detects a standard Straight", () => {

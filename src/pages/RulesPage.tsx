@@ -3,100 +3,28 @@ import { Box, Button, Divider, Stack, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 
 const ARCANA: { name: string; effect: string }[] = [
-  {
-    name: "0 – The Fool",
-    effect:
-      "Acts as a wildcard; evaluator finds the best possible hand for each player.",
-  },
-  {
-    name: "1 – The Magician",
-    effect: "Players guess a suit; a correct guess earns an extra hole card.",
-  },
-  {
-    name: "2 – The High Priestess",
-    effect: "All active players reveal one hole card face up.",
-  },
-  {
-    name: "3 – The Empress",
-    effect: "A 6th community card is dealt after the River.",
-  },
-  {
-    name: "4 – The Emperor",
-    effect: "In tie-breakers, only J, Q, K, and Page count as kickers.",
-  },
-  {
-    name: "5 – The Hierophant",
-    effect:
-      "Effect persists into subsequent hands until a new Arcana is drawn.",
-  },
-  {
-    name: "6 – The Lovers",
-    effect: "The pot is split between the two best hands.",
-  },
-  {
-    name: "7 – The Chariot",
-    effect: "Active players pass one hole card to the left.",
-  },
-  {
-    name: "8 – Strength",
-    effect:
-      "Card values are inverted — 2 is highest, Ace is lowest, Page stays 0.",
-  },
-  {
-    name: "9 – The Hermit",
-    effect: "The board is ignored; hands are formed from hole cards only.",
-  },
-  {
-    name: "10 – Wheel of Fortune",
-    effect: "Complete redeal, keeping the current betting round structure.",
-  },
-  {
-    name: "11 – Justice",
-    effect: "Players may bet less than the call amount; excess is returned.",
-  },
-  {
-    name: "12 – The Hanged Man",
-    effect: "An all-in player receives a 3rd hole card.",
-  },
-  {
-    name: "13 – Death",
-    effect:
-      "The round ends immediately; hands are compared at the current stage.",
-  },
-  {
-    name: "14 – Temperance",
-    effect:
-      "River reveals 3 cards; each player chooses 1 to keep on the board.",
-  },
-  {
-    name: "15 – The Devil",
-    effect: "Raises must be at least double the current total bet.",
-  },
-  {
-    name: "16 – The Tower",
-    effect: "Half the pot (rounded up) is destroyed and removed from play.",
-  },
-  {
-    name: "17 – The Star",
-    effect: "Players may discard 1 hole card and draw a new one.",
-  },
-  {
-    name: "18 – The Moon",
-    effect:
-      "Players receive a 3rd hole card face down; may swap it at showdown.",
-  },
-  {
-    name: "19 – The Sun",
-    effect: "Round ends; pot is split equally among active players.",
-  },
-  {
-    name: "20 – Judgement",
-    effect: "Folded players may pay 1 BB to return with 2 new hole cards.",
-  },
-  {
-    name: "21 – The World",
-    effect: "Announces the final hand of the entire game.",
-  },
+  { name: "The Fool",          effect: "Acts as a wildcard; evaluator finds the best possible hand for each player." },
+  { name: "The Magician",      effect: "Players guess a suit; a correct guess earns an extra hole card." },
+  { name: "The High Priestess",effect: "All active players reveal one hole card face up." },
+  { name: "The Empress",       effect: "A 6th community card is dealt after the River." },
+  { name: "The Emperor",       effect: "In tie-breakers, only J, Q, K, and Page count as kickers." },
+  { name: "The Hierophant",    effect: "Effect persists into subsequent hands until a new Arcana is drawn." },
+  { name: "The Lovers",        effect: "The pot is split between the two best hands." },
+  { name: "The Chariot",       effect: "Active players pass one hole card to the left." },
+  { name: "Strength",          effect: "Card values are inverted — 2 is highest, Ace is lowest, Page stays 0." },
+  { name: "The Hermit",        effect: "The board is ignored; hands are formed from hole cards only." },
+  { name: "Wheel of Fortune",  effect: "Complete redeal, keeping the current betting round structure." },
+  { name: "Justice",           effect: "Players may bet less than the call amount; excess is returned." },
+  { name: "The Hanged Man",    effect: "An all-in player receives a 3rd hole card." },
+  { name: "Death",             effect: "The round ends immediately; hands are compared at the current stage." },
+  { name: "Temperance",        effect: "River reveals 3 cards; each player chooses 1 to keep on the board." },
+  { name: "The Devil",         effect: "Raises must be at least double the current total bet." },
+  { name: "The Tower",         effect: "Half the pot (rounded up) is destroyed and removed from play." },
+  { name: "The Star",          effect: "Players may discard 1 hole card and draw a new one." },
+  { name: "The Moon",          effect: "Players receive a 3rd hole card face down; may swap it at showdown." },
+  { name: "The Sun",           effect: "Round ends; pot is split equally among active players." },
+  { name: "Judgement",         effect: "Folded players may pay 1 BB to return with 2 new hole cards." },
+  { name: "The World",         effect: "Announces the final hand of the entire game." },
 ];
 
 export function RulesPage() {
@@ -170,7 +98,65 @@ export function RulesPage() {
           </Typography>
         </Stack>
 
-        {/* Section 2: The Major Arcana Deck */}
+        {/* Section 2: Hand Rankings */}
+        <Stack spacing={1.5}>
+          <Typography variant="h5" sx={{ color: "gold.light" }}>
+            Hand Rankings
+          </Typography>
+          <Divider sx={{ borderColor: "gold.dark", opacity: 0.4 }} />
+          <Typography variant="body1" sx={{ color: "silver.light", opacity: 0.8 }}>
+            Arcane Poker uses a modified ranking where a <strong>Straight beats a Flush</strong>.
+            The odds change below reflects the shift in probability from standard poker.
+          </Typography>
+          <Box sx={{ display: "flex", gap: 2, pl: 3, mb: 0.5 }}>
+            <Typography variant="caption" sx={{ color: "silver.light", opacity: 0.4, minWidth: 160, flexShrink: 0 }}>Hand</Typography>
+            <Typography variant="caption" sx={{ color: "silver.light", opacity: 0.4, minWidth: 80, flexShrink: 0 }}>Standard</Typography>
+            <Typography variant="caption" sx={{ color: "silver.light", opacity: 0.4, minWidth: 80, flexShrink: 0 }}>Arcane</Typography>
+            <Typography variant="caption" sx={{ color: "silver.light", opacity: 0.4 }}>Change</Typography>
+          </Box>
+          <Box
+            component="ol"
+            sx={{ m: 0, pl: 3, display: "flex", flexDirection: "column", gap: 0.5, "& li::marker": { fontFamily: "Rubik, sans-serif" } }}
+          >
+            {[
+              { hand: "Straight Flush",  standard: "0.0015%", arcane: "0.0011%", note: "-25.16%" },
+              { hand: "Four of a Kind",  standard: "0.0240%", arcane: "0.0190%", note: "-20.62%" },
+              { hand: "Full House",      standard: "0.1440%", arcane: "0.1143%", note: "-20.62%" },
+              { hand: "Straight",        standard: "0.3924%", arcane: "0.2937%", note: "-25.16%" },
+              { hand: "Flush",           standard: "0.1965%", arcane: "0.2084%", note: "+6.08%"  },
+              { hand: "Three of a Kind", standard: "2.1128%", arcane: "1.8296%", note: "-13.41%" },
+              { hand: "Two Pair",        standard: "4.7539%", arcane: "4.1166%", note: "-13.41%" },
+              { hand: "One Pair",        standard: "42.2569%",arcane: "40.2515%",note: "-4.75%"  },
+              { hand: "High Card",       standard: "50.1177%",arcane: "53.1653%",note: "+6.08%"  },
+            ].map(({ hand, standard, arcane, note }) => (
+              <Box component="li" key={hand} sx={{ color: "silver.light", fontSize: "0.875rem" }}>
+                <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
+                  <Typography variant="body2" sx={{ color: "silver.light", minWidth: 160, flexShrink: 0 }}>
+                    {hand}
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: "silver.light", opacity: 0.5, minWidth: 80, flexShrink: 0, fontVariantNumeric: "tabular-nums" }}>
+                    {standard}
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: "silver.light", opacity: 0.7, minWidth: 80, flexShrink: 0, fontVariantNumeric: "tabular-nums" }}>
+                    {arcane}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: note.startsWith("+") ? "success.main" : "error.main",
+                      fontVariantNumeric: "tabular-nums",
+                      opacity: 0.8,
+                    }}
+                  >
+                    {note}
+                  </Typography>
+                </Box>
+              </Box>
+            ))}
+          </Box>
+        </Stack>
+
+        {/* Section 3: The Major Arcana Deck */}
         <Stack spacing={1.5}>
           <Typography variant="h5" sx={{ color: "gold.light" }}>
             The Major Arcana Deck
@@ -188,34 +174,24 @@ export function RulesPage() {
             modifies the rules for the rest of that round.
           </Typography>
 
-          <Stack spacing={1} pt={1}>
+          <Box
+            component="ol"
+            start={0}
+            sx={{ m: 0, pl: 3, display: "flex", flexDirection: "column", gap: 0.5, "& li::marker": { fontFamily: "Rubik, sans-serif" } }}
+          >
             {ARCANA.map(({ name, effect }) => (
-              <Stack
-                key={name}
-                direction="row"
-                spacing={1.5}
-                alignItems="flex-start"
-              >
-                <Typography
-                  variant="body2"
-                  sx={{
-                    color: "gold.light",
-                    minWidth: 200,
-                    fontWeight: 600,
-                    flexShrink: 0,
-                  }}
-                >
-                  {name}
-                </Typography>
-                <Typography
-                  variant="body2"
-                  sx={{ color: "silver.light", opacity: 0.85 }}
-                >
-                  {effect}
-                </Typography>
-              </Stack>
+              <Box component="li" key={name} sx={{ color: "silver.light", fontSize: "0.875rem" }}>
+                <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
+                  <Typography variant="body2" sx={{ color: "silver.light", minWidth: 200, flexShrink: 0 }}>
+                    {name}
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: "silver.light", opacity: 0.8 }}>
+                    {effect}
+                  </Typography>
+                </Box>
+              </Box>
             ))}
-          </Stack>
+          </Box>
         </Stack>
       </Stack>
     </Box>

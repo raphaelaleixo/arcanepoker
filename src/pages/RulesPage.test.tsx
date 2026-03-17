@@ -45,9 +45,9 @@ describe("RulesPage", () => {
   });
 
   it("renders all 22 Major Arcana entries", () => {
-    renderWithProviders(<RulesPage />);
-    // Each entry name contains " – " (en-dash), unique to ARCANA rows
-    const entries = screen.getAllByText(/\d+ – /);
-    expect(entries).toHaveLength(22);
+    const { container } = renderWithProviders(<RulesPage />);
+    // The arcana ol starts at 0 and has 22 items
+    const arcanaList = container.querySelectorAll("ol[start='0'] li");
+    expect(arcanaList).toHaveLength(22);
   });
 });

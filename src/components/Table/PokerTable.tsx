@@ -144,7 +144,7 @@ export function PokerTable() {
       </Box>
 
       {/* Overlay modals */}
-      {showTarot && <TarotModal onClose={() => setShowTarot(false)} />}
+      {showTarot && <TarotModal onClose={() => setShowTarot(false)} onNextHand={() => { setShowTarot(false); dispatch({ type: "NEXT_HAND" }); }} />}
       <InteractionModal />
       <GameOverModal />
       <DealerChip />
