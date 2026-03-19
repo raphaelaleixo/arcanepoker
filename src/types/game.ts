@@ -96,22 +96,22 @@ export type ArcanaEffectKey =
   | "priestess-reveal"      // 2  – each player reveals one hole card
   | "empress-sixth-card"    // 3  – extra community card after river
   | "emperor-kickers"       // 4  – only J, Q, K, Page serve as tiebreaker kickers
-  | "hierophant-persist"    // 5  – effect carries to next hand; cancels next arcana
+  | "hierophant-vote"       // 5  – reveal 3 arcana; players vote; dealer breaks ties
   | "lovers-split-pot"      // 6  – pot split between two best hands
   | "chariot-pass-left"     // 7  – each active player passes one hole card left
   | "strength-invert"       // 8  – card values inverted (2 high, A low)
   | "hermit-hole-only"      // 9  – hands formed from hole cards only
   | "wheel-redeal"          // 10 – complete redeal
-  | "justice-partial-bet"   // 11 – players can bet less than call amount
+  | "justice-reveal"        // 11 – one random active player's hand revealed face-up
   | "hanged-man-extra-allin"// 12 – all-in player gets 3rd hole card
   | "death-end-now"         // 13 – round ends immediately
   | "temperance-three-river"// 14 – river reveals 3 cards; hero picks 1
   | "devil-double-raise"    // 15 – raises must be at least double current bet
   | "tower-destroy-pot"     // 16 – half the pot (rounded up) is removed
   | "star-discard-draw"     // 17 – each player may discard 1 hole card for a new one
-  | "moon-third-card"       // 18 – players receive 3rd hole card; may swap at showdown
+  | "moon-hide-community"   // 18 – one random community card hidden until showdown
   | "sun-split-all"         // 19 – round ends; pot split equally among actives
-  | "judgement-rejoin"      // 20 – folded players may pay 1 BB to rejoin
+  | "judgement-rejoin"      // 20 – folded players may pay the current highest bet to rejoin
   | "world-final-hand";     // 21 – game's final hand announced
 
 export interface ActiveArcana {
@@ -128,7 +128,7 @@ export type PendingInteraction =
   | { type: "chariot-pass"; playerId: string; receivedCard?: StandardCard } // hero picks a card to pass
   | { type: "temperance-pick"; playerId: string }     // hero picks 1 of 3 river cards (candidates in state)
   | { type: "star-discard"; playerId: string }         // hero decides whether to swap
-  | { type: "moon-swap"; playerId: string }            // hero decides whether to swap 3rd card
+  | { type: "hierophant-vote"; options: [ArcanaCard, ArcanaCard, ArcanaCard] } // hero votes on which arcana to apply
   | { type: "magician-guess"; playerId: string }       // hero guesses a suit
   | { type: "judgement-return"; playerId: string }    // hero decides whether to rejoin
   | { type: "tarot-reading" }                          // first-win tarot modal
@@ -144,8 +144,10 @@ export interface ArcaneGameState {
   activeArcana: ActiveArcana | null;
   /** Has an arcana already been triggered this round? (one per round limit) */
   arcanaTriggeredThisRound: boolean;
-  /** Hierophant active: next drawn arcana is cancelled */
-  hierophantShield: boolean;
+  /** Hierophant: the 3 arcana cards players are voting on (null when not active) */
+  hierophantOptions: [ArcanaCard, ArcanaCard, ArcanaCard] | null;
+  /** Hierophant: map of playerId → chosen arcana value */
+  hierophantVotes: Record<string, string>;
   /** Full major arcana draw pile for this game session */
   arcanaDeck: ArcanaCard[];
 
@@ -164,8 +166,14 @@ export interface ArcaneGameState {
   // ── Empress: track if a 6th community card should be dealt ───────────────
   empress6thCardDealt: boolean;
 
-  // ── Moon: track each player's optional 3rd hole card ────────────────────
-  moonExtraCards: Record<string, StandardCard>;
+  // ── Moon: index of the community card hidden until showdown ─────────────
+  moonHiddenCommunityIndex: number | null;
+  /** Justice: playerId whose entire hand is revealed face-up this round */
+  justiceRevealedPlayerId: string | null;
+  /** Tower: chips set aside to be awarded to the winner of the next round */
+  ruinsPot: number;
+  /** Tower: true once the next hand starts — ruins pot is ready to be awarded */
+  ruinsPotReady: boolean;
 
   // ── Temperance: the three candidate river cards ──────────────────────────
   temperanceCandidates: [StandardCard, StandardCard, StandardCard] | null;

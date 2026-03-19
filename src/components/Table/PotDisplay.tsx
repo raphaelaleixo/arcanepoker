@@ -13,6 +13,8 @@ interface PotDisplayProps {
   potWon: number;
   winnerIds: string[];
   players: GamePlayer[];
+  /** Tower ruins pot — awarded to the winner of the next round. */
+  ruinsPot: number;
 }
 
 export function PotDisplay({
@@ -22,10 +24,16 @@ export function PotDisplay({
   potWon,
   winnerIds,
   players,
+  ruinsPot,
 }: PotDisplayProps) {
+  const ruinsPotEl = ruinsPot > 0 ? (
+    <Typography variant="body2" sx={{ color: "error.light", fontWeight: "bold" }}>
+      &#x1F3F0; {ruinsPot}
+    </Typography>
+  ) : null;
+
   if (stage === "showdown") {
     const perWinner = winnerIds.length > 0 ? Math.floor(potWon / winnerIds.length) : 0;
-    // Hero is identified by type "human" — same convention as the rest of the store.
     const heroId = players.find((p) => p.type === "human")?.id;
 
     if (winnerIds.length > 1) {
@@ -34,6 +42,7 @@ export function PotDisplay({
           <Typography variant="body2" sx={{ color: "gold.main", fontWeight: "bold" }}>
             Split Pot — {perWinner} each
           </Typography>
+          {ruinsPotEl}
         </Stack>
       );
     }
@@ -46,6 +55,7 @@ export function PotDisplay({
           <Typography variant="body2" sx={{ color: "gold.main", fontWeight: "bold" }}>
             {name} {verb} {perWinner}!
           </Typography>
+          {ruinsPotEl}
         </Stack>
       );
     }
@@ -62,6 +72,7 @@ export function PotDisplay({
           Bet: {currentBet}
         </Typography>
       )}
+      {ruinsPotEl}
     </Stack>
   );
 }

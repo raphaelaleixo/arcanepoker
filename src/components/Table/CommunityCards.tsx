@@ -20,6 +20,11 @@ interface CommunityCardsProps {
    * Null when no Fool substitution is active.
    */
   foolCardIndex: number | null;
+  /**
+   * Index of the community card hidden face-down by the Moon arcana.
+   * Null when no card is hidden.
+   */
+  moonHiddenCommunityIndex: number | null;
   /** React key seed — incremented each hand to replay deal animations. */
   wheelRound: number;
 }
@@ -28,6 +33,7 @@ export function CommunityCards({
   communityCards,
   totalSlots,
   foolCardIndex,
+  moonHiddenCommunityIndex,
   wheelRound,
 }: CommunityCardsProps) {
   return (
@@ -47,6 +53,20 @@ export function CommunityCards({
                 rank={"0" as ArcanaCard["value"]}
                 suit={"arcana"}
                 flipped
+                dealIndex={di}
+                revealDelay={di * 80 + 400}
+              />
+            );
+          }
+          // Moon: render this card face-down (hidden)
+          if (i === moonHiddenCommunityIndex) {
+            return (
+              <DealtCard
+                key={`${wheelRound}-${i}`}
+                small
+                rank={card.value}
+                suit={card.suit}
+                flipped={false}
                 dealIndex={di}
                 revealDelay={di * 80 + 400}
               />

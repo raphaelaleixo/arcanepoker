@@ -430,7 +430,7 @@ export default {
       tags: ["tradition", "conformity", "morality", "spiritual guidance"],
       description:
         "The Hierophant symbolizes tradition, conformity, and spiritual guidance. It represents a need to follow established rules and values. This card suggests a need to seek wisdom and guidance from established institutions. It's a reminder to honor tradition and seek spiritual growth.",
-      gameEffect: "Cancel the next major arcana drawn",
+      gameEffect: "Reveal the next 3 Arcana cards. All players still in the round vote on which applies. The dealer breaks ties. Discard the other two.",
     },
     "6": {
       fullName: "The Lovers",
@@ -467,14 +467,14 @@ export default {
       tags: ["fate", "change", "cycles", "destiny"],
       description:
         "The Wheel of Fortune represents fate, change, and destiny. It signifies a need to embrace the cyclical nature of life and accept change. This card suggests a need to be adaptable and flexible. It's a reminder to trust the process and embrace new opportunities.",
-      gameEffect: "Shuffle back together all the cards in play",
+      gameEffect: "All players' hole cards are shuffled together and redealt. Each player receives the same number of cards they had. Community cards remain unchanged.",
     },
     "11": {
       fullName: "Justice",
       tags: ["fairness", "truth", "balance", "consequences"],
       description:
         "Justice symbolizes fairness, truth, and consequences. It represents a need to be honest and accountable for your actions. This card suggests a need to be impartial and objective. It's a reminder to seek balance and justice.",
-      gameEffect: "Players may bet any amount, even less than the current call amount.",
+      gameEffect: "One random player still in the round reveals all cards in their hand. Those cards remain face up for the rest of the round.",
     },
     "12": {
       fullName: "The Hanged Man",
@@ -509,7 +509,7 @@ export default {
       tags: ["sudden change", "upheaval", "revelation", "chaos"],
       description:
         "The Tower represents sudden change, upheaval, and revelation. It signifies a need to embrace unexpected change and transformation. This card suggests a need to be adaptable and resilient. It's a reminder to trust the process and find strength in chaos.",
-      gameEffect: "Half the pot (rounded up) is destroyed and removed from play.",
+      gameEffect: "Half the pot (rounded up) is removed and held as a ruins pot. The ruins pot is awarded to the winner of the next round.",
     },
     "17": {
       fullName: "The Star",
@@ -523,7 +523,7 @@ export default {
       tags: ["intuition", "fear", "illusions", "subconscious"],
       description:
         "The Moon represents intuition, fear, and illusions. It signifies a need to trust your intuition and confront your fears. This card suggests a need to be aware of your subconscious patterns and beliefs. It's a reminder to trust your gut and seek deeper understanding.",
-      gameEffect: "Each player receives a 3rd hole card and may choose to swap it with one of their original cards at showdown.",
+      gameEffect: "One random community card is turned face down and hidden until showdown, when it is revealed and used normally.",
     },
     "19": {
       fullName: "The Sun",
@@ -537,7 +537,7 @@ export default {
       tags: ["renewal", "reflection", "awakening", "evaluation"],
       description:
         "Judgment symbolizes renewal, reflection, and awakening. It represents a time of self-evaluation and transformation. This card suggests a need to reflect on your past experiences and make positive changes. It's a reminder to embrace new opportunities and move forward with purpose.",
-      gameEffect: "Folded players may pay 1 big blind to rejoin the hand.",
+      gameEffect: "All folded players may re-enter at the start of the next betting phase by paying the current highest bet. They are dealt two new hole cards.",
     },
     "21": {
       fullName: "The World",

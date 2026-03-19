@@ -8,7 +8,6 @@ import {
 import {
   chariotCardToPass,
   starShouldDiscard,
-  moonShouldSwap,
   judgementShouldRejoin,
 } from "../engine/ai";
 import type { EvalOptions } from "../engine/handEvaluator";
@@ -247,7 +246,8 @@ function evaluateShowdown(state: StoreGameState): StoreGameState {
         : winnerIds;
   }
 
-  const perWinner = Math.floor(state.potSize / winnerIds.length);
+  const totalPot = state.potSize + (state.ruinsPotReady ? state.ruinsPot : 0);
+  const perWinner = Math.floor(totalPot / winnerIds.length);
   const newPlayers = state.players.map((p) =>
     winnerIds.includes(p.id) ? { ...p, stack: p.stack + perWinner } : p
   );
@@ -269,7 +269,10 @@ function evaluateShowdown(state: StoreGameState): StoreGameState {
     stage: "showdown",
     players: newPlayers,
     potSize: 0,
-    potWon: state.potSize,
+    potWon: totalPot,
+    ruinsPot: state.ruinsPotReady ? 0 : state.ruinsPot,
+    ruinsPotReady: false,
+    moonHiddenCommunityIndex: null,
     winnerIds,
     handResults,
     pendingInteraction: pageChallengePending ? { type: "page-challenge" as const } : null,
@@ -363,7 +366,6 @@ function startHand(state: StoreGameState): StoreGameState {
     arcanaTriggeredThisRound: false,
     activeArcana: null,
     empress6thCardDealt: false,
-    moonExtraCards: {},
     temperanceCandidates: null,
     temperanceChoices: {},
     priestessRevealedCards: {},
@@ -372,6 +374,7 @@ function startHand(state: StoreGameState): StoreGameState {
     handResults: [],
     potWon: 0,
     pendingInteraction: null,
+    wheelRound: (state.wheelRound ?? 0) + 1,
   };
 }
 
@@ -514,11 +517,6 @@ function applyArcana(
     parseInt(arcanaCard.value)
   ] as ArcanaEffectKey;
 
-  // Hierophant shield cancels the next arcana
-  if (state.hierophantShield) {
-    return { ...state, hierophantShield: false, arcanaTriggeredThisRound: true };
-  }
-
   const activeArcana: ActiveArcana = { card: arcanaCard, effectKey };
   const base: StoreGameState = {
     ...state,
@@ -530,56 +528,66 @@ function applyArcana(
   switch (effectKey) {
     // ── Immediate effects ─────────────────────────────────────────────────────
 
-    case "hierophant-persist":
-      return { ...base, hierophantShield: true };
+    case "hierophant-vote": {
+      // Draw 3 more arcana cards for the vote
+      const [opt1, opt2, opt3, ...remainingArcanaDeck] = base.arcanaDeck;
+      if (!opt1 || !opt2 || !opt3) {
+        // Not enough arcana left — skip (no effect)
+        return base;
+      }
+      const options: [ArcanaCard, ArcanaCard, ArcanaCard] = [opt1, opt2, opt3];
 
-    case "wheel-redeal": {
-      // Collect all in-play cards (deck + hole cards + community) into one shuffled deck
-      const allCards = [
-        ...base.deck,
-        ...base.players.flatMap((p) => p.holeCards),
-        ...base.communityCards,
-      ];
-      let wheelDeck = shuffle(allCards);
-
-      // Re-deal 2 hole cards to every non-folded player, preserving deal order
-      const wheelPlayers = base.players.map((p) => ({ ...p, holeCards: [] as typeof p.holeCards }));
-      const activePosns = wheelPlayers
-        .map((_, i) => i)
-        .filter((i) => !wheelPlayers[i].folded);
-      for (let round = 0; round < 2; round++) {
-        for (const idx of activePosns) {
-          const { dealt, remaining } = dealCards(wheelDeck, 1);
-          wheelPlayers[idx] = {
-            ...wheelPlayers[idx],
-            holeCards: [...wheelPlayers[idx].holeCards, dealt[0]],
-          };
-          wheelDeck = remaining;
-        }
+      // Bots vote: each active bot picks randomly from the 3 options
+      const hierophantVotes: Record<string, string> = {};
+      for (const p of base.players.filter((pl) => pl.type === "ai" && !pl.folded)) {
+        const pick = options[Math.floor(Math.random() * options.length)];
+        hierophantVotes[p.id] = pick.value;
       }
 
-      // Deal community cards matching the current stage
-      const communityCounts: Partial<Record<typeof base.stage, number>> = {
-        "pre-flop": 0,
-        flop: 3,
-        turn: 4,
-        river: base.empress6thCardDealt ? 6 : 5,
+      return {
+        ...base,
+        arcanaDeck: remainingArcanaDeck,
+        hierophantOptions: options,
+        hierophantVotes,
+        pendingInteraction: heroFolded(base)
+          ? null
+          : { type: "hierophant-vote", options },
       };
-      const communityCount = communityCounts[base.stage] ?? 0;
-      const { dealt: newCommunity, remaining: wheelFinalDeck } = dealCards(wheelDeck, communityCount);
+    }
+
+    case "wheel-redeal": {
+      // Pool only active players' hole cards, shuffle, and redeal the same counts.
+      // Community cards and the remaining deck are untouched.
+      const activePosns = base.players
+        .map((_, i) => i)
+        .filter((i) => !base.players[i].folded);
+
+      // Record how many hole cards each active player had
+      const holeCounts = activePosns.map((i) => base.players[i].holeCards.length);
+      const pooled = shuffle(base.players.filter((p) => !p.folded).flatMap((p) => p.holeCards));
+
+      let poolIdx = 0;
+      const wheelPlayers = base.players.map((p) => ({ ...p }));
+      for (let i = 0; i < activePosns.length; i++) {
+        const count = holeCounts[i];
+        wheelPlayers[activePosns[i]] = {
+          ...wheelPlayers[activePosns[i]],
+          holeCards: pooled.slice(poolIdx, poolIdx + count),
+        };
+        poolIdx += count;
+      }
 
       return {
         ...base,
         players: wheelPlayers,
-        deck: wheelFinalDeck,
-        communityCards: newCommunity,
         wheelRound: (base.wheelRound ?? 0) + 1,
         // Clear card-specific arcana state that referenced the old cards
-        moonExtraCards: {},
         temperanceCandidates: null,
         temperanceChoices: {},
         priestessRevealedCards: {},
         foolCardIndex: null,
+        moonHiddenCommunityIndex: null,
+        justiceRevealedPlayerId: null,
       };
     }
 
@@ -606,8 +614,8 @@ function applyArcana(
     }
 
     case "tower-destroy-pot": {
-      const destroyed = Math.ceil(base.potSize / 2);
-      return { ...base, potSize: base.potSize - destroyed };
+      const ruins = Math.ceil(base.potSize / 2);
+      return { ...base, potSize: base.potSize - ruins, ruinsPot: base.ruinsPot + ruins };
     }
 
     // ── Evaluation modifiers (tracked via activeArcana, applied at showdown) ──
@@ -627,7 +635,13 @@ function applyArcana(
     case "hermit-hole-only":
     case "lovers-split-pot":
     case "devil-double-raise":
-    case "justice-partial-bet":
+    case "justice-reveal": {
+      // Pick one random active (non-folded) player and reveal their hand
+      const activePlayers = base.players.filter((p) => !p.folded);
+      if (activePlayers.length === 0) return base;
+      const chosen = activePlayers[Math.floor(Math.random() * activePlayers.length)];
+      return { ...base, justiceRevealedPlayerId: chosen.id };
+    }
     case "empress-sixth-card":
     case "world-final-hand":
       return base;
@@ -685,42 +699,11 @@ function applyArcana(
       };
     }
 
-    case "moon-third-card": {
-      // Deal each active player a 3rd hole card face down
-      let deck = base.deck;
-      const players = [...base.players] as GamePlayer[];
-      const moonExtras: Record<string, StandardCard> = {};
-      for (const p of players.filter((pl) => !pl.folded)) {
-        const { dealt, remaining } = dealCards(deck, 1);
-        moonExtras[p.id] = dealt[0];
-        deck = remaining;
-        // Bots decide immediately
-        if (p.type === "ai") {
-          const evalOpts = buildEvalOptions(base);
-          const shouldSwap = moonShouldSwap(
-            p.holeCards,
-            dealt[0],
-            base.communityCards,
-            evalOpts
-          );
-          if (shouldSwap) {
-            const pIdx = players.findIndex((pl) => pl.id === p.id);
-            players[pIdx] = {
-              ...players[pIdx],
-              holeCards: [...p.holeCards, dealt[0]],
-            };
-          }
-        }
-      }
-      return {
-        ...base,
-        players,
-        deck,
-        moonExtraCards: moonExtras,
-        pendingInteraction: heroFolded(base)
-          ? null
-          : { type: "moon-swap", playerId: HERO_ID },
-      };
+    case "moon-hide-community": {
+      // Hide one random community card face-down until showdown
+      if (base.communityCards.length === 0) return base;
+      const hiddenIdx = Math.floor(Math.random() * base.communityCards.length);
+      return { ...base, moonHiddenCommunityIndex: hiddenIdx };
     }
 
     case "star-discard-draw": {
@@ -763,12 +746,14 @@ function applyArcana(
     }
 
     case "judgement-rejoin": {
+      // Cost to rejoin = current highest bet (floor to bigBlind if no bet yet)
+      const rejoinCost = Math.max(base.currentBet, base.bigBlind);
       // Bots that qualify auto-rejoin
       let deck = base.deck;
       const players = [...base.players] as GamePlayer[];
       let potDelta = 0;
       for (const p of players.filter((pl) => pl.folded && pl.type === "ai")) {
-        if (judgementShouldRejoin(p.stack, base.bigBlind)) {
+        if (judgementShouldRejoin(p.stack, rejoinCost)) {
           const { dealt, remaining } = dealCards(deck, 2);
           deck = remaining;
           const pIdx = players.findIndex((pl) => pl.id === p.id);
@@ -776,9 +761,9 @@ function applyArcana(
             ...players[pIdx],
             folded: false,
             holeCards: dealt,
-            stack: p.stack - base.bigBlind,
+            stack: p.stack - rejoinCost,
           };
-          potDelta += base.bigBlind;
+          potDelta += rejoinCost;
         }
       }
       return {
@@ -936,21 +921,6 @@ function resolveStar(
   };
 }
 
-function resolveMoon(state: StoreGameState, swap: boolean): StoreGameState {
-  if (!swap) return { ...state, pendingInteraction: null };
-
-  const hIdx = state.players.findIndex((p) => p.id === HERO_ID);
-  const thirdCard = state.moonExtraCards[HERO_ID];
-  if (!thirdCard) return { ...state, pendingInteraction: null };
-
-  const players = [...state.players] as GamePlayer[];
-  players[hIdx] = {
-    ...players[hIdx],
-    holeCards: [...players[hIdx].holeCards, thirdCard],
-  };
-
-  return { ...state, players, pendingInteraction: null };
-}
 
 function resolveMagician(
   state: StoreGameState,
@@ -986,20 +956,21 @@ function resolveJudgement(
 
   // Guard: can only rejoin if actually folded
   if (!hero?.folded) return { ...state, pendingInteraction: null };
+  const rejoinCost = Math.max(state.currentBet, state.bigBlind);
   const { dealt, remaining } = dealCards(state.deck, 2);
   const players = [...state.players] as GamePlayer[];
   players[hIdx] = {
     ...hero,
     folded: false,
     holeCards: dealt,
-    stack: hero.stack - state.bigBlind,
+    stack: hero.stack - rejoinCost,
   };
 
   return {
     ...state,
     players,
     deck: remaining,
-    potSize: state.potSize + state.bigBlind,
+    potSize: state.potSize + rejoinCost,
     pendingInteraction: null,
   };
 }
@@ -1016,6 +987,49 @@ function resolvePriestess(
     },
     pendingInteraction: null,
   };
+}
+
+// ─── Hierophant vote resolution ───────────────────────────────────────────────
+
+function resolveHierophant(
+  state: StoreGameState,
+  heroChoice: ArcanaCard["value"]
+): StoreGameState {
+  const options = state.hierophantOptions;
+  if (!options) return { ...state, pendingInteraction: null };
+
+  // Tally votes (bots + hero)
+  const allVotes: Record<string, string> = { ...state.hierophantVotes, [HERO_ID]: heroChoice };
+  const tally: Record<string, number> = {};
+  for (const value of Object.values(allVotes)) {
+    tally[value] = (tally[value] ?? 0) + 1;
+  }
+
+  const maxVotes = Math.max(...Object.values(tally));
+  const tied = options.filter((c) => (tally[c.value] ?? 0) === maxVotes);
+
+  let winner: ArcanaCard;
+  if (tied.length === 1) {
+    winner = tied[0];
+  } else {
+    // Dealer tiebreaker: use the dealer's vote if they voted for a tied card
+    const dealer = state.players[state.dealerIndex];
+    const dealerVote = dealer ? allVotes[dealer.id] : undefined;
+    const dealerPick = tied.find((c) => c.value === dealerVote);
+    winner = dealerPick ?? tied[Math.floor(Math.random() * tied.length)];
+  }
+
+  const cleanState: StoreGameState = {
+    ...state,
+    pendingInteraction: null,
+    hierophantOptions: null,
+    hierophantVotes: {},
+    // Restore the arcanaTriggeredThisRound flag so applyArcana doesn't block
+    arcanaTriggeredThisRound: false,
+    activeArcana: null,
+  };
+
+  return applyArcana(cleanState, winner);
 }
 
 // ─── Challenge of the Page ────────────────────────────────────────────────────
@@ -1068,6 +1082,12 @@ function prepareNextHand(state: StoreGameState): StoreGameState {
     handNumber: state.handNumber + 1,
     activeArcana: null,
     arcanaTriggeredThisRound: false,
+    justiceRevealedPlayerId: null,
+    moonHiddenCommunityIndex: null,
+    hierophantOptions: null,
+    hierophantVotes: {},
+    // ruinsPot carries forward; mark it ready to be awarded at next showdown
+    ruinsPotReady: state.ruinsPot > 0,
   };
 }
 
@@ -1093,8 +1113,6 @@ export function gameReducer(
     case "RESOLVE_STAR":
       return resolveStar(state, action.payload.discard);
 
-    case "RESOLVE_MOON":
-      return resolveMoon(state, action.payload.swap);
 
     case "RESOLVE_MAGICIAN":
       return resolveMagician(state, action.payload.suit);
@@ -1104,6 +1122,9 @@ export function gameReducer(
 
     case "RESOLVE_PRIESTESS":
       return resolvePriestess(state, action.payload.card);
+
+    case "RESOLVE_HIEROPHANT":
+      return resolveHierophant(state, action.payload.choice);
 
     case "REVEAL_ARCANA": {
       if (state.pendingInteraction?.type !== "arcana-reveal") return state;
@@ -1126,7 +1147,6 @@ export function gameReducer(
       const resetState: StoreGameState = {
         ...state,
         activeArcana: null,
-        hierophantShield: false,
         arcanaTriggeredThisRound: false,
       };
       return applyArcana(resetState, arcanaCard);

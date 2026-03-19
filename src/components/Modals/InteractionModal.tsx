@@ -19,20 +19,20 @@ import {
 import { useGame } from "../../store/useGame";
 import type { PendingInteraction } from "../../types/game";
 import { StarDiscardContent } from "./StarDiscardContent";
-import { MoonSwapContent } from "./MoonSwapContent";
 import { MagicianGuessContent } from "./MagicianGuessContent";
 import { JudgementReturnContent } from "./JudgementReturnContent";
+import { HierophantVoteContent } from "./HierophantVoteContent";
 
 /** Maps interaction type to a dialog title string. Also used for the minimized chip label. */
 function dialogTitle(type: PendingInteraction["type"]): string {
   switch (type) {
-    case "star-discard":     return "The Star: Discard or Keep?";
-    case "moon-swap":        return "The Moon: Swap for 3rd Card?";
-    case "magician-guess":   return "The Magician: Guess a Suit";
-    case "judgement-return": return "Judgement: Rejoin the Hand?";
+    case "star-discard":      return "The Star: Discard or Keep?";
+    case "hierophant-vote":   return "The Hierophant: Vote for an Arcana";
+    case "magician-guess":    return "The Magician: Guess a Suit";
+    case "judgement-return":  return "Judgement: Rejoin the Hand?";
     // Inline types retained so the minimized chip still gets a label if needed.
-    case "priestess-reveal": return "The High Priestess: Reveal a Card";
-    default:                 return "Choose";
+    case "priestess-reveal":  return "The High Priestess: Reveal a Card";
+    default:                  return "Choose";
   }
 }
 
@@ -67,6 +67,7 @@ export function InteractionModal() {
   ) {
     return null;
   }
+
 
   if (minimized) {
     return (
@@ -111,10 +112,10 @@ export function InteractionModal() {
             onKeep={() => dispatch({ type: "RESOLVE_STAR", payload: { discard: false } })}
           />
         )}
-        {pendingInteraction.type === "moon-swap" && (
-          <MoonSwapContent
-            onSwap={() => dispatch({ type: "RESOLVE_MOON", payload: { swap: true } })}
-            onKeep={() => dispatch({ type: "RESOLVE_MOON", payload: { swap: false } })}
+        {pendingInteraction.type === "hierophant-vote" && (
+          <HierophantVoteContent
+            options={pendingInteraction.options}
+            onVote={(choice) => dispatch({ type: "RESOLVE_HIEROPHANT", payload: { choice } })}
           />
         )}
         {pendingInteraction.type === "magician-guess" && (
@@ -124,7 +125,7 @@ export function InteractionModal() {
         )}
         {pendingInteraction.type === "judgement-return" && (
           <JudgementReturnContent
-            bigBlind={state.bigBlind}
+            rejoinCost={Math.max(state.currentBet, state.bigBlind)}
             onRejoin={() => dispatch({ type: "RESOLVE_JUDGEMENT", payload: { rejoin: true } })}
             onSitOut={() => dispatch({ type: "RESOLVE_JUDGEMENT", payload: { rejoin: false } })}
           />

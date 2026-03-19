@@ -63,6 +63,7 @@ export function CommunityArea({ sx }: CommunityAreaProps) {
         communityCards={state.communityCards}
         totalSlots={totalSlots}
         foolCardIndex={state.foolCardIndex}
+        moonHiddenCommunityIndex={state.moonHiddenCommunityIndex}
         wheelRound={state.wheelRound}
       />
 
@@ -73,6 +74,7 @@ export function CommunityArea({ sx }: CommunityAreaProps) {
         potWon={state.potWon}
         winnerIds={state.winnerIds}
         players={state.players}
+        ruinsPot={state.ruinsPot}
       />
 
       <ArcanaDisplay

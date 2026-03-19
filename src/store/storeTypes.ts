@@ -73,8 +73,10 @@ export interface StoreGameState {
   arcanaDeck: ArcanaCard[];
   activeArcana: ActiveArcana | null;
   arcanaTriggeredThisRound: boolean;
-  /** Hierophant active: next arcana drawn is cancelled. */
-  hierophantShield: boolean;
+  /** Hierophant: the 3 arcana cards being voted on (null when not active). */
+  hierophantOptions: [ArcanaCard, ArcanaCard, ArcanaCard] | null;
+  /** Hierophant: map of playerId → chosen arcana card value. */
+  hierophantVotes: Record<string, string>;
 
   // ── Session ──────────────────────────────────────────────────────────────────
   handNumber: number;
@@ -83,7 +85,6 @@ export interface StoreGameState {
 
   // ── Arcana-specific state ────────────────────────────────────────────────────
   empress6thCardDealt: boolean;
-  moonExtraCards: Record<string, StandardCard>;
   temperanceCandidates: [StandardCard, StandardCard, StandardCard] | null;
   /** Each active player's chosen river card when Temperance is active. */
   temperanceChoices: Record<string, StandardCard>;
@@ -91,6 +92,14 @@ export interface StoreGameState {
   priestessRevealedCards: Record<string, StandardCard>;
   /** Index of the community card replaced by the Fool (rendered as Fool arcana card). */
   foolCardIndex: number | null;
+  /** Moon: index of the community card hidden face-down until showdown. */
+  moonHiddenCommunityIndex: number | null;
+  /** Justice: playerId whose entire hand is revealed face-up this round. */
+  justiceRevealedPlayerId: string | null;
+  /** Tower: chips set aside to be awarded to the winner of the next round. */
+  ruinsPot: number;
+  /** Tower: true once the next hand starts — ruins pot is ready to be awarded at showdown. */
+  ruinsPotReady: boolean;
 
   // ── Results ──────────────────────────────────────────────────────────────────
   winnerIds: string[];
@@ -119,7 +128,8 @@ export type GameAction =
   | { type: "RESOLVE_PAGE_CHALLENGE" }
   | { type: "NEXT_HAND" }
   | { type: "FORCE_ARCANA"; payload: { value: ArcanaValue } }
-  | { type: "RESOLVE_PRIESTESS"; payload: { card: StandardCard } };
+  | { type: "RESOLVE_PRIESTESS"; payload: { card: StandardCard } }
+  | { type: "RESOLVE_HIEROPHANT"; payload: { choice: ArcanaValue } };
 
 // ─── Arcana value → effect key mapping ───────────────────────────────────────
 
@@ -129,20 +139,20 @@ export const ARCANA_EFFECT_KEYS: ArcanaEffectKey[] = [
   "priestess-reveal",       // 2
   "empress-sixth-card",     // 3
   "emperor-kickers",        // 4
-  "hierophant-persist",     // 5
+  "hierophant-vote",        // 5
   "lovers-split-pot",       // 6
   "chariot-pass-left",      // 7
   "strength-invert",        // 8
   "hermit-hole-only",       // 9
   "wheel-redeal",           // 10
-  "justice-partial-bet",    // 11
+  "justice-reveal",         // 11
   "hanged-man-extra-allin", // 12
   "death-end-now",          // 13
   "temperance-three-river", // 14
   "devil-double-raise",     // 15
   "tower-destroy-pot",      // 16
   "star-discard-draw",      // 17
-  "moon-third-card",        // 18
+  "moon-hide-community",    // 18
   "sun-split-all",          // 19
   "judgement-rejoin",       // 20
   "world-final-hand",       // 21

@@ -203,13 +203,13 @@ export function moonShouldSwap(
 }
 
 /**
- * Judgement: bot pays 1 BB to rejoin only if its stack > 10 BB.
+ * Judgement: bot rejoins only if its stack is at least 10x the rejoin cost.
  */
 export function judgementShouldRejoin(
   stack: number,
-  bigBlind: number
+  rejoinCost: number
 ): boolean {
-  return stack > bigBlind * 10;
+  return stack > rejoinCost * 10;
 }
 
 // ─── Main AI decision function ────────────────────────────────────────────────
