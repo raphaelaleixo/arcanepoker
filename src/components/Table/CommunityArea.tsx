@@ -64,7 +64,9 @@ export function CommunityArea({ sx }: CommunityAreaProps) {
         totalSlots={totalSlots}
         foolCardIndex={state.foolCardIndex}
         moonHiddenCommunityIndex={state.moonHiddenCommunityIndex}
+        moonAffectedIndex={state.moonAffectedIndex}
         wheelRound={state.wheelRound}
+        communityChangeKey={state.communityChangeKey}
       />
 
       <PotDisplay

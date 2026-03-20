@@ -96,28 +96,28 @@ function applyMagicianRedraw(state: StoreGameState): StoreGameState {
   const players = [...state.players] as GamePlayer[];
 
   // Bots decide and redraw immediately
-  let magicianRedrawSeeds = { ...state.magicianRedrawSeeds };
+  let holeCardChangeSeeds = { ...state.holeCardChangeSeeds };
   for (const p of players.filter((pl) => pl.type === "ai" && !pl.folded)) {
     if (magicianShouldRedraw(p.holeCards, state.communityCards, evalOpts)) {
       const { dealt, remaining } = dealCards(deck, 2);
       deck = remaining;
       const idx = players.findIndex((pl) => pl.id === p.id);
       players[idx] = { ...players[idx], holeCards: dealt };
-      magicianRedrawSeeds[p.id] = (magicianRedrawSeeds[p.id] ?? 0) + 1;
+      holeCardChangeSeeds[p.id] = (holeCardChangeSeeds[p.id] ?? 0) + 1;
     }
   }
 
   // Hero gets an interactive choice (unless already folded)
   const hero = players.find((p) => p.id === HERO_ID);
   if (!hero || hero.folded) {
-    return evaluateShowdown({ ...state, players, deck, magicianRedrawSeeds });
+    return evaluateShowdown({ ...state, players, deck, holeCardChangeSeeds });
   }
 
   return {
     ...state,
     players,
     deck,
-    magicianRedrawSeeds,
+    holeCardChangeSeeds,
     pendingInteraction: { type: "magician-redraw", playerId: HERO_ID },
   };
 }
@@ -408,12 +408,13 @@ function startHand(state: StoreGameState): StoreGameState {
     temperanceChoices: {},
     priestessRevealedCards: {},
     foolCardIndex: null,
+    moonAffectedIndex: null,
     winnerIds: [],
     handResults: [],
     potWon: 0,
     pendingInteraction: null,
     wheelRound: (state.wheelRound ?? 0) + 1,
-    magicianRedrawSeeds: {},
+    holeCardChangeSeeds: {},
     judgementCommittedIds: [],
   };
 }
@@ -565,6 +566,12 @@ function processPlayerAction(
     return goToLastPlayerWins(state, players, newPot, activePlayers[0].id);
   }
 
+  // If Hanged Man dealt an extra card this action, bump the animation seed for that player
+  const hangedManDealt =
+    state.activeArcana?.effectKey === "hanged-man-extra-allin" &&
+    players[playerIdx].isAllIn &&
+    !state.players[playerIdx].isAllIn;
+
   const next: StoreGameState = {
     ...state,
     players,
@@ -573,6 +580,12 @@ function processPlayerAction(
     currentBet: newCurrentBet,
     roundActors: newRoundActors,
     judgementCommittedIds,
+    holeCardChangeSeeds: hangedManDealt
+      ? {
+          ...state.holeCardChangeSeeds,
+          [players[playerIdx].id]: (state.holeCardChangeSeeds[players[playerIdx].id] ?? 0) + 1,
+        }
+      : state.holeCardChangeSeeds,
   };
 
   if (isBettingRoundComplete(next)) {
@@ -709,6 +722,7 @@ function applyArcana(
         ...base,
         communityCards: replaced,
         foolCardIndex: idx,
+        communityChangeKey: base.communityChangeKey + 1,
       };
     }
     case "strength-invert":
@@ -796,6 +810,8 @@ function applyArcana(
         communityCards: newCommunity,
         deck: remaining,
         moonHiddenCommunityIndex: hiddenIdx,
+        moonAffectedIndex: hiddenIdx,
+        communityChangeKey: base.communityChangeKey + 1,
       };
     }
 
@@ -951,6 +967,10 @@ function resolveStar(
     players,
     deck: remaining,
     pendingInteraction: null,
+    holeCardChangeSeeds: {
+      ...state.holeCardChangeSeeds,
+      [HERO_ID]: (state.holeCardChangeSeeds[HERO_ID] ?? 0) + 1,
+    },
   };
 }
 
@@ -962,16 +982,16 @@ function resolveMagician(
   const hIdx = state.players.findIndex((p) => p.id === HERO_ID);
   let players = [...state.players] as GamePlayer[];
   let deck = state.deck;
-  let magicianRedrawSeeds = { ...state.magicianRedrawSeeds };
+  let holeCardChangeSeeds = { ...state.holeCardChangeSeeds };
 
   if (redraw && hIdx !== -1) {
     const { dealt, remaining } = dealCards(deck, 2);
     deck = remaining;
     players[hIdx] = { ...players[hIdx], holeCards: dealt };
-    magicianRedrawSeeds[HERO_ID] = (magicianRedrawSeeds[HERO_ID] ?? 0) + 1;
+    holeCardChangeSeeds[HERO_ID] = (holeCardChangeSeeds[HERO_ID] ?? 0) + 1;
   }
 
-  return evaluateShowdown({ ...state, players, deck, magicianRedrawSeeds, pendingInteraction: null });
+  return evaluateShowdown({ ...state, players, deck, holeCardChangeSeeds, pendingInteraction: null });
 }
 
 

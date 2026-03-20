@@ -4,7 +4,7 @@
  * face-up without revealing the rest) and card selection for
  * Chariot/Priestess interactions.
  *
- * When the Magician arcana causes a redraw, the old cards animate out (dealOut)
+ * When any arcana causes a hole card redraw, the old cards animate out (dealOut)
  * and the new cards deal in (dealIn) automatically via key-based remounting.
  */
 import { useEffect, useRef, useState } from "react";

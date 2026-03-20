@@ -106,7 +106,7 @@ export function PlayerSeat({
         wheelRound={state.wheelRound}
         dealerAnchorId={player.id}
         isHero={isHero}
-        redrawSeed={state.magicianRedrawSeeds?.[player.id] ?? 0}
+        redrawSeed={state.holeCardChangeSeeds?.[player.id] ?? 0}
       />
 
       <PlayerStatusBar

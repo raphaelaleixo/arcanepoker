@@ -101,6 +101,7 @@ export function createInitialState(): StoreGameState {
     priestessRevealedCards: {},
     foolCardIndex: null,
     moonHiddenCommunityIndex: null,
+    moonAffectedIndex: null,
     justiceRevealedPlayerId: null,
     ruinsPot: 0,
     ruinsPotReady: false,
@@ -110,6 +111,7 @@ export function createInitialState(): StoreGameState {
     handResults: [],
     potWon: 0,
     wheelRound: 0,
-    magicianRedrawSeeds: {},
+    holeCardChangeSeeds: {},
+    communityChangeKey: 0,
   };
 }

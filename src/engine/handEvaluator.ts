@@ -4,7 +4,7 @@
  * Special rules handled here:
  *  - Page (value "0") is the lowest card in isolation (numeric value 0).
  *  - In straights, Page connects BEFORE the Ace: Page-A-2-3-4 is valid.
- *  - Strength (Arcana 8): all card values are inverted (2 highest, A lowest, Page stays 0).
+ *  - Strength (Arcana 8): all card values are inverted (2 highest, A lowest, Page becomes highest).
  *  - Emperor (Arcana 4): all hands are treated as high-card; compare cards in descending order.
  *  - Fool (Arcana 0): exactly one Page card acts as a wildcard (the Fool-injected community card).
  */

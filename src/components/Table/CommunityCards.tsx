@@ -25,8 +25,15 @@ interface CommunityCardsProps {
    * Null when no card is hidden.
    */
   moonHiddenCommunityIndex: number | null;
+  /**
+   * Same slot as moonHiddenCommunityIndex but persists through showdown so the
+   * React key stays stable when the card flips face-up, preventing a second animation.
+   */
+  moonAffectedIndex: number | null;
   /** React key seed — incremented each hand to replay deal animations. */
   wheelRound: number;
+  /** Incremented when any community card changes mid-hand (Fool, Moon); triggers remount → dealIn animation. */
+  communityChangeKey: number;
 }
 
 export function CommunityCards({
@@ -34,7 +41,9 @@ export function CommunityCards({
   totalSlots,
   foolCardIndex,
   moonHiddenCommunityIndex,
+  moonAffectedIndex,
   wheelRound,
+  communityChangeKey,
 }: CommunityCardsProps) {
   return (
     <Stack direction="row" spacing={0.75} alignItems="center">
@@ -48,7 +57,7 @@ export function CommunityCards({
           if (i === foolCardIndex) {
             return (
               <DealtCard
-                key={`${wheelRound}-${i}`}
+                key={`${wheelRound}-fool-${communityChangeKey}-${i}`}
                 small
                 rank={"0" as ArcanaCard["value"]}
                 suit={"arcana"}
@@ -58,15 +67,16 @@ export function CommunityCards({
               />
             );
           }
-          // Moon: render this card face-down (hidden)
-          if (i === moonHiddenCommunityIndex) {
+          // Moon: use a stable key (moonAffectedIndex persists through showdown so the
+          // key doesn't change on reveal, avoiding a second remount animation).
+          if (i === moonAffectedIndex) {
             return (
               <DealtCard
-                key={`${wheelRound}-${i}`}
+                key={`${wheelRound}-moon-${communityChangeKey}-${i}`}
                 small
                 rank={card.value}
                 suit={card.suit}
-                flipped={false}
+                flipped={i !== moonHiddenCommunityIndex}
                 dealIndex={di}
                 revealDelay={di * 80 + 400}
               />

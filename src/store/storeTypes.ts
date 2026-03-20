@@ -94,6 +94,8 @@ export interface StoreGameState {
   foolCardIndex: number | null;
   /** Moon: index of the community card hidden face-down until showdown. */
   moonHiddenCommunityIndex: number | null;
+  /** Moon: same index as moonHiddenCommunityIndex but persists through showdown so the React key stays stable and doesn't trigger a second animation on reveal. */
+  moonAffectedIndex: number | null;
   /** Justice: playerId whose entire hand is revealed face-up this round. */
   justiceRevealedPlayerId: string | null;
   /** Tower: chips set aside to be awarded to the winner of the next round. */
@@ -108,8 +110,10 @@ export interface StoreGameState {
   handResults: HandResultEntry[];
   /** Incremented on every Wheel-of-Fortune redeal; used as a React key seed to replay deal animations. */
   wheelRound: number;
-  /** Per-player counter incremented when the Magician redraws their cards; used to trigger deal animations. */
-  magicianRedrawSeeds: Record<string, number>;
+  /** Per-player counter incremented when any arcana replaces hole cards (Magician, Star, Chariot, Hanged Man); used to trigger deal animations. */
+  holeCardChangeSeeds: Record<string, number>;
+  /** Incremented when any community card changes mid-hand (Fool, Moon); forces DealtCard remount → dealIn animation. */
+  communityChangeKey: number;
   /** Total pot distributed at the last showdown (0 during play). Used for "wins XXX" display. */
   potWon: number;
 }
