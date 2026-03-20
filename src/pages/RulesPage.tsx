@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 const ARCANA: { name: string; effect: string }[] = [
   { name: "The Fool",          effect: "Acts as a wildcard; evaluator finds the best possible hand for each player." },
-  { name: "The Magician",      effect: "Players guess a suit; a correct guess earns an extra hole card." },
+  { name: "The Magician",      effect: "After the final betting round, each player may discard both hole cards and draw two new ones before the reveal." },
   { name: "The High Priestess",effect: "All active players reveal one hole card face up." },
   { name: "The Empress",       effect: "A 6th community card is dealt after the River." },
   { name: "The Emperor",       effect: "All hands are treated as high-card hands. Players compare highest card, then next highest, and so on." },

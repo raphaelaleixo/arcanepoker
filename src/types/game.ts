@@ -92,7 +92,7 @@ export interface EvaluatedHand {
 
 export type ArcanaEffectKey =
   | "fool-wildcard"         // 0  – The Fool acts as absolute wildcard
-  | "magician-extra-card"   // 1  – players guess suit → draw extra hole card
+  | "magician-redraw"        // 1  – each player may discard both hole cards and draw two new ones before showdown
   | "priestess-reveal"      // 2  – each player reveals one hole card
   | "empress-sixth-card"    // 3  – extra community card after river
   | "emperor-highcard"      // 4  – all hands evaluated as high-card (ignore rank)
@@ -129,7 +129,7 @@ export type PendingInteraction =
   | { type: "temperance-pick"; playerId: string }     // hero picks 1 of 3 river cards (candidates in state)
   | { type: "star-discard"; playerId: string }         // hero decides whether to swap
   | { type: "hierophant-vote"; options: [ArcanaCard, ArcanaCard, ArcanaCard] } // hero votes on which arcana to apply
-  | { type: "magician-guess"; playerId: string }       // hero guesses a suit
+  | { type: "magician-redraw"; playerId: string }      // hero decides whether to redraw both hole cards
   | { type: "judgement-return"; playerId: string }    // hero decides whether to rejoin
   | { type: "tarot-reading" }                          // first-win tarot modal
   | { type: "priestess-reveal"; playerId: string };    // hero picks a hole card to reveal

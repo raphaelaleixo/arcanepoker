@@ -1,43 +1,34 @@
 /**
  * Dialog content for The Magician arcana interaction.
- * The hero guesses the suit of the top card of the deck.
- * A correct guess grants that card as an extra hole card.
+ * Before showdown, the hero may discard both hole cards and draw two new ones.
  */
 import { Button, Stack, Typography } from "@mui/material";
 
-const SUIT_BUTTONS: { suit: string; label: string }[] = [
-  { suit: "hearts",   label: "\u2665 Hearts" },
-  { suit: "clubs",    label: "\u2663 Clubs" },
-  { suit: "diamonds", label: "\u2666 Diamonds" },
-  { suit: "spades",   label: "\u2660 Spades" },
-];
-
-interface MagicianGuessContentProps {
-  onGuess: (suit: string) => void;
+interface Props {
+  onChoice: (redraw: boolean) => void;
 }
 
-export function MagicianGuessContent({ onGuess }: MagicianGuessContentProps) {
+export function MagicianGuessContent({ onChoice }: Props) {
   return (
     <Stack spacing={3} alignItems="center">
       <Typography variant="body2" sx={{ color: "silver.light", textAlign: "center" }}>
-        Guess the suit of the top card. If correct, you keep it as an extra hole card.
+        Discard both hole cards and draw two new ones — or keep your current hand.
       </Typography>
-      <Stack direction="row" spacing={1} justifyContent="center" flexWrap="wrap">
-        {SUIT_BUTTONS.map(({ suit, label }) => (
-          <Button
-            key={suit}
-            variant="outlined"
-            onClick={() => onGuess(suit)}
-            sx={{
-              color: suit === "hearts" || suit === "diamonds" ? "redSuit.main" : "silver.light",
-              borderColor:
-                suit === "hearts" || suit === "diamonds" ? "redSuit.main" : "silver.dark",
-              "&:hover": { borderColor: "gold.main", color: "gold.main" },
-            }}
-          >
-            {label}
-          </Button>
-        ))}
+      <Stack direction="row" spacing={2} justifyContent="center">
+        <Button
+          variant="outlined"
+          onClick={() => onChoice(true)}
+          sx={{ color: "gold.main", borderColor: "gold.main" }}
+        >
+          Redraw
+        </Button>
+        <Button
+          variant="outlined"
+          onClick={() => onChoice(false)}
+          sx={{ color: "silver.light", borderColor: "silver.dark" }}
+        >
+          Keep Hand
+        </Button>
       </Stack>
     </Stack>
   );

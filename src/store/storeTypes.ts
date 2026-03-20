@@ -106,6 +106,8 @@ export interface StoreGameState {
   handResults: HandResultEntry[];
   /** Incremented on every Wheel-of-Fortune redeal; used as a React key seed to replay deal animations. */
   wheelRound: number;
+  /** Per-player counter incremented when the Magician redraws their cards; used to trigger deal animations. */
+  magicianRedrawSeeds: Record<string, number>;
   /** Total pot distributed at the last showdown (0 during play). Used for "wins XXX" display. */
   potWon: number;
 }
@@ -122,7 +124,7 @@ export type GameAction =
   | { type: "RESOLVE_TEMPERANCE"; payload: { card: StandardCard } }
   | { type: "RESOLVE_STAR"; payload: { discard: boolean } }
   | { type: "RESOLVE_MOON"; payload: { swap: boolean } }
-  | { type: "RESOLVE_MAGICIAN"; payload: { suit: string } }
+  | { type: "RESOLVE_MAGICIAN"; payload: { redraw: boolean } }
   | { type: "RESOLVE_JUDGEMENT"; payload: { rejoin: boolean } }
   | { type: "REVEAL_ARCANA" }
   | { type: "RESOLVE_PAGE_CHALLENGE" }
@@ -135,7 +137,7 @@ export type GameAction =
 
 export const ARCANA_EFFECT_KEYS: ArcanaEffectKey[] = [
   "fool-wildcard",          // 0
-  "magician-extra-card",    // 1
+  "magician-redraw",        // 1
   "priestess-reveal",       // 2
   "empress-sixth-card",     // 3
   "emperor-highcard",       // 4

@@ -203,6 +203,18 @@ export function moonShouldSwap(
 }
 
 /**
+ * Magician: bot redraws both hole cards only if the current best hand is high-card or pair.
+ */
+export function magicianShouldRedraw(
+  holeCards: StandardCard[],
+  communityCards: StandardCard[],
+  evalOptions: EvalOptions
+): boolean {
+  const hand = evaluateBestHand([...holeCards, ...communityCards], evalOptions);
+  return hand.rankValue < 2; // redraw if high-card (0) or pair (1)
+}
+
+/**
  * Judgement: bot rejoins only if its stack is at least 10x the rejoin cost.
  */
 export function judgementShouldRejoin(

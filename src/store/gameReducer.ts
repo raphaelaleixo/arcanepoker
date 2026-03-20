@@ -9,6 +9,7 @@ import {
   chariotCardToPass,
   starShouldDiscard,
   judgementShouldRejoin,
+  magicianShouldRedraw,
 } from "../engine/ai";
 import type { EvalOptions } from "../engine/handEvaluator";
 import type { StandardCard, ArcanaCard, ActionType, GameStage } from "../types/types";
@@ -82,6 +83,44 @@ function firstActiveAfter(players: GamePlayer[], fromIndex: number): number {
     if (!players[idx].folded && !players[idx].isAllIn) return idx;
   }
   return fromIndex; // fallback (shouldn't happen)
+}
+
+// ─── Magician pre-showdown intercept ─────────────────────────────────────────
+
+function applyMagicianRedraw(state: StoreGameState): StoreGameState {
+  if (state.activeArcana?.effectKey !== "magician-redraw") {
+    return evaluateShowdown(state);
+  }
+
+  const evalOpts = buildEvalOptions(state);
+  let deck = state.deck;
+  const players = [...state.players] as GamePlayer[];
+
+  // Bots decide and redraw immediately
+  let magicianRedrawSeeds = { ...state.magicianRedrawSeeds };
+  for (const p of players.filter((pl) => pl.type === "ai" && !pl.folded)) {
+    if (magicianShouldRedraw(p.holeCards, state.communityCards, evalOpts)) {
+      const { dealt, remaining } = dealCards(deck, 2);
+      deck = remaining;
+      const idx = players.findIndex((pl) => pl.id === p.id);
+      players[idx] = { ...players[idx], holeCards: dealt };
+      magicianRedrawSeeds[p.id] = (magicianRedrawSeeds[p.id] ?? 0) + 1;
+    }
+  }
+
+  // Hero gets an interactive choice (unless already folded)
+  const hero = players.find((p) => p.id === HERO_ID);
+  if (!hero || hero.folded) {
+    return evaluateShowdown({ ...state, players, deck, magicianRedrawSeeds });
+  }
+
+  return {
+    ...state,
+    players,
+    deck,
+    magicianRedrawSeeds,
+    pendingInteraction: { type: "magician-redraw", playerId: HERO_ID },
+  };
 }
 
 // ─── Stage transition ─────────────────────────────────────────────────────────
@@ -196,11 +235,11 @@ function advanceStage(state: StoreGameState): StoreGameState {
         if (eligiblePlayers(next.players).length <= 1) return advanceStage(next);
         return next;
       }
-      return evaluateShowdown(state);
+      return applyMagicianRedraw(state);
     }
 
     case "empress":
-      return evaluateShowdown(state);
+      return applyMagicianRedraw(state);
 
     default:
       return state;
@@ -375,6 +414,7 @@ function startHand(state: StoreGameState): StoreGameState {
     potWon: 0,
     pendingInteraction: null,
     wheelRound: (state.wheelRound ?? 0) + 1,
+    magicianRedrawSeeds: {},
   };
 }
 
@@ -797,32 +837,9 @@ function applyArcana(
       };
     }
 
-    case "magician-extra-card": {
-      // Bots guess a random suit immediately
-      let deck = base.deck;
-      const players = [...base.players] as GamePlayer[];
-      const suits = ["hearts", "clubs", "diamonds", "spades"];
-      for (const p of players.filter((pl) => pl.type === "ai" && !pl.folded)) {
-        const guess = suits[Math.floor(Math.random() * suits.length)];
-        const { dealt: botDealt, remaining: botRem } = dealCards(deck, 1);
-        deck = botRem;
-        if (botDealt[0].suit === guess) {
-          const pIdx = players.findIndex((pl) => pl.id === p.id);
-          players[pIdx] = {
-            ...players[pIdx],
-            holeCards: [...players[pIdx].holeCards, botDealt[0]],
-          };
-        }
-      }
-      return {
-        ...base,
-        players,
-        deck,
-        pendingInteraction: heroFolded(base)
-          ? null
-          : { type: "magician-guess", playerId: HERO_ID },
-      };
-    }
+    case "magician-redraw":
+      // Effect fires at showdown boundary (applyMagicianRedraw), not on arcana reveal
+      return base;
 
     case "temperance-three-river":
       // Handled in advanceStage when turn ends
@@ -924,25 +941,21 @@ function resolveStar(
 
 function resolveMagician(
   state: StoreGameState,
-  suit: string
+  redraw: boolean
 ): StoreGameState {
-  // Hero draws top card; if its suit matches guess, hero keeps it
-  // (bots already resolved their guesses in applyArcana)
-  const { dealt, remaining } = dealCards(state.deck, 1);
-  const drawnCard = dealt[0];
-  const correct = drawnCard.suit === suit;
-
   const hIdx = state.players.findIndex((p) => p.id === HERO_ID);
-  const players = [...state.players] as GamePlayer[];
+  let players = [...state.players] as GamePlayer[];
+  let deck = state.deck;
+  let magicianRedrawSeeds = { ...state.magicianRedrawSeeds };
 
-  if (correct) {
-    players[hIdx] = {
-      ...players[hIdx],
-      holeCards: [...players[hIdx].holeCards, drawnCard],
-    };
+  if (redraw && hIdx !== -1) {
+    const { dealt, remaining } = dealCards(deck, 2);
+    deck = remaining;
+    players[hIdx] = { ...players[hIdx], holeCards: dealt };
+    magicianRedrawSeeds[HERO_ID] = (magicianRedrawSeeds[HERO_ID] ?? 0) + 1;
   }
 
-  return { ...state, players, deck: remaining, pendingInteraction: null };
+  return evaluateShowdown({ ...state, players, deck, magicianRedrawSeeds, pendingInteraction: null });
 }
 
 function resolveJudgement(
@@ -1115,7 +1128,7 @@ export function gameReducer(
 
 
     case "RESOLVE_MAGICIAN":
-      return resolveMagician(state, action.payload.suit);
+      return resolveMagician(state, action.payload.redraw);
 
     case "RESOLVE_JUDGEMENT":
       return resolveJudgement(state, action.payload.rejoin);

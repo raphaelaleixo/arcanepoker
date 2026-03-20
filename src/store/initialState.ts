@@ -109,5 +109,6 @@ export function createInitialState(): StoreGameState {
     handResults: [],
     potWon: 0,
     wheelRound: 0,
+    magicianRedrawSeeds: {},
   };
 }

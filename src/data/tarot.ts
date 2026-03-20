@@ -401,7 +401,7 @@ export default {
       description:
         "The Magician symbolizes power, skill, and manifestation. It represents the ability to harness your inner resources and create your reality. This card suggests a need to be confident and resourceful. It's a reminder to trust your abilities and take action.",
       gameEffect:
-        "Each player guesses a suit and opens the first card of the deck, adding it to their hands if correctly guessed",
+        "After the final betting round, each player may discard both hole cards and draw two new ones from the deck before hands are revealed.",
     },
     "2": {
       fullName: "The High Priestess",

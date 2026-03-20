@@ -3,11 +3,21 @@
  * Handles the High Priestess reveal edge case (a single opponent card shown
  * face-up without revealing the rest) and card selection for
  * Chariot/Priestess interactions.
+ *
+ * When the Magician arcana causes a redraw, the old cards animate out (dealOut)
+ * and the new cards deal in (dealIn) automatically via key-based remounting.
  */
+import { useEffect, useRef, useState } from "react";
+import { keyframes } from "@emotion/react";
 import { Box, Stack } from "@mui/material";
 import { PlayingCard } from "../Card/PlayingCard";
 import { DealtCard } from "../Card/DealtCard";
 import type { StandardCard } from "../../types/types";
+
+const dealOut = keyframes`
+  from { opacity: 1; transform: scale(1) translateY(0); }
+  to   { opacity: 0; transform: scale(0.75) translateY(-30px); }
+`;
 
 interface PlayerCardsProps {
   holeCards: StandardCard[];
@@ -25,6 +35,8 @@ interface PlayerCardsProps {
   dealerAnchorId: string;
   /** Hero cards are revealed immediately (no animation delay). */
   isHero?: boolean;
+  /** Incremented when this player's cards are replaced by the Magician redraw effect. */
+  redrawSeed?: number;
 }
 
 export function PlayerCards({
@@ -37,17 +49,64 @@ export function PlayerCards({
   wheelRound,
   dealerAnchorId,
   isHero = false,
+  redrawSeed = 0,
 }: PlayerCardsProps) {
+  // Local card buffer — holds old cards during the exit animation so they stay
+  // visible while fading out before the new cards deal in.
+  const [displayCards, setDisplayCards] = useState<StandardCard[]>(holeCards);
+  const [isExiting, setIsExiting] = useState(false);
+  // Incremented when new cards arrive after a redraw — forces DealtCard remount → dealIn fires.
+  const [cardKey, setCardKey] = useState(0);
+
+  const prevSeedRef = useRef(redrawSeed);
+  const prevWheelRef = useRef(wheelRound);
+
+  useEffect(() => {
+    // New hand: wheelRound changed, so reset without exit animation.
+    if (wheelRound !== prevWheelRef.current) {
+      prevWheelRef.current = wheelRound;
+      prevSeedRef.current = redrawSeed;
+      setDisplayCards(holeCards);
+      return;
+    }
+
+    // Magician redraw: seed increased within the same hand.
+    if (redrawSeed > prevSeedRef.current) {
+      setIsExiting(true);
+      const t = setTimeout(() => {
+        setDisplayCards(holeCards);
+        setCardKey((k) => k + 1); // force DealtCard remount → dealIn
+        setIsExiting(false);
+        prevSeedRef.current = redrawSeed;
+      }, 320);
+      return () => clearTimeout(t);
+    }
+
+    // Normal state update (bet, fold, etc.) — sync immediately.
+    setDisplayCards(holeCards);
+    prevSeedRef.current = redrawSeed;
+  }, [holeCards, redrawSeed, wheelRound]);
+
   return (
     <Box
       data-dealer-anchor={dealerAnchorId}
       sx={{ position: "relative", display: "flex", justifyContent: "center", mb: 0.5 }}
     >
-      <Stack direction="row" justifyContent="center" alignItems="flex-end">
-        {holeCards.length > 0 ? (
-          holeCards.map((card, i) => {
-            // Priestess reveal: isPriestessRevealed allows a single opponent card
-            // to appear face-up without showFaceUp being true for the whole hand.
+      <Stack
+        direction="row"
+        justifyContent="center"
+        alignItems="flex-end"
+        sx={
+          isExiting
+            ? {
+                animation: `${dealOut} 280ms ease-in both`,
+                pointerEvents: "none",
+              }
+            : {}
+        }
+      >
+        {displayCards.length > 0 ? (
+          displayCards.map((card, i) => {
             const isPriestessRevealed =
               !showFaceUp &&
               priestessCard != null &&
@@ -60,12 +119,16 @@ export function PlayerCards({
               card.suit === selectedCard.suit;
             return (
               <Box
-                key={`${wheelRound}-${i}`}
+                key={`${wheelRound}-${cardKey}-${i}`}
                 onClick={onCardClick ? () => onCardClick(card) : undefined}
                 sx={{
                   transform: isSelected
-                    ? (i === 0 ? "rotate(-6deg) translateY(-10px)" : "rotate(6deg) translateY(-10px)")
-                    : (i === 0 ? "rotate(-6deg)" : "rotate(6deg)"),
+                    ? i === 0
+                      ? "rotate(-6deg) translateY(-10px)"
+                      : "rotate(6deg) translateY(-10px)"
+                    : i === 0
+                    ? "rotate(-6deg)"
+                    : "rotate(6deg)",
                   transformOrigin: "bottom center",
                   ml: i === 0 ? 0 : -1.5,
                   cursor: onCardClick ? "pointer" : "default",

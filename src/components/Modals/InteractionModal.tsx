@@ -28,7 +28,7 @@ function dialogTitle(type: PendingInteraction["type"]): string {
   switch (type) {
     case "star-discard":      return "The Star: Discard or Keep?";
     case "hierophant-vote":   return "The Hierophant: Vote for an Arcana";
-    case "magician-guess":    return "The Magician: Guess a Suit";
+    case "magician-redraw":   return "The Magician: Redraw?";
     case "judgement-return":  return "Judgement: Rejoin the Hand?";
     // Inline types retained so the minimized chip still gets a label if needed.
     case "priestess-reveal":  return "The High Priestess: Reveal a Card";
@@ -118,9 +118,9 @@ export function InteractionModal() {
             onVote={(choice) => dispatch({ type: "RESOLVE_HIEROPHANT", payload: { choice } })}
           />
         )}
-        {pendingInteraction.type === "magician-guess" && (
+        {pendingInteraction.type === "magician-redraw" && (
           <MagicianGuessContent
-            onGuess={(suit) => dispatch({ type: "RESOLVE_MAGICIAN", payload: { suit } })}
+            onChoice={(redraw) => dispatch({ type: "RESOLVE_MAGICIAN", payload: { redraw } })}
           />
         )}
         {pendingInteraction.type === "judgement-return" && (
