@@ -8,7 +8,6 @@ import {
 import {
   chariotCardToPass,
   starShouldDiscard,
-  judgementShouldRejoin,
   magicianShouldRedraw,
 } from "../engine/ai";
 import type { EvalOptions } from "../engine/handEvaluator";
@@ -415,6 +414,7 @@ function startHand(state: StoreGameState): StoreGameState {
     pendingInteraction: null,
     wheelRound: (state.wheelRound ?? 0) + 1,
     magicianRedrawSeeds: {},
+    judgementCommittedIds: [],
   };
 }
 
@@ -427,6 +427,20 @@ function processPlayerAction(
   const { playerId, action, amount } = payload;
   const playerIdx = state.players.findIndex((p) => p.id === playerId);
   if (playerIdx === -1) return state;
+
+  // Judgement: committed players (bet/raised) cannot fold — silently convert to check/call
+  if (
+    state.activeArcana?.effectKey === "judgement-no-fold" &&
+    action === "fold" &&
+    state.judgementCommittedIds.includes(playerId)
+  ) {
+    const player = state.players[playerIdx];
+    const toCallAmt = state.currentBet - player.currentBet;
+    return processPlayerAction(state, {
+      playerId,
+      action: toCallAmt === 0 ? "check" : "call",
+    });
+  }
 
   const player = state.players[playerIdx];
   const players = [...state.players] as GamePlayer[];
@@ -519,6 +533,18 @@ function processPlayerAction(
     hangedManDeck = remaining;
   }
 
+  // Judgement: track players who bet or raised while the effect is active
+  let judgementCommittedIds = state.judgementCommittedIds;
+  if (state.activeArcana?.effectKey === "judgement-no-fold") {
+    const isRaisingAction =
+      action === "bet" ||
+      action === "raise" ||
+      (action === "all-in" && players[playerIdx].currentBet > state.currentBet);
+    if (isRaisingAction && !judgementCommittedIds.includes(playerId)) {
+      judgementCommittedIds = [...judgementCommittedIds, playerId];
+    }
+  }
+
   // Check if only one player remains (everyone else folded)
   const activePlayers = players.filter((p) => !p.folded);
   if (activePlayers.length === 1) {
@@ -532,6 +558,7 @@ function processPlayerAction(
     potSize: newPot,
     currentBet: newCurrentBet,
     roundActors: newRoundActors,
+    judgementCommittedIds,
   };
 
   if (isBettingRoundComplete(next)) {
@@ -785,38 +812,10 @@ function applyArcana(
       };
     }
 
-    case "judgement-rejoin": {
-      // Cost to rejoin = current highest bet (floor to bigBlind if no bet yet)
-      const rejoinCost = Math.max(base.currentBet, base.bigBlind);
-      // Bots that qualify auto-rejoin
-      let deck = base.deck;
-      const players = [...base.players] as GamePlayer[];
-      let potDelta = 0;
-      for (const p of players.filter((pl) => pl.folded && pl.type === "ai")) {
-        if (judgementShouldRejoin(p.stack, rejoinCost)) {
-          const { dealt, remaining } = dealCards(deck, 2);
-          deck = remaining;
-          const pIdx = players.findIndex((pl) => pl.id === p.id);
-          players[pIdx] = {
-            ...players[pIdx],
-            folded: false,
-            holeCards: dealt,
-            stack: p.stack - rejoinCost,
-          };
-          potDelta += rejoinCost;
-        }
-      }
-      return {
-        ...base,
-        players,
-        deck,
-        potSize: base.potSize + potDelta,
-        // Only prompt hero to rejoin if they actually folded this hand
-        pendingInteraction: heroFolded(base)
-          ? { type: "judgement-return", playerId: HERO_ID }
-          : null,
-      };
-    }
+    case "judgement-no-fold":
+      // Passive enforcement: players who bet/raise may not fold for the rest of the hand.
+      // No immediate side effect on arcana reveal — tracking happens in processPlayerAction.
+      return base;
 
     case "priestess-reveal": {
       // Bots each reveal their lower-value hole card immediately
@@ -958,35 +957,6 @@ function resolveMagician(
   return evaluateShowdown({ ...state, players, deck, magicianRedrawSeeds, pendingInteraction: null });
 }
 
-function resolveJudgement(
-  state: StoreGameState,
-  rejoin: boolean
-): StoreGameState {
-  if (!rejoin) return { ...state, pendingInteraction: null };
-
-  const hIdx = state.players.findIndex((p) => p.id === HERO_ID);
-  const hero = state.players[hIdx];
-
-  // Guard: can only rejoin if actually folded
-  if (!hero?.folded) return { ...state, pendingInteraction: null };
-  const rejoinCost = Math.max(state.currentBet, state.bigBlind);
-  const { dealt, remaining } = dealCards(state.deck, 2);
-  const players = [...state.players] as GamePlayer[];
-  players[hIdx] = {
-    ...hero,
-    folded: false,
-    holeCards: dealt,
-    stack: hero.stack - rejoinCost,
-  };
-
-  return {
-    ...state,
-    players,
-    deck: remaining,
-    potSize: state.potSize + rejoinCost,
-    pendingInteraction: null,
-  };
-}
 
 function resolvePriestess(
   state: StoreGameState,
@@ -1129,9 +1099,6 @@ export function gameReducer(
 
     case "RESOLVE_MAGICIAN":
       return resolveMagician(state, action.payload.redraw);
-
-    case "RESOLVE_JUDGEMENT":
-      return resolveJudgement(state, action.payload.rejoin);
 
     case "RESOLVE_PRIESTESS":
       return resolvePriestess(state, action.payload.card);

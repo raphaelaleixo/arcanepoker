@@ -104,6 +104,7 @@ export function createInitialState(): StoreGameState {
     justiceRevealedPlayerId: null,
     ruinsPot: 0,
     ruinsPotReady: false,
+    judgementCommittedIds: [],
 
     winnerIds: [],
     handResults: [],

@@ -26,6 +26,9 @@ export function ActionBar({ isVisible = true, overlayContent }: ActionBarProps) 
 
   // The Devil arcana doubles the minimum raise to 4× the current bet.
   const devilActive = state.activeArcana?.effectKey === "devil-double-raise";
+  const judgementFoldBlocked =
+    state.activeArcana?.effectKey === "judgement-no-fold" &&
+    state.judgementCommittedIds.includes(HERO_ID_CONST);
   const toCall = hero ? state.currentBet - hero.currentBet : 0;
   const canCheck = toCall === 0;
   const minRaiseCalc = hero
@@ -111,6 +114,7 @@ export function ActionBar({ isVisible = true, overlayContent }: ActionBarProps) 
             onFold={handleFold}
             onCheckOrCall={handleCheckOrCall}
             onRaiseOrAllIn={handleRaiseOrAllIn}
+            foldDisabled={judgementFoldBlocked}
           />
         </Box>
 

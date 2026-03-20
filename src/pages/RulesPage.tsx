@@ -23,7 +23,7 @@ const ARCANA: { name: string; effect: string }[] = [
   { name: "The Star",          effect: "Players may discard 1 hole card and draw a new one." },
   { name: "The Moon",          effect: "One random community card is turned face down and hidden until showdown, when it is revealed and used normally." },
   { name: "The Sun",           effect: "Round ends; pot is split equally among active players." },
-  { name: "Judgement",         effect: "All folded players may re-enter at the start of the next betting phase by paying the current highest bet. They are dealt two new hole cards." },
+  { name: "Judgement",         effect: "Any player who bets or raises may not fold for the remainder of the hand." },
   { name: "The World",         effect: "Announces the final hand of the entire game." },
 ];
 

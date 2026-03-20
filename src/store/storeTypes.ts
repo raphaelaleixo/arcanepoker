@@ -100,6 +100,8 @@ export interface StoreGameState {
   ruinsPot: number;
   /** Tower: true once the next hand starts — ruins pot is ready to be awarded at showdown. */
   ruinsPotReady: boolean;
+  /** IDs of players who have bet/raised while Judgement is active; they may not fold. */
+  judgementCommittedIds: string[];
 
   // ── Results ──────────────────────────────────────────────────────────────────
   winnerIds: string[];
@@ -125,7 +127,6 @@ export type GameAction =
   | { type: "RESOLVE_STAR"; payload: { discard: boolean } }
   | { type: "RESOLVE_MOON"; payload: { swap: boolean } }
   | { type: "RESOLVE_MAGICIAN"; payload: { redraw: boolean } }
-  | { type: "RESOLVE_JUDGEMENT"; payload: { rejoin: boolean } }
   | { type: "REVEAL_ARCANA" }
   | { type: "RESOLVE_PAGE_CHALLENGE" }
   | { type: "NEXT_HAND" }
@@ -156,6 +157,6 @@ export const ARCANA_EFFECT_KEYS: ArcanaEffectKey[] = [
   "star-discard-draw",      // 17
   "moon-hide-community",    // 18
   "sun-split-all",          // 19
-  "judgement-rejoin",       // 20
+  "judgement-no-fold",      // 20
   "world-final-hand",       // 21
 ];

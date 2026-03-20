@@ -111,7 +111,7 @@ export type ArcanaEffectKey =
   | "star-discard-draw"     // 17 – each player may discard 1 hole card for a new one
   | "moon-hide-community"   // 18 – one random community card hidden until showdown
   | "sun-split-all"         // 19 – round ends; pot split equally among actives
-  | "judgement-rejoin"      // 20 – folded players may pay the current highest bet to rejoin
+  | "judgement-no-fold"     // 20 – players who bet or raise may not fold for the rest of the hand
   | "world-final-hand";     // 21 – game's final hand announced
 
 export interface ActiveArcana {
@@ -130,7 +130,6 @@ export type PendingInteraction =
   | { type: "star-discard"; playerId: string }         // hero decides whether to swap
   | { type: "hierophant-vote"; options: [ArcanaCard, ArcanaCard, ArcanaCard] } // hero votes on which arcana to apply
   | { type: "magician-redraw"; playerId: string }      // hero decides whether to redraw both hole cards
-  | { type: "judgement-return"; playerId: string }    // hero decides whether to rejoin
   | { type: "tarot-reading" }                          // first-win tarot modal
   | { type: "priestess-reveal"; playerId: string };    // hero picks a hole card to reveal
 

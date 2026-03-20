@@ -214,16 +214,6 @@ export function magicianShouldRedraw(
   return hand.rankValue < 2; // redraw if high-card (0) or pair (1)
 }
 
-/**
- * Judgement: bot rejoins only if its stack is at least 10x the rejoin cost.
- */
-export function judgementShouldRejoin(
-  stack: number,
-  rejoinCost: number
-): boolean {
-  return stack > rejoinCost * 10;
-}
-
 // ─── Main AI decision function ────────────────────────────────────────────────
 
 export function makeAIDecision(ctx: AIContext): AIDecision {

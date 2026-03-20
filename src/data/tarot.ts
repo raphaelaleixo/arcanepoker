@@ -537,7 +537,7 @@ export default {
       tags: ["renewal", "reflection", "awakening", "evaluation"],
       description:
         "Judgment symbolizes renewal, reflection, and awakening. It represents a time of self-evaluation and transformation. This card suggests a need to reflect on your past experiences and make positive changes. It's a reminder to embrace new opportunities and move forward with purpose.",
-      gameEffect: "All folded players may re-enter at the start of the next betting phase by paying the current highest bet. They are dealt two new hole cards.",
+      gameEffect: "Any player who bets or raises this hand may not fold for the remainder of the hand.",
     },
     "21": {
       fullName: "The World",

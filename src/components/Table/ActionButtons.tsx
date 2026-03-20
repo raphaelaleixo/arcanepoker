@@ -18,6 +18,7 @@ interface ActionButtonsProps {
   onFold: () => void;
   onCheckOrCall: () => void;
   onRaiseOrAllIn: () => void;
+  foldDisabled?: boolean;
 }
 
 export function ActionButtons({
@@ -30,10 +31,11 @@ export function ActionButtons({
   onFold,
   onCheckOrCall,
   onRaiseOrAllIn,
+  foldDisabled,
 }: ActionButtonsProps) {
   return (
     <Stack direction="row" spacing={1} justifyContent="center">
-      <Button variant="contained" color="error" size="small" onClick={onFold}>
+      <Button variant="contained" color="error" size="small" onClick={onFold} disabled={foldDisabled}>
         Fold
       </Button>
 

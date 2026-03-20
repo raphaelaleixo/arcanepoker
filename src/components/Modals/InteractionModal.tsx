@@ -20,7 +20,6 @@ import { useGame } from "../../store/useGame";
 import type { PendingInteraction } from "../../types/game";
 import { StarDiscardContent } from "./StarDiscardContent";
 import { MagicianGuessContent } from "./MagicianGuessContent";
-import { JudgementReturnContent } from "./JudgementReturnContent";
 import { HierophantVoteContent } from "./HierophantVoteContent";
 
 /** Maps interaction type to a dialog title string. Also used for the minimized chip label. */
@@ -29,7 +28,6 @@ function dialogTitle(type: PendingInteraction["type"]): string {
     case "star-discard":      return "The Star: Discard or Keep?";
     case "hierophant-vote":   return "The Hierophant: Vote for an Arcana";
     case "magician-redraw":   return "The Magician: Redraw?";
-    case "judgement-return":  return "Judgement: Rejoin the Hand?";
     // Inline types retained so the minimized chip still gets a label if needed.
     case "priestess-reveal":  return "The High Priestess: Reveal a Card";
     default:                  return "Choose";
@@ -121,13 +119,6 @@ export function InteractionModal() {
         {pendingInteraction.type === "magician-redraw" && (
           <MagicianGuessContent
             onChoice={(redraw) => dispatch({ type: "RESOLVE_MAGICIAN", payload: { redraw } })}
-          />
-        )}
-        {pendingInteraction.type === "judgement-return" && (
-          <JudgementReturnContent
-            rejoinCost={Math.max(state.currentBet, state.bigBlind)}
-            onRejoin={() => dispatch({ type: "RESOLVE_JUDGEMENT", payload: { rejoin: true } })}
-            onSitOut={() => dispatch({ type: "RESOLVE_JUDGEMENT", payload: { rejoin: false } })}
           />
         )}
       </DialogContent>
