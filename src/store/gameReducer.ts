@@ -442,6 +442,20 @@ function processPlayerAction(
     });
   }
 
+  // Devil: first actor in the round must open with a bet — checking is forbidden
+  if (
+    state.activeArcana?.effectKey === "devil-double-raise" &&
+    state.roundActors.length === 0 &&
+    state.currentBet === 0 &&
+    (action === "check" || (action === "call" && state.currentBet - state.players[playerIdx].currentBet === 0))
+  ) {
+    return processPlayerAction(state, {
+      playerId,
+      action: "raise",
+      amount: state.bigBlind,
+    });
+  }
+
   const player = state.players[playerIdx];
   const players = [...state.players] as GamePlayer[];
   let potDelta = 0;

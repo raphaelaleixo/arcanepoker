@@ -502,7 +502,7 @@ export default {
       tags: ["shadow self", "addiction", "materialism", "restriction"],
       description:
         "The Devil symbolizes the shadow self, addiction, and restriction. It represents a need to confront your fears and limitations. This card suggests a need to be aware of your negative patterns and behaviors. It's a reminder to break free from self-imposed limitations.",
-      gameEffect: "Bets must be doubled to be raised.",
+      gameEffect: "The first player to act each post-flop street must bet — checking is forbidden for the opener.",
     },
     "16": {
       fullName: "The Tower",

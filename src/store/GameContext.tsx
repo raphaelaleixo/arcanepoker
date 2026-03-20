@@ -58,12 +58,22 @@ export function GameProvider({ children }: { children: ReactNode }) {
         activeArcanaEffect: snapshot.activeArcana?.effectKey ?? null,
       });
 
+      const devilMustBet =
+        snapshot.activeArcana?.effectKey === "devil-double-raise" &&
+        snapshot.roundActors.length === 0 &&
+        snapshot.currentBet === 0;
+
+      const finalDecision =
+        devilMustBet && decision.action === "check"
+          ? { action: "raise" as const, amount: snapshot.bigBlind }
+          : decision;
+
       dispatch({
         type: "PLAYER_ACTION",
         payload: {
           playerId: bot.id,
-          action: decision.action,
-          amount: "amount" in decision ? decision.amount : undefined,
+          action: finalDecision.action,
+          amount: "amount" in finalDecision ? finalDecision.amount : undefined,
         },
       });
     }, BOT_THINK_MS);

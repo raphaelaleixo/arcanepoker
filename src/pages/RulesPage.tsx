@@ -18,7 +18,7 @@ const ARCANA: { name: string; effect: string }[] = [
   { name: "The Hanged Man",    effect: "An all-in player receives a 3rd hole card." },
   { name: "Death",             effect: "The round ends immediately; hands are compared at the current stage." },
   { name: "Temperance",        effect: "River reveals 3 cards; each player chooses 1 to keep on the board." },
-  { name: "The Devil",         effect: "Raises must be at least double the current total bet." },
+  { name: "The Devil",         effect: "The first player to act each post-flop street must bet — checking is forbidden for the opener." },
   { name: "The Tower",         effect: "Half the pot (rounded up) is set aside as a ruins pot, awarded to the winner of the next round." },
   { name: "The Star",          effect: "Players may discard 1 hole card and draw a new one." },
   { name: "The Moon",          effect: "One random community card is turned face down and hidden until showdown, when it is revealed and used normally." },
