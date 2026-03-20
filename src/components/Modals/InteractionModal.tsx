@@ -18,7 +18,6 @@ import {
 } from "@mui/material";
 import { useGame } from "../../store/useGame";
 import type { PendingInteraction } from "../../types/game";
-import { StarDiscardContent } from "./StarDiscardContent";
 import { MagicianGuessContent } from "./MagicianGuessContent";
 import { HierophantVoteContent } from "./HierophantVoteContent";
 
@@ -61,7 +60,8 @@ export function InteractionModal() {
     pendingInteraction.type === "page-challenge" ||
     pendingInteraction.type === "chariot-pass" ||
     pendingInteraction.type === "priestess-reveal" ||
-    pendingInteraction.type === "temperance-pick"
+    pendingInteraction.type === "temperance-pick" ||
+    pendingInteraction.type === "star-discard"
   ) {
     return null;
   }
@@ -104,12 +104,6 @@ export function InteractionModal() {
       </DialogTitle>
 
       <DialogContent sx={{ py: 3 }}>
-        {pendingInteraction.type === "star-discard" && (
-          <StarDiscardContent
-            onDiscard={() => dispatch({ type: "RESOLVE_STAR", payload: { discard: true } })}
-            onKeep={() => dispatch({ type: "RESOLVE_STAR", payload: { discard: false } })}
-          />
-        )}
         {pendingInteraction.type === "hierophant-vote" && (
           <HierophantVoteContent
             options={pendingInteraction.options}

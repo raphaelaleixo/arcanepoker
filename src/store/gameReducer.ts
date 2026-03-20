@@ -702,6 +702,8 @@ function applyArcana(
     case "hermit-hole-only":
     case "lovers-split-pot":
     case "devil-double-raise":
+      return base;
+
     case "justice-reveal": {
       // Pick one random active (non-folded) player and reveal their hand
       const activePlayers = base.players.filter((p) => !p.folded);
@@ -767,10 +769,20 @@ function applyArcana(
     }
 
     case "moon-hide-community": {
-      // Hide one random community card face-down until showdown
+      // Return the chosen community card to the deck, draw a replacement face-down
       if (base.communityCards.length === 0) return base;
       const hiddenIdx = Math.floor(Math.random() * base.communityCards.length);
-      return { ...base, moonHiddenCommunityIndex: hiddenIdx };
+      const removed = base.communityCards[hiddenIdx];
+      const deckWithReturned = shuffle([...base.deck, removed]);
+      const { dealt, remaining } = dealCards(deckWithReturned, 1);
+      const newCommunity = [...base.communityCards];
+      newCommunity[hiddenIdx] = dealt[0];
+      return {
+        ...base,
+        communityCards: newCommunity,
+        deck: remaining,
+        moonHiddenCommunityIndex: hiddenIdx,
+      };
     }
 
     case "star-discard-draw": {
@@ -786,17 +798,13 @@ function applyArcana(
         );
         if (shouldDiscard && p.holeCards.length > 0) {
           const pIdx = players.findIndex((pl) => pl.id === p.id);
-          const sorted = [...p.holeCards].sort(
-            (a, b) =>
-              (CARD_NUMERIC_VALUES[a.value] ?? 0) -
-              (CARD_NUMERIC_VALUES[b.value] ?? 0)
-          );
+          const cardToDiscard = chariotCardToPass(p.holeCards, evalOpts);
           const { dealt, remaining } = dealCards(deck, 1);
           deck = remaining;
           players[pIdx] = {
             ...players[pIdx],
             holeCards: [
-              ...p.holeCards.filter((c) => c !== sorted[0]),
+              ...p.holeCards.filter((c) => c !== cardToDiscard),
               dealt[0],
             ],
           };
@@ -911,22 +919,17 @@ function resolveTemperance(
 
 function resolveStar(
   state: StoreGameState,
-  discard: boolean
+  card: StandardCard | null
 ): StoreGameState {
-  if (!discard) return { ...state, pendingInteraction: null };
+  if (!card) return { ...state, pendingInteraction: null };
 
   const hIdx = state.players.findIndex((p) => p.id === HERO_ID);
   const hero = state.players[hIdx];
   const { dealt, remaining } = dealCards(state.deck, 1);
-
-  // Discard hero's lowest card (by raw numeric value) and draw a new one
-  const sorted = [...hero.holeCards].sort(
-    (a, b) => (CARD_NUMERIC_VALUES[a.value] ?? 0) - (CARD_NUMERIC_VALUES[b.value] ?? 0)
-  );
   const players = [...state.players] as GamePlayer[];
   players[hIdx] = {
     ...hero,
-    holeCards: [...hero.holeCards.filter((c) => c !== sorted[0]), dealt[0]],
+    holeCards: [...hero.holeCards.filter((c) => c !== card), dealt[0]],
   };
 
   return {
@@ -1094,7 +1097,7 @@ export function gameReducer(
       return resolveTemperance(state, action.payload.card);
 
     case "RESOLVE_STAR":
-      return resolveStar(state, action.payload.discard);
+      return resolveStar(state, action.payload.card);
 
 
     case "RESOLVE_MAGICIAN":

@@ -29,7 +29,8 @@ export function PokerTable() {
 
   const cardPickInteraction =
     state.pendingInteraction?.type === "priestess-reveal" ||
-    state.pendingInteraction?.type === "chariot-pass"
+    state.pendingInteraction?.type === "chariot-pass" ||
+    state.pendingInteraction?.type === "star-discard"
       ? state.pendingInteraction.type
       : null;
 
@@ -45,7 +46,14 @@ export function PokerTable() {
       dispatch({ type: "RESOLVE_PRIESTESS", payload: { card: selectedCard } });
     } else if (cardPickInteraction === "chariot-pass") {
       dispatch({ type: "RESOLVE_CHARIOT", payload: { card: selectedCard } });
+    } else if (cardPickInteraction === "star-discard") {
+      dispatch({ type: "RESOLVE_STAR", payload: { card: selectedCard } });
     }
+    setSelectedCard(null);
+  }
+
+  function keepBothStar() {
+    dispatch({ type: "RESOLVE_STAR", payload: { card: null } });
     setSelectedCard(null);
   }
 
@@ -75,6 +83,7 @@ export function PokerTable() {
     bigBlind: state.bigBlind,
     isFinalHand: state.isFinalHand,
     onConfirmCardPick: confirmCardPick,
+    onKeepBothStar: keepBothStar,
     onNextHand: () => { setShowTarot(false); dispatch({ type: "NEXT_HAND" }); },
     onShowTarot: () => setShowTarot(true),
     dispatch,

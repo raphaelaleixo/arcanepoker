@@ -1,30 +1,39 @@
 /**
  * Dialog content for The Star arcana interaction.
- * The hero may discard their lowest card and draw a replacement.
+ * The hero picks which hole card to discard and redraw, or keeps both.
  */
 import { Button, Stack, Typography } from "@mui/material";
+import type { StandardCard } from "../../types/types";
 
 interface StarDiscardContentProps {
-  onDiscard: () => void;
+  holeCards: StandardCard[];
+  onDiscard: (card: StandardCard) => void;
   onKeep: () => void;
 }
 
-export function StarDiscardContent({ onDiscard, onKeep }: StarDiscardContentProps) {
+export function StarDiscardContent({ holeCards, onDiscard, onKeep }: StarDiscardContentProps) {
   return (
     <Stack spacing={3} alignItems="center">
       <Typography variant="body1" sx={{ color: "silver.light", textAlign: "center" }}>
-        Discard your lowest card and draw a new one?
+        Choose a card to discard and redraw, or keep both.
       </Typography>
-      <Stack direction="row" spacing={1} justifyContent="center">
-        <Button variant="contained" color="warning" onClick={onDiscard}>
-          Discard
-        </Button>
+      <Stack direction="row" spacing={2} justifyContent="center" flexWrap="wrap">
+        {holeCards.map((card, i) => (
+          <Button
+            key={i}
+            variant="contained"
+            color="warning"
+            onClick={() => onDiscard(card)}
+          >
+            Discard {card.value} of {card.suit}
+          </Button>
+        ))}
         <Button
           variant="outlined"
           onClick={onKeep}
           sx={{ color: "silver.light", borderColor: "silver.dark" }}
         >
-          Keep
+          Keep Both
         </Button>
       </Stack>
     </Stack>

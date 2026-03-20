@@ -352,7 +352,7 @@ describe("Strength (Arcana 8) — inverted values", () => {
     expect(compareHands(pair2, pairA)).toBeGreaterThan(0);
   });
 
-  it("Page (0) remains the absolute lowest under Strength", () => {
+  it("Page (0) becomes the absolute highest under Strength", () => {
     const withPage = evaluateBestHand(
       [c("0", "hearts"), c("A", "clubs"), c("K", "diamonds"), c("Q", "spades"), c("J", "hearts")],
       STRENGTH
@@ -361,8 +361,8 @@ describe("Strength (Arcana 8) — inverted values", () => {
       [c("2", "hearts"), c("A", "clubs"), c("K", "diamonds"), c("Q", "spades"), c("J", "clubs")],
       STRENGTH
     );
-    // Under Strength: 2=14, A=1, Page=0. 2 should beat Page.
-    expect(compareHands(withTwo, withPage)).toBeGreaterThan(0);
+    // Under Strength: Page=15 (highest), 2=14, A=1. Page beats 2.
+    expect(compareHands(withPage, withTwo)).toBeGreaterThan(0);
   });
 
   it("a normal pair loses to a pair of 2s under Strength (inverted makes 2s highest)", () => {

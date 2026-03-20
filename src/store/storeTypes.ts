@@ -124,7 +124,7 @@ export type GameAction =
     }
   | { type: "RESOLVE_CHARIOT"; payload: { card: StandardCard } }
   | { type: "RESOLVE_TEMPERANCE"; payload: { card: StandardCard } }
-  | { type: "RESOLVE_STAR"; payload: { discard: boolean } }
+  | { type: "RESOLVE_STAR"; payload: { card: StandardCard | null } }
   | { type: "RESOLVE_MOON"; payload: { swap: boolean } }
   | { type: "RESOLVE_MAGICIAN"; payload: { redraw: boolean } }
   | { type: "REVEAL_ARCANA" }

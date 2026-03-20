@@ -221,9 +221,9 @@ export const CARD_NUMERIC_VALUES: Record<string, number> = {
   A: 14,
 };
 
-/** Strength (Arcana 8) inversion: 2=14, 3=13 … A=1, Page stays 0 */
+/** Strength (Arcana 8) inversion: Page=15 (highest), 2=14, 3=13 … A=1 */
 export const CARD_NUMERIC_VALUES_INVERTED: Record<string, number> = {
-  "0": 0,
+  "0": 15,
   "2": 14,
   "3": 13,
   "4": 12,

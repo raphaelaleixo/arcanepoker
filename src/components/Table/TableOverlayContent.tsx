@@ -20,7 +20,7 @@ import type { StoreGameState, GameAction } from "../../store/storeTypes";
 import { HERO_ID_CONST } from "../../store/initialState";
 
 interface TableOverlayContentProps {
-  cardPickInteraction: "priestess-reveal" | "chariot-pass" | null;
+  cardPickInteraction: "priestess-reveal" | "chariot-pass" | "star-discard" | null;
   selectedCard: StandardCard | null;
   stage: string;
   pendingInteraction: StoreGameState["pendingInteraction"];
@@ -29,6 +29,7 @@ interface TableOverlayContentProps {
   bigBlind: number;
   isFinalHand: boolean;
   onConfirmCardPick: () => void;
+  onKeepBothStar: () => void;
   onNextHand: () => void;
   onShowTarot: () => void;
   /** Pre-bound dispatch from PokerTable's useGame() call. */
@@ -50,44 +51,68 @@ export function TableOverlayContent({
   bigBlind,
   isFinalHand,
   onConfirmCardPick,
+  onKeepBothStar,
   onNextHand,
   onShowTarot,
   dispatch,
 }: TableOverlayContentProps): React.ReactNode {
-  // ── Card-pick interactions (Priestess reveal / Chariot pass) ─────────────
+  // ── Card-pick interactions (Priestess reveal / Chariot pass / Star discard) ─
   if (cardPickInteraction) {
+    const instructionText =
+      cardPickInteraction === "priestess-reveal"
+        ? "Click a card to reveal it to all players."
+        : cardPickInteraction === "star-discard"
+        ? "Click a card to discard and redraw it."
+        : "Click a card to pass it to the player on your left.";
+
     return (
       <Stack direction="column" alignItems="center" spacing={0.5}>
         <Typography
           variant="caption"
           sx={{ color: "secondary.light", fontSize: "0.7rem", fontStyle: "italic" }}
         >
-          {cardPickInteraction === "priestess-reveal"
-            ? "Click a card to reveal it to all players."
-            : "Click a card to pass it to the player on your left."}
+          {instructionText}
         </Typography>
-        <Button
-          variant="contained"
-          size="large"
-          disabled={!selectedCard}
-          onClick={onConfirmCardPick}
-          sx={{
-            px: 5,
-            py: 1,
-            background: "linear-gradient(135deg, #4a1a6e, #1a0a2e)",
-            border: "1px solid",
-            borderColor: "secondary.main",
-            color: "secondary.light",
-            letterSpacing: "0.08em",
-            "&:hover": {
-              background: "linear-gradient(135deg, #6c3483, #2d0f4e)",
-              borderColor: "secondary.light",
-            },
-            "&.Mui-disabled": { opacity: 0.4 },
-          }}
-        >
-          Confirm
-        </Button>
+        <Stack direction="row" spacing={1}>
+          <Button
+            variant="contained"
+            size="large"
+            disabled={!selectedCard}
+            onClick={onConfirmCardPick}
+            sx={{
+              px: 5,
+              py: 1,
+              background: "linear-gradient(135deg, #4a1a6e, #1a0a2e)",
+              border: "1px solid",
+              borderColor: "secondary.main",
+              color: "secondary.light",
+              letterSpacing: "0.08em",
+              "&:hover": {
+                background: "linear-gradient(135deg, #6c3483, #2d0f4e)",
+                borderColor: "secondary.light",
+              },
+              "&.Mui-disabled": { opacity: 0.4 },
+            }}
+          >
+            Confirm
+          </Button>
+          {cardPickInteraction === "star-discard" && (
+            <Button
+              variant="outlined"
+              size="large"
+              onClick={onKeepBothStar}
+              sx={{
+                px: 3,
+                py: 1,
+                color: "silver.light",
+                borderColor: "silver.dark",
+                "&:hover": { borderColor: "silver.light", background: "rgba(255,255,255,0.05)" },
+              }}
+            >
+              Keep Both
+            </Button>
+          )}
+        </Stack>
       </Stack>
     );
   }
