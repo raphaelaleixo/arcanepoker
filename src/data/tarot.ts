@@ -423,7 +423,7 @@ export default {
       description:
         "The Emperor represents authority, structure, and control. It signifies a need for order and stability. This card suggests a need to be assertive and responsible. It's a reminder to take charge and create a solid foundation.",
       gameEffect:
-        "When breaking ties, all cards have no value, except for the Kings and the Knights",
+        "All hands are treated as high-card hands. Pairs, straights, flushes — none of it matters. Compare your highest card, then the next, and so on.",
     },
     "5": {
       fullName: "The Hierophant",

@@ -7,7 +7,7 @@ const ARCANA: { name: string; effect: string }[] = [
   { name: "The Magician",      effect: "Players guess a suit; a correct guess earns an extra hole card." },
   { name: "The High Priestess",effect: "All active players reveal one hole card face up." },
   { name: "The Empress",       effect: "A 6th community card is dealt after the River." },
-  { name: "The Emperor",       effect: "In tie-breakers, only J, Q, K, and Page count as kickers." },
+  { name: "The Emperor",       effect: "All hands are treated as high-card hands. Players compare highest card, then next highest, and so on." },
   { name: "The Hierophant",    effect: "Reveal 3 upcoming Arcana; players still in the round vote on which applies. The dealer breaks ties. Discard the other two." },
   { name: "The Lovers",        effect: "The pot is split between the two best hands." },
   { name: "The Chariot",       effect: "Active players pass one hole card to the left." },

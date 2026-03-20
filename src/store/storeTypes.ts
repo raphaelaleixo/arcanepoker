@@ -138,7 +138,7 @@ export const ARCANA_EFFECT_KEYS: ArcanaEffectKey[] = [
   "magician-extra-card",    // 1
   "priestess-reveal",       // 2
   "empress-sixth-card",     // 3
-  "emperor-kickers",        // 4
+  "emperor-highcard",       // 4
   "hierophant-vote",        // 5
   "lovers-split-pot",       // 6
   "chariot-pass-left",      // 7

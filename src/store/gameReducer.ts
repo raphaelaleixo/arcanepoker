@@ -32,7 +32,7 @@ export function buildEvalOptions(state: StoreGameState): EvalOptions {
   const key = state.activeArcana?.effectKey ?? null;
   return {
     strengthActive: key === "strength-invert",
-    emperorActive: key === "emperor-kickers",
+    emperorActive: key === "emperor-highcard",
     foolActive: key === "fool-wildcard",
   };
 }
@@ -631,7 +631,7 @@ function applyArcana(
       };
     }
     case "strength-invert":
-    case "emperor-kickers":
+    case "emperor-highcard":
     case "hermit-hole-only":
     case "lovers-split-pot":
     case "devil-double-raise":

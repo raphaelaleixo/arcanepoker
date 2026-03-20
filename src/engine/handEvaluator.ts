@@ -5,7 +5,7 @@
  *  - Page (value "0") is the lowest card in isolation (numeric value 0).
  *  - In straights, Page connects BEFORE the Ace: Page-A-2-3-4 is valid.
  *  - Strength (Arcana 8): all card values are inverted (2 highest, A lowest, Page stays 0).
- *  - Emperor (Arcana 4): only J, Q, K, Page count as tiebreaker kickers.
+ *  - Emperor (Arcana 4): all hands are treated as high-card; compare cards in descending order.
  *  - Fool (Arcana 0): exactly one Page card acts as a wildcard (the Fool-injected community card).
  */
 
@@ -14,7 +14,6 @@ import type { EvaluatedHand, HandRankName } from "../types/game";
 import {
   CARD_NUMERIC_VALUES,
   CARD_NUMERIC_VALUES_INVERTED,
-  EMPEROR_KICKER_VALUES,
 } from "../types/game";
 
 // ─── Public options ───────────────────────────────────────────────────────────
@@ -22,7 +21,7 @@ import {
 export interface EvalOptions {
   /** Strength (Arcana 8): card values inverted */
   strengthActive: boolean;
-  /** Emperor (Arcana 4): only face cards count as kickers */
+  /** Emperor (Arcana 4): all hands evaluated as high-card */
   emperorActive: boolean;
   /** Fool (Arcana 0): Page cards are wildcards */
   foolActive: boolean;
@@ -110,15 +109,12 @@ function isRoyalFlush(desc: number[]): boolean {
 /** Ordered kickers from grouped cards (e.g. pair, trips, quads). */
 function groupKickers(
   groups: StandardCard[][],
-  inverted: boolean,
-  emperorActive: boolean
+  inverted: boolean
 ): number[] {
   const kickers: number[] = [];
   for (const group of groups) {
     for (const card of group) {
-      if (!emperorActive || EMPEROR_KICKER_VALUES.has(card.value)) {
-        kickers.push(numVal(card, inverted));
-      }
+      kickers.push(numVal(card, inverted));
     }
   }
   return kickers;
@@ -127,13 +123,9 @@ function groupKickers(
 /** Ordered kickers from a flat sorted card list (high card, flush). */
 function cardKickers(
   sorted: StandardCard[],
-  inverted: boolean,
-  emperorActive: boolean
+  inverted: boolean
 ): number[] {
-  const cards = emperorActive
-    ? sorted.filter((c) => EMPEROR_KICKER_VALUES.has(c.value))
-    : sorted;
-  return cards.map((c) => numVal(c, inverted));
+  return sorted.map((c) => numVal(c, inverted));
 }
 
 /**
@@ -158,6 +150,12 @@ function evaluateFive(
   const sorted = [...five].sort(
     (a, b) => numVal(b, inverted) - numVal(a, inverted)
   );
+
+  if (emperorActive) {
+    const kickers = sorted.map((c) => numVal(c, inverted));
+    return { rankName: "high-card", rankValue: 0, kickers, bestFive: sorted };
+  }
+
   const desc = sorted.map((c) => numVal(c, inverted));
 
   const flush = isFlush(five);
@@ -188,11 +186,11 @@ function evaluateFive(
   } else if (counts[0] === 4) {
     rankName = "four-of-a-kind";
     rankValue = 7;
-    kickers = groupKickers(groups, inverted, emperorActive);
+    kickers = groupKickers(groups, inverted);
   } else if (counts[0] === 3 && counts[1] === 2) {
     rankName = "full-house";
     rankValue = 6;
-    kickers = groupKickers(groups, inverted, emperorActive);
+    kickers = groupKickers(groups, inverted);
   } else if (straight) {
     rankName = "straight";
     rankValue = 5;
@@ -200,23 +198,23 @@ function evaluateFive(
   } else if (flush) {
     rankName = "flush";
     rankValue = 4;
-    kickers = cardKickers(sorted, inverted, emperorActive);
+    kickers = cardKickers(sorted, inverted);
   } else if (counts[0] === 3) {
     rankName = "three-of-a-kind";
     rankValue = 3;
-    kickers = groupKickers(groups, inverted, emperorActive);
+    kickers = groupKickers(groups, inverted);
   } else if (counts[0] === 2 && counts[1] === 2) {
     rankName = "two-pair";
     rankValue = 2;
-    kickers = groupKickers(groups, inverted, emperorActive);
+    kickers = groupKickers(groups, inverted);
   } else if (counts[0] === 2) {
     rankName = "pair";
     rankValue = 1;
-    kickers = groupKickers(groups, inverted, emperorActive);
+    kickers = groupKickers(groups, inverted);
   } else {
     rankName = "high-card";
     rankValue = 0;
-    kickers = cardKickers(sorted, inverted, emperorActive);
+    kickers = cardKickers(sorted, inverted);
   }
 
   // For ace-low straights, re-sort bestFive treating Ace as 1 so it appears last.
@@ -248,6 +246,11 @@ function bestFromCombos(
     const sorted = [...cards].sort(
       (a, b) => numVal(b, inverted) - numVal(a, inverted)
     );
+
+    if (emperorActive) {
+      const kickers = sorted.map((c) => numVal(c, inverted));
+      return { rankName: "high-card", rankValue: 0, kickers, bestFive: sorted };
+    }
     const groupMap = new Map<number, StandardCard[]>();
     for (const card of sorted) {
       const v = numVal(card, inverted);
@@ -267,22 +270,22 @@ function bestFromCombos(
 
     if (counts[0] === 4) {
       rankName = "four-of-a-kind"; rankValue = 7;
-      kickers = groupKickers(groups, inverted, emperorActive);
+      kickers = groupKickers(groups, inverted);
     } else if (counts[0] === 3 && counts[1] === 2) {
       rankName = "full-house"; rankValue = 6;
-      kickers = groupKickers(groups, inverted, emperorActive);
+      kickers = groupKickers(groups, inverted);
     } else if (counts[0] === 3) {
       rankName = "three-of-a-kind"; rankValue = 3;
-      kickers = groupKickers(groups, inverted, emperorActive);
+      kickers = groupKickers(groups, inverted);
     } else if (counts[0] === 2 && counts[1] === 2) {
       rankName = "two-pair"; rankValue = 2;
-      kickers = groupKickers(groups, inverted, emperorActive);
+      kickers = groupKickers(groups, inverted);
     } else if (counts[0] === 2) {
       rankName = "pair"; rankValue = 1;
-      kickers = groupKickers(groups, inverted, emperorActive);
+      kickers = groupKickers(groups, inverted);
     } else {
       rankName = "high-card"; rankValue = 0;
-      kickers = cardKickers(sorted, inverted, emperorActive);
+      kickers = cardKickers(sorted, inverted);
     }
     return { rankName, rankValue, kickers, bestFive: sorted };
   }

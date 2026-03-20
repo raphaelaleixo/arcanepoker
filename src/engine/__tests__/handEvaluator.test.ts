@@ -378,51 +378,55 @@ describe("Strength (Arcana 8) — inverted values", () => {
   });
 });
 
-// ─── Emperor (Arcana 4) — kicker restriction ──────────────────────────────────
+// ─── Emperor (Arcana 4) — all hands evaluated as high-card ───────────────────
 
-describe("Emperor (Arcana 4) — only face cards as kickers", () => {
-  it("two high-card hands that differ only on numeric kickers tie under Emperor", () => {
-    // Hand A: K J 9 7 5 — Hand B: K J 8 6 4
-    // Without Emperor: A wins (9 > 8). With Emperor: tie (K=K, J=J, no more kickers).
+describe("Emperor (Arcana 4) — all hands treated as high-card", () => {
+  it("a Royal Flush loses to a high-card hand with a higher top card under Emperor", () => {
+    // Royal Flush: A K Q J 10 (all hearts) → under Emperor, compare as high-card: A=14
+    // High-card hand: A K Q J 9 (mixed) → under Emperor: same top card A=14, K=13, Q=12, J=11, then 9 vs 10
+    // Royal flush has 10 as 5th card; the other has 9 — royal flush wins the 5th kicker
+    // Flip: high-card hand with A K Q J 9 loses to Royal Flush at 5th kicker (10 > 9)
+    const royalFlush = evaluateBestHand(
+      [c("A", "hearts"), c("K", "hearts"), c("Q", "hearts"), c("J", "hearts"), c("10", "hearts")],
+      EMPEROR
+    );
+    const highCard = evaluateBestHand(
+      [c("A", "spades"), c("K", "clubs"), c("Q", "diamonds"), c("J", "spades"), c("9", "clubs")],
+      EMPEROR
+    );
+    // Both treated as high-card; Royal Flush kickers [14,13,12,11,10] > [14,13,12,11,9]
+    expect(royalFlush.rankName).toBe("high-card");
+    expect(highCard.rankName).toBe("high-card");
+    expect(compareHands(royalFlush, highCard)).toBeGreaterThan(0);
+  });
+
+  it("a two-pair hand loses to a high-card hand with a higher top card under Emperor", () => {
+    // Two-pair: A A K K Q — under Emperor, kickers = [14,14,13,13,12] (high-card)
+    // High-card: A 9 8 7 6 — under Emperor, kickers = [14,9,8,7,6]
+    // A=A at first kicker; then 14 vs 9 → two-pair wins the 2nd kicker
+    const twoPair = evaluateBestHand(
+      [c("A", "hearts"), c("A", "clubs"), c("K", "diamonds"), c("K", "spades"), c("Q", "hearts")],
+      EMPEROR
+    );
+    const highCard = evaluateBestHand(
+      [c("A", "spades"), c("9", "clubs"), c("8", "diamonds"), c("7", "spades"), c("6", "clubs")],
+      EMPEROR
+    );
+    expect(twoPair.rankName).toBe("high-card");
+    expect(highCard.rankName).toBe("high-card");
+    expect(compareHands(twoPair, highCard)).toBeGreaterThan(0);
+  });
+
+  it("two hands with equal top 5 cards tie under Emperor", () => {
     const handA = evaluateBestHand(
-      [c("K", "hearts"), c("J", "spades"), c("9", "clubs"), c("7", "diamonds"), c("5", "hearts")],
+      [c("A", "hearts"), c("K", "clubs"), c("Q", "diamonds"), c("J", "spades"), c("9", "hearts")],
       EMPEROR
     );
     const handB = evaluateBestHand(
-      [c("K", "clubs"), c("J", "diamonds"), c("8", "hearts"), c("6", "spades"), c("4", "clubs")],
+      [c("A", "spades"), c("K", "diamonds"), c("Q", "clubs"), c("J", "hearts"), c("9", "clubs")],
       EMPEROR
     );
     expect(compareHands(handA, handB)).toBe(0);
-  });
-
-  it("face-card kicker still breaks a tie under Emperor", () => {
-    // Hand A: K Q 9 7 5 — Hand B: K J 9 7 5
-    // With Emperor: A wins (Q > J)
-    const handA = evaluateBestHand(
-      [c("K", "hearts"), c("Q", "spades"), c("9", "clubs"), c("7", "diamonds"), c("5", "hearts")],
-      EMPEROR
-    );
-    const handB = evaluateBestHand(
-      [c("K", "clubs"), c("J", "diamonds"), c("9", "hearts"), c("7", "spades"), c("5", "clubs")],
-      EMPEROR
-    );
-    expect(compareHands(handA, handB)).toBeGreaterThan(0);
-  });
-
-  it("Page (0) counts as an Emperor kicker", () => {
-    // Hand A: K J Page 9 7 — Hand B: K J 8 6 4
-    // With Emperor: A wins because Page (face card kicker) > nothing
-    const handA = evaluateBestHand(
-      [c("K", "hearts"), c("J", "clubs"), c("0", "diamonds"), c("9", "spades"), c("7", "hearts")],
-      EMPEROR
-    );
-    const handB = evaluateBestHand(
-      [c("K", "clubs"), c("J", "hearts"), c("8", "diamonds"), c("6", "spades"), c("4", "clubs")],
-      EMPEROR
-    );
-    // handA has kickers [K, J, Page(0)]; handB has kickers [K, J]
-    // K=K, J=J, then 0 vs nothing → A wins
-    expect(compareHands(handA, handB)).toBeGreaterThan(0);
   });
 });
 

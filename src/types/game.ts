@@ -95,7 +95,7 @@ export type ArcanaEffectKey =
   | "magician-extra-card"   // 1  – players guess suit → draw extra hole card
   | "priestess-reveal"      // 2  – each player reveals one hole card
   | "empress-sixth-card"    // 3  – extra community card after river
-  | "emperor-kickers"       // 4  – only J, Q, K, Page serve as tiebreaker kickers
+  | "emperor-highcard"      // 4  – all hands evaluated as high-card (ignore rank)
   | "hierophant-vote"       // 5  – reveal 3 arcana; players vote; dealer breaks ties
   | "lovers-split-pot"      // 6  – pot split between two best hands
   | "chariot-pass-left"     // 7  – each active player passes one hole card left
@@ -240,5 +240,3 @@ export const CARD_NUMERIC_VALUES_INVERTED: Record<string, number> = {
   A: 1,
 };
 
-// ─── Arc‑effect helper: cards that are valid Emperor kickers ─────────────────
-export const EMPEROR_KICKER_VALUES = new Set(["J", "Q", "K", "0"]);
