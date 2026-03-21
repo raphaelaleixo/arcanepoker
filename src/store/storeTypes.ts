@@ -116,6 +116,12 @@ export interface StoreGameState {
   communityChangeKey: number;
   /** Total pot distributed at the last showdown (0 during play). Used for "wins XXX" display. */
   potWon: number;
+
+  // ── Tutorial ─────────────────────────────────────────────────────────────────
+  /** Pre-seeded community cards consumed by advanceStage instead of drawing from deck. */
+  communityCardQueue?: StandardCard[];
+  /** Force a specific arcana card when a Page triggers the arcana deck. Cleared after use. */
+  arcanaOverride?: ArcanaCard | null;
 }
 
 // ─── Actions ──────────────────────────────────────────────────────────────────
@@ -136,7 +142,16 @@ export type GameAction =
   | { type: "NEXT_HAND" }
   | { type: "FORCE_ARCANA"; payload: { value: ArcanaValue } }
   | { type: "RESOLVE_PRIESTESS"; payload: { card: StandardCard } }
-  | { type: "RESOLVE_HIEROPHANT"; payload: { choice: ArcanaValue } };
+  | { type: "RESOLVE_HIEROPHANT"; payload: { choice: ArcanaValue } }
+  | {
+      type: "TUTORIAL_OVERRIDE_DEAL";
+      payload: {
+        dealerIndex: number;
+        playerHoleCards: Record<string, [StandardCard, StandardCard]>;
+        communityCardQueue: StandardCard[];
+        arcanaOverride: ArcanaCard | null;
+      };
+    };
 
 // ─── Arcana value → effect key mapping ───────────────────────────────────────
 

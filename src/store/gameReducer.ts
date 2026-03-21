@@ -1169,6 +1169,60 @@ export function gameReducer(
       return applyArcana(resetState, arcanaCard);
     }
 
+    case "TUTORIAL_OVERRIDE_DEAL": {
+      const { dealerIndex, playerHoleCards, communityCardQueue, arcanaOverride } = action.payload;
+      const n = state.players.length;
+      const sbIdx = (dealerIndex + 1) % n;
+      const bbIdx = (dealerIndex + 2) % n;
+      const utgIdx = (dealerIndex + 3) % n;
+
+      const players = state.players.map((p, idx) => {
+        const scripted = playerHoleCards[p.id];
+        const isSB = idx === sbIdx;
+        const isBB = idx === bbIdx;
+
+        // Undo any blind already posted by a prior startHand call before re-posting
+        // at the correct tutorial positions. p.currentBet holds whatever was posted.
+        const cleanStack = p.stack + p.currentBet;
+
+        return {
+          ...p,
+          holeCards: scripted ?? p.holeCards,
+          currentBet: isSB ? state.smallBlind : isBB ? state.bigBlind : 0,
+          stack: cleanStack - (isSB ? state.smallBlind : isBB ? state.bigBlind : 0),
+          folded: false,
+          isAllIn: false,
+          currentAction: isSB
+            ? ("smallBlind" as const)
+            : isBB
+            ? ("bigBlind" as const)
+            : undefined,
+        };
+      });
+
+      return {
+        ...state,
+        stage: "pre-flop",
+        players,
+        communityCards: [],
+        dealerIndex,
+        activePlayerIndex: utgIdx,
+        currentBet: state.bigBlind,
+        potSize: state.smallBlind + state.bigBlind,
+        roundActors: [],
+        arcanaTriggeredThisRound: false,
+        activeArcana: null,
+        pendingInteraction: null,
+        foolCardIndex: null,
+        moonAffectedIndex: null,
+        winnerIds: [],
+        handResults: [],
+        potWon: 0,
+        communityCardQueue,
+        arcanaOverride,
+      };
+    }
+
     default:
       return state;
   }

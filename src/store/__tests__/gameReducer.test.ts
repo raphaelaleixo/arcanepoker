@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { gameReducer } from "../gameReducer";
 import { createInitialState } from "../initialState";
 import type { StoreGameState } from "../storeTypes";
-import type { ArcanaValue, StandardCard } from "../../types/types";
+import type { ArcanaValue, StandardCard, ArcanaCard } from "../../types/types";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -189,5 +189,100 @@ describe("startHand resets priestessRevealedCards", () => {
     const showdown = { ...state, stage: "showdown" as const, pendingInteraction: null };
     const next = gameReducer(showdown, { type: "NEXT_HAND" });
     expect(next.priestessRevealedCards).toEqual({});
+  });
+});
+
+// ─── Helpers for tutorial tests ───────────────────────────────────────────────
+
+const TUTORIAL_HOLE_CARDS_R1 = {
+  hero:           [{ value: "0" as const, suit: "hearts"   as const }, { value: "3" as const,  suit: "clubs"    as const }],
+  "bot-swords":   [{ value: "K" as const, suit: "spades"   as const }, { value: "K" as const,  suit: "clubs"    as const }],
+  "bot-cups":     [{ value: "7" as const, suit: "diamonds" as const }, { value: "9" as const,  suit: "clubs"    as const }],
+  "bot-wands":    [{ value: "8" as const, suit: "clubs"    as const }, { value: "J" as const,  suit: "spades"   as const }],
+  "bot-pentacles":[{ value: "2" as const, suit: "spades"   as const }, { value: "5" as const,  suit: "diamonds" as const }],
+} as const;
+
+const TUTORIAL_QUEUE_R1: StandardCard[] = [
+  { value: "A", suit: "spades"   },
+  { value: "2", suit: "diamonds" },
+  { value: "4", suit: "clubs"    },
+  { value: "K", suit: "diamonds" },
+  { value: "9", suit: "spades"   },
+];
+
+function dispatchOverride(state: StoreGameState) {
+  return gameReducer(state, {
+    type: "TUTORIAL_OVERRIDE_DEAL",
+    payload: {
+      dealerIndex: 4,
+      playerHoleCards: TUTORIAL_HOLE_CARDS_R1 as Record<string, [StandardCard, StandardCard]>,
+      communityCardQueue: TUTORIAL_QUEUE_R1,
+      arcanaOverride: null,
+    },
+  });
+}
+
+describe("TUTORIAL_OVERRIDE_DEAL", () => {
+  it("sets stage to pre-flop", () => {
+    const state = gameReducer(createInitialState(), { type: "START_GAME" });
+    const next = dispatchOverride(state);
+    expect(next.stage).toBe("pre-flop");
+  });
+
+  it("replaces hero hole cards with scripted ones", () => {
+    const state = gameReducer(createInitialState(), { type: "START_GAME" });
+    const next = dispatchOverride(state);
+    const hero = next.players.find(p => p.id === "hero")!;
+    expect(hero.holeCards).toEqual([
+      { value: "0", suit: "hearts" },
+      { value: "3", suit: "clubs" },
+    ]);
+  });
+
+  it("sets communityCardQueue on state", () => {
+    const state = gameReducer(createInitialState(), { type: "START_GAME" });
+    const next = dispatchOverride(state);
+    expect(next.communityCardQueue).toEqual(TUTORIAL_QUEUE_R1);
+  });
+
+  it("sets arcanaOverride on state", () => {
+    const state = gameReducer(createInitialState(), { type: "START_GAME" });
+    const foolCard: ArcanaCard = { suit: "arcana" as const, value: "0" as const };
+    const next = gameReducer(state, {
+      type: "TUTORIAL_OVERRIDE_DEAL",
+      payload: {
+        dealerIndex: 4,
+        playerHoleCards: TUTORIAL_HOLE_CARDS_R1 as Record<string, [StandardCard, StandardCard]>,
+        communityCardQueue: [],
+        arcanaOverride: foolCard,
+      },
+    });
+    expect(next.arcanaOverride).toEqual(foolCard);
+  });
+
+  it("sets dealerIndex from payload and recomputes blind structure", () => {
+    const state = gameReducer(createInitialState(), { type: "START_GAME" });
+    // dealerIndex=4 (Wanderer): SB=(4+1)%5=0=hero, BB=(4+2)%5=1=Merchant, UTG=(4+3)%5=2=Swordsman
+    const next = dispatchOverride(state);
+    expect(next.dealerIndex).toBe(4);
+    const hero = next.players.find(p => p.id === "hero")!;
+    expect(hero.currentBet).toBe(10); // small blind
+    const merchant = next.players.find(p => p.id === "bot-pentacles")!;
+    expect(merchant.currentBet).toBe(20); // big blind
+    expect(next.activePlayerIndex).toBe(2); // UTG = Swordsman
+  });
+
+  it("does not double-deduct blinds from stacks", () => {
+    // START_GAME already posted blinds; TUTORIAL_OVERRIDE_DEAL must undo them
+    // before re-posting at the new positions
+    const state = gameReducer(createInitialState(), { type: "START_GAME" });
+    const next = dispatchOverride(state);
+    // All players start at 1000; after override: SB=hero posts 10, BB=Merchant posts 20
+    const hero = next.players.find(p => p.id === "hero")!;
+    const merchant = next.players.find(p => p.id === "bot-pentacles")!;
+    const swords = next.players.find(p => p.id === "bot-swords")!;
+    expect(hero.stack).toBe(990);     // 1000 - 10 (SB)
+    expect(merchant.stack).toBe(980); // 1000 - 20 (BB)
+    expect(swords.stack).toBe(1000);  // no blind
   });
 });
