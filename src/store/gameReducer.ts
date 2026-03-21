@@ -161,6 +161,25 @@ function checkPageTrigger(
 }
 
 /**
+ * Draw `count` cards for community dealing.
+ * Prefers communityCardQueue when available, falls back to the shuffled deck.
+ */
+function drawCommunityCards(
+  state: StoreGameState,
+  count: number
+): { dealt: StandardCard[]; nextState: StoreGameState } {
+  const queue = state.communityCardQueue;
+  if (queue && queue.length >= count) {
+    return {
+      dealt: queue.slice(0, count),
+      nextState: { ...state, communityCardQueue: queue.slice(count) },
+    };
+  }
+  const { dealt, remaining } = dealCards(state.deck, count);
+  return { dealt, nextState: { ...state, deck: remaining } };
+}
+
+/**
  * Advance from the current stage to the next one.
  * Deals community cards, resets betting, checks for Page triggers.
  */
@@ -170,9 +189,9 @@ function advanceStage(state: StoreGameState): StoreGameState {
 
   switch (state.stage) {
     case "pre-flop": {
-      const { dealt, remaining } = dealCards(state.deck, 3);
+      const { dealt, nextState } = drawCommunityCards(state, 3);
       let next = resetBettingRound(
-        { ...state, stage: "flop", communityCards: dealt, deck: remaining },
+        { ...nextState, stage: "flop", communityCards: dealt },
         postFlopStart
       );
       next = checkPageTrigger(next, dealt);
@@ -182,13 +201,12 @@ function advanceStage(state: StoreGameState): StoreGameState {
     }
 
     case "flop": {
-      const { dealt, remaining } = dealCards(state.deck, 1);
+      const { dealt, nextState } = drawCommunityCards(state, 1);
       let next = resetBettingRound(
         {
-          ...state,
+          ...nextState,
           stage: "turn",
           communityCards: [...state.communityCards, dealt[0]],
-          deck: remaining,
         },
         postFlopStart
       );
@@ -198,13 +216,12 @@ function advanceStage(state: StoreGameState): StoreGameState {
     }
 
     case "turn": {
-      const { dealt, remaining } = dealCards(state.deck, 1);
+      const { dealt, nextState } = drawCommunityCards(state, 1);
       let next = resetBettingRound(
         {
-          ...state,
+          ...nextState,
           stage: "river",
           communityCards: [...state.communityCards, dealt[0]],
-          deck: remaining,
         },
         postFlopStart
       );

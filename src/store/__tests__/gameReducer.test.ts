@@ -286,3 +286,69 @@ describe("TUTORIAL_OVERRIDE_DEAL", () => {
     expect(swords.stack).toBe(1000);  // no blind
   });
 });
+
+describe("advanceStage with communityCardQueue", () => {
+  /**
+   * Returns a pre-flop state where all bots are all-in (ineligible to bet)
+   * and bets are zeroed out, so hero can check and trigger advanceStage.
+   * This avoids the "only one non-folded player → last-player-wins" short-circuit.
+   */
+  function makeQueuedReadyToAdvance(): StoreGameState {
+    const base = gameReducer(createInitialState(), { type: "START_GAME" });
+    const overridden = gameReducer(base, {
+      type: "TUTORIAL_OVERRIDE_DEAL",
+      payload: {
+        dealerIndex: 4,
+        playerHoleCards: TUTORIAL_HOLE_CARDS_R1 as Record<string, [StandardCard, StandardCard]>,
+        communityCardQueue: TUTORIAL_QUEUE_R1,
+        arcanaOverride: null,
+      },
+    });
+    // Put all bots all-in with 0 remaining stack and zero out bets so
+    // hero can check to complete the round.
+    return {
+      ...overridden,
+      currentBet: 0,
+      roundActors: [],
+      players: overridden.players.map((p) =>
+        p.id === "hero"
+          ? { ...p, currentBet: 0 }
+          : { ...p, isAllIn: true, stack: 0, currentBet: 0 }
+      ),
+    };
+  }
+
+  it("deals flop cards from communityCardQueue instead of deck", () => {
+    const state = makeQueuedReadyToAdvance();
+    // Hero checks; only hero is eligible, so round completes and advanceStage fires
+    const next = gameReducer(state, {
+      type: "PLAYER_ACTION",
+      payload: { playerId: "hero", action: "check" },
+    });
+    // Community cards must come from the queue in order
+    expect(next.communityCards[0]).toEqual({ value: "A", suit: "spades"   });
+    expect(next.communityCards[1]).toEqual({ value: "2", suit: "diamonds" });
+    expect(next.communityCards[2]).toEqual({ value: "4", suit: "clubs"    });
+  });
+
+  it("deals turn card from communityCardQueue", () => {
+    const state = makeQueuedReadyToAdvance();
+    const next = gameReducer(state, {
+      type: "PLAYER_ACTION",
+      payload: { playerId: "hero", action: "check" },
+    });
+    // Auto-chains flop→turn→river; turn is index 3 in queue
+    expect(next.communityCards[3]).toEqual({ value: "K", suit: "diamonds" });
+  });
+
+  it("queue is empty after all 5 scripted community cards are dealt (auto-chain)", () => {
+    // With only hero eligible, advanceStage chains pre-flop→flop→turn→river→showdown
+    // consuming all 5 queue entries. Queue must be [] or undefined after.
+    const state = makeQueuedReadyToAdvance();
+    const next = gameReducer(state, {
+      type: "PLAYER_ACTION",
+      payload: { playerId: "hero", action: "check" },
+    });
+    expect(next.communityCardQueue?.length ?? 0).toBe(0);
+  });
+});
