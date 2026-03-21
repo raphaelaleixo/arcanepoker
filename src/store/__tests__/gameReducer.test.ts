@@ -200,7 +200,7 @@ const TUTORIAL_HOLE_CARDS_R1 = {
   "bot-cups":     [{ value: "7" as const, suit: "diamonds" as const }, { value: "9" as const,  suit: "clubs"    as const }],
   "bot-wands":    [{ value: "8" as const, suit: "clubs"    as const }, { value: "J" as const,  suit: "spades"   as const }],
   "bot-pentacles":[{ value: "2" as const, suit: "spades"   as const }, { value: "5" as const,  suit: "diamonds" as const }],
-} as const;
+};
 
 const TUTORIAL_QUEUE_R1: StandardCard[] = [
   { value: "A", suit: "spades"   },
@@ -215,7 +215,7 @@ function dispatchOverride(state: StoreGameState) {
     type: "TUTORIAL_OVERRIDE_DEAL",
     payload: {
       dealerIndex: 4,
-      playerHoleCards: TUTORIAL_HOLE_CARDS_R1 as Record<string, [StandardCard, StandardCard]>,
+      playerHoleCards: TUTORIAL_HOLE_CARDS_R1 as unknown as Record<string, [StandardCard, StandardCard]>,
       communityCardQueue: TUTORIAL_QUEUE_R1,
       arcanaOverride: null,
     },
@@ -252,7 +252,7 @@ describe("TUTORIAL_OVERRIDE_DEAL", () => {
       type: "TUTORIAL_OVERRIDE_DEAL",
       payload: {
         dealerIndex: 4,
-        playerHoleCards: TUTORIAL_HOLE_CARDS_R1 as Record<string, [StandardCard, StandardCard]>,
+        playerHoleCards: TUTORIAL_HOLE_CARDS_R1 as unknown as Record<string, [StandardCard, StandardCard]>,
         communityCardQueue: [],
         arcanaOverride: foolCard,
       },
@@ -299,7 +299,7 @@ describe("advanceStage with communityCardQueue", () => {
       type: "TUTORIAL_OVERRIDE_DEAL",
       payload: {
         dealerIndex: 4,
-        playerHoleCards: TUTORIAL_HOLE_CARDS_R1 as Record<string, [StandardCard, StandardCard]>,
+        playerHoleCards: TUTORIAL_HOLE_CARDS_R1 as unknown as Record<string, [StandardCard, StandardCard]>,
         communityCardQueue: TUTORIAL_QUEUE_R1,
         arcanaOverride: null,
       },
@@ -371,7 +371,7 @@ describe("checkPageTrigger with arcanaOverride", () => {
       type: "TUTORIAL_OVERRIDE_DEAL",
       payload: {
         dealerIndex: 4,
-        playerHoleCards: TUTORIAL_HOLE_CARDS_R1 as Record<string, [StandardCard, StandardCard]>,
+        playerHoleCards: TUTORIAL_HOLE_CARDS_R1 as unknown as Record<string, [StandardCard, StandardCard]>,
         communityCardQueue: QUEUE_WITH_PAGE,
         arcanaOverride: FOOL_CARD,
       },
