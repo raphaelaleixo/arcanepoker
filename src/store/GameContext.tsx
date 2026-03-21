@@ -18,18 +18,21 @@ const BOT_THINK_MS = 700;
 
 // ─── Provider ─────────────────────────────────────────────────────────────────
 
-export function GameProvider({ children }: { children: ReactNode }) {
+export function GameProvider({ children, isTutorial = false }: { children: ReactNode; isTutorial?: boolean }) {
   const [state, dispatch] = useReducer(gameReducer, createInitialState());
 
   const startGame = useCallback(() => dispatch({ type: "START_GAME" }), []);
 
-  // Auto-start on mount
+  // Auto-start on mount (suppressed in tutorial — TutorialContext controls hand start)
   useEffect(() => {
+    if (isTutorial) return;
     dispatch({ type: "START_GAME" });
-  }, []);
+  }, [isTutorial]);
 
-  // Auto-run bot turns
+  // Auto-run bot turns (suppressed in tutorial — TutorialContext drives bot actions)
   useEffect(() => {
+    if (isTutorial) return;
+
     const activePlayer = state.players[state.activePlayerIndex];
 
     if (
@@ -79,7 +82,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     }, BOT_THINK_MS);
 
     return () => clearTimeout(timer);
-  }, [state]);
+  }, [state, isTutorial]);
 
   return (
     <GameContext.Provider value={{ state, dispatch, startGame }}>
