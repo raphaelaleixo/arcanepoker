@@ -12,6 +12,7 @@ import { useGame } from "../../store/useGame";
 import { HERO_ID_CONST } from "../../store/initialState";
 import { RaiseSlider } from "./RaiseSlider";
 import { ActionButtons } from "./ActionButtons";
+import { useTutorialOptional } from "../../tutorial/TutorialContext";
 
 interface ActionBarProps {
   isVisible?: boolean;
@@ -21,6 +22,8 @@ interface ActionBarProps {
 
 export function ActionBar({ isVisible = true, overlayContent }: ActionBarProps) {
   const { state, dispatch } = useGame();
+  const tutorial = useTutorialOptional();
+  const tutorialAllowedAction = tutorial?.tutorialAllowedAction ?? null;
 
   const hero = state.players.find((p) => p.id === HERO_ID_CONST);
 
@@ -119,6 +122,7 @@ export function ActionBar({ isVisible = true, overlayContent }: ActionBarProps) 
             onRaiseOrAllIn={handleRaiseOrAllIn}
             foldDisabled={judgementFoldBlocked}
             checkDisabled={devilMustBet}
+            tutorialAllowedAction={tutorialAllowedAction}
           />
         </Box>
 
