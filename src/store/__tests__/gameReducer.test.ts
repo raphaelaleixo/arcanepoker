@@ -352,3 +352,71 @@ describe("advanceStage with communityCardQueue", () => {
     expect(next.communityCardQueue?.length ?? 0).toBe(0);
   });
 });
+
+describe("checkPageTrigger with arcanaOverride", () => {
+  const FOOL_CARD: ArcanaCard = { suit: "arcana" as const, value: "0" as const };
+
+  // Page at index 2 of the flop queue triggers arcana
+  const QUEUE_WITH_PAGE: StandardCard[] = [
+    { value: "6", suit: "hearts"   },
+    { value: "J", suit: "diamonds" },
+    { value: "0", suit: "spades"   }, // Page → triggers arcana
+    { value: "3", suit: "diamonds" },
+    { value: "A", suit: "clubs"    },
+  ];
+
+  function makeStateWithFoolOverride(): StoreGameState {
+    const base = gameReducer(createInitialState(), { type: "START_GAME" });
+    const overridden = gameReducer(base, {
+      type: "TUTORIAL_OVERRIDE_DEAL",
+      payload: {
+        dealerIndex: 4,
+        playerHoleCards: TUTORIAL_HOLE_CARDS_R1 as Record<string, [StandardCard, StandardCard]>,
+        communityCardQueue: QUEUE_WITH_PAGE,
+        arcanaOverride: FOOL_CARD,
+      },
+    });
+    // Prepare for hero check to advance stage (same pattern as queue tests)
+    return {
+      ...overridden,
+      currentBet: 0,
+      roundActors: [],
+      players: overridden.players.map((p) =>
+        p.id === "hero"
+          ? { ...p, currentBet: 0 }
+          : { ...p, isAllIn: true, stack: 0, currentBet: 0 }
+      ),
+    };
+  }
+
+  it("uses arcanaOverride card instead of drawing from arcanaDeck", () => {
+    const state = makeStateWithFoolOverride();
+    const next = gameReducer(state, {
+      type: "PLAYER_ACTION",
+      payload: { playerId: "hero", action: "check" },
+    });
+    expect(next.pendingInteraction?.type).toBe("arcana-reveal");
+    if (next.pendingInteraction?.type === "arcana-reveal") {
+      expect(next.pendingInteraction.arcanaCard).toEqual(FOOL_CARD);
+    }
+  });
+
+  it("clears arcanaOverride after it is consumed", () => {
+    const state = makeStateWithFoolOverride();
+    const next = gameReducer(state, {
+      type: "PLAYER_ACTION",
+      payload: { playerId: "hero", action: "check" },
+    });
+    expect(next.arcanaOverride).toBeNull();
+  });
+
+  it("does not consume a card from arcanaDeck when override is set", () => {
+    const state = makeStateWithFoolOverride();
+    const deckLengthBefore = state.arcanaDeck.length;
+    const next = gameReducer(state, {
+      type: "PLAYER_ACTION",
+      payload: { playerId: "hero", action: "check" },
+    });
+    expect(next.arcanaDeck.length).toBe(deckLengthBefore);
+  });
+});

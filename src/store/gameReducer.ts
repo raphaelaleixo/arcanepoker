@@ -148,13 +148,24 @@ function checkPageTrigger(
   if (state.arcanaTriggeredThisRound) return state;
   if (!newCards.some((c) => c.value === "0")) return state;
 
-  const [arcanaCard, ...remainingArcanaDeck] = state.arcanaDeck;
-  if (!arcanaCard) return state;
+  let arcanaCard: ArcanaCard;
+  let remainingArcanaDeck = state.arcanaDeck;
+
+  if (state.arcanaOverride) {
+    // Tutorial mode: use the forced card, do NOT consume from arcanaDeck
+    arcanaCard = state.arcanaOverride;
+  } else {
+    const [drawn, ...rest] = state.arcanaDeck;
+    if (!drawn) return state;
+    arcanaCard = drawn;
+    remainingArcanaDeck = rest;
+  }
 
   // Pause for the hero to reveal the arcana before applying its effect
   return {
     ...state,
     arcanaDeck: remainingArcanaDeck,
+    arcanaOverride: null, // Consumed — clear so it cannot fire again
     arcanaTriggeredThisRound: true,
     pendingInteraction: { type: "arcana-reveal", arcanaCard },
   };
@@ -195,6 +206,8 @@ function advanceStage(state: StoreGameState): StoreGameState {
         postFlopStart
       );
       next = checkPageTrigger(next, dealt);
+      // If an arcana was triggered, stop so the interaction can be shown first
+      if (next.pendingInteraction) return next;
       // If all eligible players can't act (everyone all-in/folded), run the board
       if (eligiblePlayers(next.players).length <= 1) return advanceStage(next);
       return next;
@@ -211,6 +224,7 @@ function advanceStage(state: StoreGameState): StoreGameState {
         postFlopStart
       );
       next = checkPageTrigger(next, dealt);
+      if (next.pendingInteraction) return next;
       if (eligiblePlayers(next.players).length <= 1) return advanceStage(next);
       return next;
     }
@@ -226,6 +240,7 @@ function advanceStage(state: StoreGameState): StoreGameState {
         postFlopStart
       );
       next = checkPageTrigger(next, dealt);
+      if (next.pendingInteraction) return next;
       if (eligiblePlayers(next.players).length <= 1) return advanceStage(next);
       return next;
     }
