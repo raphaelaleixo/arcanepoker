@@ -24,7 +24,9 @@ A scripted, hand-held tutorial accessible from the home screen that walks new pl
 
 ## Architecture: Tutorial Context Layer
 
-The tutorial is implemented as a context layer that wraps the existing `GameContext` without modifying the core game engine. The existing `gameReducer`, hand evaluator, and UI components remain intact. The tutorial steers the engine via scripted data rather than rebuilding it.
+The tutorial is implemented as a context layer that wraps the existing `GameContext` without forking the core game engine. The existing `gameReducer`, hand evaluator, and UI components remain intact. The tutorial steers the engine via scripted data rather than rebuilding it.
+
+**Bot suppression strategy:** `GameProvider` accepts a new optional `isTutorial?: boolean` prop. When true, the bot auto-run `useEffect` inside `GameProvider` is skipped entirely. `TutorialContext` takes over bot timing, firing scripted actions from the queue instead. This is the minimal, safe change required — it avoids the bot AI and the tutorial script racing to dispatch `PLAYER_ACTION` for the same turn.
 
 ---
 
@@ -96,7 +98,7 @@ type TutorialTrigger =
 - **Dealer:** Wanderer (index 4)
 - **Hero hole cards:** 10♣ + Q♠
 - **Mystic hole cards:** A♥ + A♦ (pair of Aces)
-- **Flop:** Page of Swords + 6♥ + J♦ → Page triggers arcana → replaced by The Fool
+- **Flop:** 6♥, J♦, Page of Spades — **Page is the last card of the flop** so the Fool wildcard replaces the correct index (index 2, per the engine's `fool-wildcard` logic)
 - **Turn:** 3♦
 - **River:** A♣
 - **Arcana override:** The Fool (arcana "0")
@@ -106,9 +108,9 @@ type TutorialTrigger =
   - After turn: Merchant bets, Wanderer folds, Mystic calls
   - After river: Mystic bets, Merchant folds, Mystic calls (hero raises first)
 - **Narrations:**
-  - `"flop-dealt"` → "A Page Appears" / "The Page of Swords has appeared on the board. This triggers the Arcana deck — the dealer draws a card."
+  - `"flop-dealt"` → "A Page Appears" / "The Page of Spades has appeared on the board. This triggers the Arcana deck — the dealer draws a card."
   - `"arcana-revealed"` → "The Fool" / "The Fool replaces the Page in the flop. It acts as a wildcard — it can become any card value needed to complete the best hand."
-  - `"showdown"` → "The Fool as a King" / "The Fool becomes a King, giving you 10 → J → Q → K → A — a Broadway straight. This beats Mystic's pair of Aces."
+  - `"showdown"` → "The Fool as a King" / "The Fool becomes a King, giving you 10 → J → Q → K → A — a royal flush. This beats Mystic's pair of Aces."
   - `"round-end"` → "Tutorial Complete" / "You've now seen both core mechanics: the Page card's power in straights, and how the Arcana deck changes the game. You're ready to play."
 
 ---
@@ -130,30 +132,41 @@ interface TutorialContextValue {
 ```
 
 **Bot interception:**
-`GameContext` auto-runs bots via a `useEffect` watching game state. `TutorialContext` suppresses this effect when `isTutorial` is true, and instead fires scripted bot actions from `botActionQueue` on a 700ms delay (matching normal bot timing).
+`TutorialContext` maintains a `botActionQueue` ref (a pointer into the current round's `botActions` array). It watches the game state via a `useEffect` and fires the next queued bot action whenever:
+- `state.activePlayerIndex` changes to a bot's index, AND
+- `state.stage` matches the next queued action's `stage`, AND
+- no narration is currently showing (`narration === null`)
+
+When those conditions are met, `TutorialContext` dispatches the scripted `PLAYER_ACTION` after a 700ms delay (matching the normal bot `BOT_THINK_MS`), then advances the queue pointer. Because `GameProvider` receives `isTutorial={true}`, its own bot `useEffect` is suppressed — there is no race condition.
 
 **Player action validation:**
 `TutorialContext` provides a wrapped `dispatch`. When it is the player's turn and `tutorialAllowedAction` is set, only matching actions are forwarded to the real dispatch. Other actions are swallowed silently.
 
 **Narration triggers:**
-`TutorialContext` watches `GameContext` state transitions (stage changes, arcana reveal, showdown) and fires the matching narration from the script. Game resumes only after `dismissNarration()` is called.
+`TutorialContext` watches `GameContext` state transitions (stage changes, `activeArcana` changes, `winnerIds` becoming non-empty) and fires the matching narration from the script. Game auto-advance and bot queue are both paused while a narration is showing. They resume only after `dismissNarration()` is called.
+
+### Changes to `GameContext.tsx`
+
+One addition: `GameProvider` accepts `isTutorial?: boolean` prop. When true, the bot auto-run `useEffect` returns early without dispatching.
 
 ### Changes to `gameReducer.ts`
 
 Minimal, targeted changes only:
 
 1. **New action `TUTORIAL_OVERRIDE_DEAL`:**
-   After `START_GAME` deals, this action replaces all players' hole cards with the scripted ones and injects `communityCardQueue` (array of pre-defined community cards) into state.
+   Carries `{ dealerIndex, playerHoleCards, communityCardQueue, arcanaOverride }`. The reducer applies `dealerIndex` first (so blind positions derived from it are correct), then replaces all players' hole cards with the scripted ones, and sets `communityCardQueue` and `arcanaOverride` on state.
+
+   **Timing:** `TutorialContext` dispatches `START_GAME` with a pre-seeded initial state that already has the correct `dealerIndex`, so `startHand()` computes the right blind structure immediately. `TUTORIAL_OVERRIDE_DEAL` fires as the next action to replace hole cards and inject the card queue.
 
 2. **`advanceStage()` — community card draw:**
-   If `state.communityCardQueue` is non-empty, shift cards from the queue instead of drawing from the deck.
+   If `state.communityCardQueue` is non-empty, shift the required number of cards from the front of the queue instead of drawing from the deck.
 
 3. **`checkPageTrigger()` — arcana draw:**
-   If `state.arcanaOverride` is set, use that card instead of drawing the top of the arcana deck.
+   If `state.arcanaOverride` is set, use that card instead of drawing the top of the arcana deck, then clear `arcanaOverride`.
 
 ### Changes to `storeTypes.ts`
 
-Add three optional fields to `StoreGameState`:
+Add two optional fields to `StoreGameState`:
 ```typescript
 communityCardQueue?: StandardCard[];   // pre-seeded community cards for tutorial
 arcanaOverride?: ArcanaCard | null;    // force a specific arcana draw
@@ -174,12 +187,12 @@ Renders when `narration` is non-null. Positioned fixed at the bottom of the view
 - "Continue →" button calls `dismissNarration()`
 - The rest of the game is visible but pointer-events are blocked on the table while narration is active
 
-### `src/components/Table/ActionBar.tsx`
+### `src/components/Table/ActionBar.tsx` and `ActionButtons.tsx`
 
-Minimal change — accepts `tutorialAllowedAction?: string | null` from `TutorialContext`:
-- When set, buttons not matching the allowed action receive `disabled` prop and reduced opacity
+`tutorialAllowedAction?: string | null` is threaded from `TutorialContext` through `ActionBar` down to `ActionButtons`:
+- In `ActionButtons`: buttons not matching the allowed action receive `disabled` prop and reduced opacity
 - The matching button receives a gold border (`border: 2px solid #c9a96e`)
-- No other ActionBar logic changes
+- No other logic in either component changes
 
 ### `src/pages/HomePage.tsx`
 
@@ -188,16 +201,18 @@ Positioned between "start new game" and "learn to play".
 
 ### `src/pages/TutorialGamePage.tsx`
 
-Thin wrapper:
+Thin wrapper — passes `isTutorial` prop into `GameProvider`:
 ```tsx
 export function TutorialGamePage() {
   return (
     <TutorialProvider>
-      <GamePage />
+      <GamePage isTutorial />
     </TutorialProvider>
   );
 }
 ```
+
+`GamePage` forwards `isTutorial` to `<GameProvider isTutorial={isTutorial} />`.
 
 ### `src/App.tsx`
 
@@ -211,27 +226,27 @@ Add route: `<Route path="/tutorial" element={<TutorialGamePage />} />`
 Home Screen
   └─ Click "Tutorial"
         └─ /tutorial route
-              └─ TutorialProvider wraps GamePage
-                    ├─ Round 1 starts: TUTORIAL_OVERRIDE_DEAL fires
+              └─ TutorialProvider wraps GamePage (isTutorial=true)
+                    ├─ Round 1: START_GAME with dealerIndex=3, then TUTORIAL_OVERRIDE_DEAL
                     │     ├─ Pre-flop: bots act from script; player constrained to Call
-                    │     ├─ Flop dealt (A♠ 2♦ 4♣); no Page → no arcana
+                    │     ├─ Flop dealt from queue (A♠ 2♦ 4♣); no Page → no arcana
                     │     ├─ Flop betting: bots act; player constrained to Call
-                    │     ├─ Turn dealt (K♦); betting; player constrained to Call
-                    │     ├─ River dealt (9♠)
+                    │     ├─ Turn dealt from queue (K♦); betting; player constrained to Call
+                    │     ├─ River dealt from queue (9♠)
                     │     ├─ River betting: Swordsman all-in; player constrained to Call
                     │     ├─ Showdown → narration: "The Page in a Straight"
                     │     ├─ Page bonus fires → narration: "Page Winner Bonus"
                     │     └─ narration: "Round 1 Complete" → NEXT_HAND
                     │
-                    └─ Round 2 starts: TUTORIAL_OVERRIDE_DEAL fires
+                    └─ Round 2: START_GAME with dealerIndex=4, then TUTORIAL_OVERRIDE_DEAL
                           ├─ Pre-flop: bots act; player constrained to Call
-                          ├─ Flop dealt (Page♠ 6♥ J♦) → Page trigger fires
+                          ├─ Flop dealt from queue (6♥ J♦ Page♠) → Page at index 2 triggers
                           │     ├─ narration: "A Page Appears"
-                          │     ├─ arcanaOverride = The Fool → board becomes [Fool, 6♥, J♦]
+                          │     ├─ arcanaOverride=Fool → engine replaces index 2 with wildcard
                           │     └─ narration: "The Fool"
                           ├─ Flop betting: bots act; player constrained to Call
-                          ├─ Turn dealt (3♦); betting; player constrained to Call
-                          ├─ River dealt (A♣); hero raises, Mystic calls
+                          ├─ Turn dealt from queue (3♦); betting; player constrained to Call
+                          ├─ River dealt from queue (A♣); hero raises, Mystic calls
                           ├─ Showdown → narration: "The Fool as a King"
                           └─ narration: "Tutorial Complete" → return to Home
 ```
@@ -248,7 +263,10 @@ Home Screen
 | `src/pages/TutorialGamePage.tsx` | **New** — thin wrapper page |
 | `src/store/storeTypes.ts` | **Minor** — add 2 optional fields |
 | `src/store/gameReducer.ts` | **Minor** — 3 targeted changes |
-| `src/components/Table/ActionBar.tsx` | **Minor** — tutorialAllowedAction prop |
+| `src/store/GameContext.tsx` | **Minor** — add `isTutorial` prop to suppress bot useEffect |
+| `src/components/Table/ActionBar.tsx` | **Minor** — thread tutorialAllowedAction prop |
+| `src/components/Table/ActionButtons.tsx` | **Minor** — disable/highlight based on tutorialAllowedAction |
+| `src/pages/GamePage.tsx` | **Minor** — forward isTutorial prop to GameProvider |
 | `src/pages/HomePage.tsx` | **Minor** — add Tutorial button |
 | `src/App.tsx` | **Minor** — add /tutorial route |
 
