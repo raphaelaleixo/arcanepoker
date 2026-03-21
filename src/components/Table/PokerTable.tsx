@@ -18,6 +18,7 @@ import { HERO_ID_CONST } from "../../store/initialState";
 import { PlaygroundDrawer } from "../Dev/PlaygroundDrawer";
 import { DealerChip } from "./DealerChip";
 import { TableOverlayContent } from "./TableOverlayContent";
+import { TutorialOverlay } from "../Tutorial/TutorialOverlay";
 
 const BETTING_STAGES = ["pre-flop", "flop", "turn", "river", "empress"];
 
@@ -179,6 +180,7 @@ export function PokerTable() {
         ⚗ DEV
       </Button>
       <PlaygroundDrawer open={playgroundOpen} onClose={() => setPlaygroundOpen(false)} />
+      <TutorialOverlay />
     </Box>
   );
 }
