@@ -81,6 +81,14 @@ export function HomePage() {
               variant="outlined"
               component={Link as ElementType}
               size="small"
+              to="/tutorial"
+            >
+              tutorial
+            </Button>
+            <Button
+              variant="outlined"
+              component={Link as ElementType}
+              size="small"
               to="/rules"
             >
               learn to play
