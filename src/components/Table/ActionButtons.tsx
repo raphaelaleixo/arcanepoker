@@ -56,8 +56,8 @@ export function ActionButtons({
         color="error"
         size="small"
         onClick={onFold}
-        disabled={foldDisabled || (!foldEnabled && !!tut)}
-        sx={!foldEnabled && tut ? { opacity: 0.35 } : undefined}
+        disabled={foldDisabled}
+        sx={!foldEnabled && tut ? { opacity: 0.45, pointerEvents: "none" } : undefined}
       >
         Fold
       </Button>
@@ -68,10 +68,10 @@ export function ActionButtons({
           color="success"
           size="small"
           onClick={onCheckOrCall}
-          disabled={checkDisabled || (!checkCallEnabled && !!tut)}
+          disabled={checkDisabled}
           sx={{
             ...(checkDisabled ? { opacity: 0.4 } : {}),
-            ...(!checkCallEnabled && tut ? { opacity: 0.35 } : {}),
+            ...(!checkCallEnabled && tut ? { opacity: 0.45, pointerEvents: "none" } : {}),
             ...(checkCallEnabled && tut ? { border: TUTORIAL_HIGHLIGHT } : {}),
           }}
         >
@@ -83,9 +83,8 @@ export function ActionButtons({
           color="info"
           size="small"
           onClick={onCheckOrCall}
-          disabled={!checkCallEnabled && !!tut}
           sx={{
-            ...(!checkCallEnabled && tut ? { opacity: 0.35 } : {}),
+            ...(!checkCallEnabled && tut ? { opacity: 0.45, pointerEvents: "none" } : {}),
             ...(checkCallEnabled && tut ? { border: TUTORIAL_HIGHLIGHT } : {}),
           }}
         >
@@ -97,9 +96,8 @@ export function ActionButtons({
           color="info"
           size="small"
           onClick={onCheckOrCall}
-          disabled={!checkCallEnabled && !!tut}
           sx={{
-            ...(!checkCallEnabled && tut ? { opacity: 0.35 } : {}),
+            ...(!checkCallEnabled && tut ? { opacity: 0.45, pointerEvents: "none" } : {}),
             ...(checkCallEnabled && tut ? { border: TUTORIAL_HIGHLIGHT } : {}),
           }}
         >
@@ -112,9 +110,9 @@ export function ActionButtons({
         color={isAllIn ? "warning" : "primary"}
         size="small"
         onClick={onRaiseOrAllIn}
-        disabled={heroStack === 0 || (!raiseEnabled && !!tut)}
+        disabled={heroStack === 0}
         sx={{
-          ...(!raiseEnabled && tut ? { opacity: 0.35 } : {}),
+          ...(!raiseEnabled && tut ? { opacity: 0.45, pointerEvents: "none" } : {}),
           ...(raiseEnabled && tut ? { border: TUTORIAL_HIGHLIGHT } : {}),
         }}
       >

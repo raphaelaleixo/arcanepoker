@@ -9,9 +9,8 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { useNavigate } from "react-router-dom";
 import { useGame } from "../store/useGame";
-import { TUTORIAL_ROUNDS, type TutorialNarration } from "./tutorialScript";
+import { TUTORIAL_ROUNDS, type TutorialNarration, type CardHighlight } from "./tutorialScript";
 import type { StandardCard, ActionType } from "../types/types";
 
 // ─── Context shape ────────────────────────────────────────────────────────────
@@ -24,6 +23,7 @@ interface TutorialContextValue {
   tutorialAllowedAction: string | null;
   isComplete: boolean;
   dismissNarration: () => void;
+  highlightCards: CardHighlight[] | null;
 }
 
 const TutorialContext = createContext<TutorialContextValue | null>(null);
@@ -76,7 +76,6 @@ const HERO_ID = "hero";
 
 export function TutorialProvider({ children }: { children: ReactNode }) {
   const { state: gameState, dispatch: gameDispatch } = useGame();
-  const navigate = useNavigate();
 
   const [tutState, tutDispatch] = useReducer(tutorialReducer, {
     currentRound: 1,
@@ -93,6 +92,9 @@ export function TutorialProvider({ children }: { children: ReactNode }) {
 
   // Track whether the current hand has been overridden with tutorial data
   const handInitializedRef = useRef(false);
+  const startGameFiredRef = useRef(false);
+  // Prevents the intro narration from firing more than once
+  const introShownRef = useRef(false);
   // Pointer into the current round's botActions array
   const botQueuePointerRef = useRef(0);
   // Previous game state for transition detection
@@ -130,6 +132,9 @@ export function TutorialProvider({ children }: { children: ReactNode }) {
 
   // Trigger the initial START_GAME (GameProvider has isTutorial=true so it won't auto-start)
   useEffect(() => {
+    if (startGameFiredRef.current) return;
+    startGameFiredRef.current = true;
+    handInitializedRef.current = false; // ensure override runs after this START_GAME
     gameDispatch({ type: "START_GAME" });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -184,6 +189,23 @@ export function TutorialProvider({ children }: { children: ReactNode }) {
 
     const script = getCurrentScript();
     const narrations = script.narrations;
+
+    // intro + hole-cards-page: fires once at the start of Round 1
+    if (currentRoundRef.current === 1 && !introShownRef.current && gameState.stage === "pre-flop") {
+      const intro = narrations.find((n) => n.trigger === "intro");
+      if (intro) {
+        introShownRef.current = true;
+        const holeCardsPage = narrations.find((n) => n.trigger === "hole-cards-page");
+        tutDispatch({
+          type: "SHOW_NARRATION",
+          narration: intro,
+          onDismiss: holeCardsPage
+            ? () => tutDispatch({ type: "SHOW_NARRATION", narration: holeCardsPage })
+            : undefined,
+        });
+        return;
+      }
+    }
 
     // arcana-pending: pendingInteraction just became arcana-reveal
     if (
@@ -249,14 +271,6 @@ export function TutorialProvider({ children }: { children: ReactNode }) {
     }
   }, [gameState]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ── Navigate home when complete ───────────────────────────────────────────
-
-  useEffect(() => {
-    if (isComplete) {
-      navigate("/");
-    }
-  }, [isComplete, navigate]);
-
   // ── Hero action constraint ────────────────────────────────────────────────
 
   const hero = gameState.players.find((p) => p.id === HERO_ID);
@@ -271,6 +285,9 @@ export function TutorialProvider({ children }: { children: ReactNode }) {
     const toCall = gameState.currentBet - hero.currentBet;
     if (toCall === 0) {
       tutorialAllowedAction = "check";
+    } else if (toCall >= hero.stack) {
+      // Hero can only go all-in — middle button key is "all-in" in this case
+      tutorialAllowedAction = "all-in";
     } else {
       const script = getCurrentScript();
       tutorialAllowedAction =
@@ -278,6 +295,13 @@ export function TutorialProvider({ children }: { children: ReactNode }) {
         ?? "call";
     }
   }
+
+  // ── Highlight cards ───────────────────────────────────────────────────────
+
+  const matchedNarration = tutState.narration
+    ? getCurrentScript().narrations.find((n) => n.title === tutState.narration!.title)
+    : null;
+  const highlightCards: CardHighlight[] | null = matchedNarration?.highlightCards ?? null;
 
   // ── Round transitions ─────────────────────────────────────────────────────
 
@@ -319,20 +343,32 @@ export function TutorialProvider({ children }: { children: ReactNode }) {
     }
 
     if (trigger === "showdown") {
-      // If this round has no page-bonus, chain directly to round-end
+      tutDispatch({ type: "DISMISS_NARRATION" });
       const hasPageBonus = script.narrations.some((nr) => nr.trigger === "page-bonus");
-      if (!hasPageBonus) {
-        tutDispatch({ type: "DISMISS_NARRATION" });
+      if (hasPageBonus) {
+        // Chain to page-bonus; RESOLVE_PAGE_CHALLENGE fires when user dismisses that.
+        const pageBonus = script.narrations.find((nr) => nr.trigger === "page-bonus");
+        if (pageBonus) {
+          setTimeout(() => {
+            tutDispatch({
+              type: "SHOW_NARRATION",
+              narration: pageBonus,
+              onDismiss: () => gameDispatch({ type: "RESOLVE_PAGE_CHALLENGE" }),
+            });
+          }, 100);
+        }
+      } else {
+        // No page-bonus — chain directly to round-end.
         const roundEnd = script.narrations.find((nr) => nr.trigger === "round-end");
         if (roundEnd) {
           tutDispatch({ type: "SHOW_NARRATION", narration: roundEnd });
         }
-        return;
       }
+      return;
     }
 
     baseDismiss();
-  }, [baseDismiss, handleRoundEndDismiss]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [baseDismiss, handleRoundEndDismiss, gameDispatch]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ─────────────────────────────────────────────────────────────────────────
 
@@ -345,6 +381,7 @@ export function TutorialProvider({ children }: { children: ReactNode }) {
         tutorialAllowedAction,
         isComplete,
         dismissNarration,
+        highlightCards,
       }}
     >
       {children}

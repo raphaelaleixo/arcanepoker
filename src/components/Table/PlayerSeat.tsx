@@ -107,6 +107,7 @@ export function PlayerSeat({
         dealerAnchorId={player.id}
         isHero={isHero}
         redrawSeed={state.holeCardChangeSeeds?.[player.id] ?? 0}
+        playerId={player.id}
       />
 
       <PlayerStatusBar

@@ -1,0 +1,52 @@
+<h2>Player's turn — what does the action bar show?</h2>
+<p class="subtitle">The script says the player should "Call". What does the action bar look like?</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#1a1a2e;padding:16px;border-radius:8px;display:flex;flex-direction:column;gap:8px;align-items:center">
+      <div style="color:#aaa;font-size:10px;margin-bottom:4px">Action bar — only scripted action shown</div>
+      <div style="display:flex;gap:8px">
+        <button style="background:#7b5ea7;border:none;color:white;padding:8px 24px;border-radius:6px;font-size:13px;font-weight:bold;cursor:pointer">Call $40</button>
+      </div>
+      <div style="color:#666;font-size:10px;font-style:italic">Fold / Check / Raise hidden</div>
+    </div>
+    <div class="card-body">
+      <h3>A — Only the scripted button</h3>
+      <p>All other action buttons are hidden. Player only sees the one correct move. Clean, unambiguous.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#1a1a2e;padding:16px;border-radius:8px;display:flex;flex-direction:column;gap:8px;align-items:center">
+      <div style="color:#aaa;font-size:10px;margin-bottom:4px">Action bar — all buttons shown, only correct one active</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+        <button style="background:#444;border:1px solid #555;color:#666;padding:8px 16px;border-radius:6px;font-size:12px;cursor:not-allowed">Fold</button>
+        <button style="background:#444;border:1px solid #555;color:#666;padding:8px 16px;border-radius:6px;font-size:12px;cursor:not-allowed">Check</button>
+        <button style="background:#7b5ea7;border:2px solid #c9a96e;color:white;padding:8px 20px;border-radius:6px;font-size:13px;font-weight:bold;cursor:pointer">Call $40 ✓</button>
+        <button style="background:#444;border:1px solid #555;color:#666;padding:8px 16px;border-radius:6px;font-size:12px;cursor:not-allowed">Raise</button>
+      </div>
+      <div style="color:#c9a96e;font-size:10px;font-style:italic">↑ Only highlighted button works</div>
+    </div>
+    <div class="card-body">
+      <h3>B — All buttons, correct one highlighted</h3>
+      <p>Shows the full UI but disables wrong options. Player can see what a real round looks like while being guided.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#1a1a2e;padding:16px;border-radius:8px;display:flex;flex-direction:column;gap:8px;align-items:center">
+      <div style="color:#aaa;font-size:10px;margin-bottom:4px">Action bar replaced by auto-advance</div>
+      <div style="background:rgba(0,0,0,0.6);border:1px solid #7b5ea7;border-radius:8px;padding:10px 20px;color:#e0e0e0;font-size:12px;text-align:center">
+        <div style="color:#c9a96e;margin-bottom:4px;font-size:11px">Your move: Call $40</div>
+        <div style="color:#bbb;font-size:11px;margin-bottom:8px">Swordsman raised to $40. You call to continue.</div>
+        <button style="background:#7b5ea7;border:none;color:white;padding:6px 20px;border-radius:4px;font-size:12px;cursor:pointer">Continue →</button>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Auto-advance with narration</h3>
+      <p>No action buttons. The overlay panel explains your move and a single "Continue" button advances the script. Most hand-holdy.</p>
+    </div>
+  </div>
+
+</div>

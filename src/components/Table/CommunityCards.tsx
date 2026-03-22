@@ -6,6 +6,7 @@
 import { Box, Stack } from "@mui/material";
 import { DealtCard } from "../Card/DealtCard";
 import type { StandardCard, ArcanaCard } from "../../types/types";
+import { useTutorialOptional } from "../../tutorial/TutorialContext";
 
 interface CommunityCardsProps {
   communityCards: StandardCard[];
@@ -45,10 +46,15 @@ export function CommunityCards({
   wheelRound,
   communityChangeKey,
 }: CommunityCardsProps) {
+  const highlights = useTutorialOptional()?.highlightCards ?? null;
+
   return (
     <Stack direction="row" spacing={0.75} alignItems="center">
       {Array.from({ length: totalSlots }).map((_, i) => {
         const card = communityCards[i];
+        const isHighlighted =
+          highlights != null &&
+          highlights.some((h) => h.type === "community" && h.communityIndex === i);
         if (card) {
           // Turn/river cards are dealt individually, so each resets stagger to 0.
           const di = i < 3 ? i : 0;
@@ -56,42 +62,54 @@ export function CommunityCards({
           // rather than the card's true value.
           if (i === foolCardIndex) {
             return (
-              <DealtCard
+              <Box
                 key={`${wheelRound}-fool-${communityChangeKey}-${i}`}
-                small
-                rank={"0" as ArcanaCard["value"]}
-                suit={"arcana"}
-                flipped
-                dealIndex={di}
-                revealDelay={di * 80 + 400}
-              />
+                sx={{ lineHeight: 0, ...(isHighlighted ? { position: "relative", zIndex: 1295, borderRadius: 1, boxShadow: "0 0 18px 6px rgba(201,169,110,0.75)" } : {}) }}
+              >
+                <DealtCard
+                  small
+                  rank={"0" as ArcanaCard["value"]}
+                  suit={"arcana"}
+                  flipped
+                  dealIndex={di}
+                  revealDelay={di * 80 + 400}
+                />
+              </Box>
             );
           }
           // Moon: use a stable key (moonAffectedIndex persists through showdown so the
           // key doesn't change on reveal, avoiding a second remount animation).
           if (i === moonAffectedIndex) {
             return (
-              <DealtCard
+              <Box
                 key={`${wheelRound}-moon-${communityChangeKey}-${i}`}
-                small
-                rank={card.value}
-                suit={card.suit}
-                flipped={i !== moonHiddenCommunityIndex}
-                dealIndex={di}
-                revealDelay={di * 80 + 400}
-              />
+                sx={{ lineHeight: 0, ...(isHighlighted ? { position: "relative", zIndex: 1295, borderRadius: 1, boxShadow: "0 0 18px 6px rgba(201,169,110,0.75)" } : {}) }}
+              >
+                <DealtCard
+                  small
+                  rank={card.value}
+                  suit={card.suit}
+                  flipped={i !== moonHiddenCommunityIndex}
+                  dealIndex={di}
+                  revealDelay={di * 80 + 400}
+                />
+              </Box>
             );
           }
           return (
-            <DealtCard
+            <Box
               key={`${wheelRound}-${i}`}
-              small
-              rank={card.value}
-              suit={card.suit}
-              flipped
-              dealIndex={di}
-              revealDelay={di * 80 + 400}
-            />
+              sx={{ lineHeight: 0, ...(isHighlighted ? { position: "relative", zIndex: 1295, borderRadius: 1, boxShadow: "0 0 18px 6px rgba(201,169,110,0.75)" } : {}) }}
+            >
+              <DealtCard
+                small
+                rank={card.value}
+                suit={card.suit}
+                flipped
+                dealIndex={di}
+                revealDelay={di * 80 + 400}
+              />
+            </Box>
           );
         }
         return (
@@ -103,6 +121,7 @@ export function CommunityCards({
               borderRadius: 1,
               border: "1px dashed rgba(255,255,255,0.2)",
               background: "rgba(0,0,0,0.2)",
+              ...(isHighlighted ? { position: "relative", zIndex: 1295, boxShadow: "0 0 18px 6px rgba(201,169,110,0.75)" } : {}),
             }}
           />
         );

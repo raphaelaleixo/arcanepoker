@@ -10,13 +10,20 @@ export interface TutorialBotAction {
   amount?: number;
 }
 
+export type CardHighlight =
+  | { type: "hole"; playerId: string; cardIndex: 0 | 1 }
+  | { type: "community"; communityIndex: number };
+
 export interface TutorialNarration {
   trigger: TutorialTrigger;
   title: string;
   body: string;
+  highlightCards?: CardHighlight[];
 }
 
 /**
+ * intro           — fires once at the start of Round 1 before any actions
+ * hole-cards-page — fires after intro, once hero's scripted hole cards are set (contains Page)
  * arcana-pending  — fires when pendingInteraction.type === "arcana-reveal" appears
  * arcana-revealed — fires when activeArcana transitions from null to non-null
  * showdown        — fires when winnerIds becomes non-empty
@@ -24,6 +31,8 @@ export interface TutorialNarration {
  * round-end       — fires after page-bonus (or directly after showdown in no-page-bonus rounds)
  */
 export type TutorialTrigger =
+  | "intro"
+  | "hole-cards-page"
   | "arcana-pending"
   | "arcana-revealed"
   | "showdown"
@@ -72,7 +81,7 @@ const ROUND_1: TutorialRound = {
     { value: "A", suit: "spades"   }, // flop 1
     { value: "2", suit: "diamonds" }, // flop 2
     { value: "4", suit: "clubs"    }, // flop 3
-    { value: "K", suit: "diamonds" }, // turn
+    { value: "8", suit: "hearts"   }, // turn  (no king on board → swords keeps pair of kings)
     { value: "9", suit: "spades"   }, // river
   ],
   arcanaOverride: null,
@@ -90,14 +99,32 @@ const ROUND_1: TutorialRound = {
     // Turn: Hero checks first; Swordsman bets; Wanderer folds; hero re-acts (call)
     { playerId: "bot-swords",    stage: "turn",     action: "bet",    amount: 60 },
     { playerId: "bot-wands",     stage: "turn",     action: "fold" },
-    // River: Hero checks first; Swordsman all-in; hero re-acts (call)
-    { playerId: "bot-swords",    stage: "river",    action: "all-in" },
+    // River: Hero checks first; Swordsman bets; hero re-acts (call)
+    { playerId: "bot-swords",    stage: "river",    action: "bet",    amount: 60 },
   ],
   narrations: [
     {
+      trigger: "intro",
+      title: "Welcome to Arcane Poker",
+      body: "This is a guided tutorial. You'll play two scripted hands to learn the core mechanics: how the Page card works in straights, and how Arcana cards can flip the rules mid-game. Bots won't act until you dismiss each panel.",
+    },
+    {
+      trigger: "hole-cards-page",
+      title: "The Page Card (0)",
+      body: "You've been dealt the Page of Hearts — value 0. Arcane Poker adds a Page to each suit, giving 14 cards per suit: 0, 2, 3, 4, 5, 6, 7, 8, 9, 10, J, Q, K, A. On its own the Page is the lowest card, but it has a special role in straights.",
+      highlightCards: [{ type: "hole", playerId: "hero", cardIndex: 0 }],
+    },
+    {
       trigger: "showdown",
       title: "The Page in a Straight",
-      body: "Your Page of Hearts connects before the Ace: Page → A → 2 → 3 → 4. This is a valid straight — and it beats Swordsman's pair of Kings.",
+      body: "Your Page of Hearts connects before the Ace: Page → A → 2 → 3 → 4. This is a valid straight — and it beats Swordsman's three of a kind of Kings.",
+      highlightCards: [
+        { type: "hole",      playerId: "hero", cardIndex: 0 },
+        { type: "hole",      playerId: "hero", cardIndex: 1 },
+        { type: "community", communityIndex: 0 },
+        { type: "community", communityIndex: 1 },
+        { type: "community", communityIndex: 2 },
+      ],
     },
     {
       trigger: "page-bonus",
@@ -120,16 +147,16 @@ const ROUND_1: TutorialRound = {
 // Post-flop (Swordsman folded): firstActiveAfter(4) = Merchant(1)
 //   Order: Merchant → Mystic → Wanderer → Hero (last)
 //
-// Flop: Page♠ is the LAST flop card (index 2). The engine's fool-wildcard
+// Flop: Page♣ is the LAST flop card (index 2). The engine's fool-wildcard
 //   replaces the last community card on trigger, so foolCardIndex=2 is correct.
 // River: Hero checks first; Mystic bets; Merchant folds; hero raises (heroActions.river="raise");
 //   Mystic re-calls after hero's raise.
-// Teaching moment: Fool wildcard = King → 10→J→Q→K→A royal flush beats pair of Aces.
+// Teaching moment: Fool wildcard = K♣ → 10♣→J♣→Q♣→K♣→A♣ royal flush beats pair of Aces.
 
 const ROUND_2: TutorialRound = {
   dealerIndex: 4,
   playerHoleCards: {
-    hero:           [{ value: "10", suit: "clubs"    }, { value: "Q",  suit: "spades"   }],
+    hero:           [{ value: "10", suit: "clubs"    }, { value: "Q",  suit: "clubs"    }],
     "bot-swords":   [{ value: "5",  suit: "spades"   }, { value: "7",  suit: "clubs"    }], // folds pre-flop
     "bot-cups":     [{ value: "A",  suit: "hearts"   }, { value: "A",  suit: "diamonds" }], // pair of aces → showdown
     "bot-wands":    [{ value: "2",  suit: "clubs"    }, { value: "8",  suit: "diamonds" }], // folds on turn
@@ -137,8 +164,8 @@ const ROUND_2: TutorialRound = {
   },
   communityCardQueue: [
     { value: "6", suit: "hearts"   }, // flop 1
-    { value: "J", suit: "diamonds" }, // flop 2
-    { value: "0", suit: "spades"   }, // flop 3 — Page triggers arcana; Fool replaces index 2
+    { value: "J", suit: "clubs"    }, // flop 2
+    { value: "0", suit: "clubs"    }, // flop 3 — Page triggers arcana; Fool replaces index 2
     { value: "3", suit: "diamonds" }, // turn
     { value: "A", suit: "clubs"    }, // river
   ],
@@ -156,11 +183,14 @@ const ROUND_2: TutorialRound = {
     { playerId: "bot-pentacles", stage: "flop",     action: "bet",    amount: 20 },
     { playerId: "bot-cups",      stage: "flop",     action: "call" },
     { playerId: "bot-wands",     stage: "flop",     action: "call" },
-    // Turn
+    // Turn: post-flop order is hero(0)→pentacles(1)→cups(3)→wands(4)
+    // Hero checks first; Pentacles bets; Cups calls; Wands folds; Hero re-acts (call)
     { playerId: "bot-pentacles", stage: "turn",     action: "bet",    amount: 40 },
-    { playerId: "bot-wands",     stage: "turn",     action: "fold" },
     { playerId: "bot-cups",      stage: "turn",     action: "call" },
-    // River: Hero checks first; Mystic bets; Merchant folds; hero raises; Mystic re-calls
+    { playerId: "bot-wands",     stage: "turn",     action: "fold" },
+    // River: hero(0)→pentacles(1)→cups(3); Hero checks; Pentacles checks; Mystic bets;
+    // Hero raises (heroActions.river="raise"); Pentacles folds; Mystic calls
+    { playerId: "bot-pentacles", stage: "river",    action: "check" },
     { playerId: "bot-cups",      stage: "river",    action: "bet",    amount: 40 },
     { playerId: "bot-pentacles", stage: "river",    action: "fold" },
     { playerId: "bot-cups",      stage: "river",    action: "call" }, // after hero raises
@@ -170,16 +200,25 @@ const ROUND_2: TutorialRound = {
       trigger: "arcana-pending",
       title: "A Page Appears",
       body: "The Page of Spades has appeared on the board. This triggers the Arcana deck — the dealer draws a card.",
+      highlightCards: [{ type: "community", communityIndex: 2 }],
     },
     {
       trigger: "arcana-revealed",
       title: "The Fool",
       body: "The Fool replaces the Page in the flop. It acts as a wildcard — it becomes whatever card value completes the best possible hand.",
+      highlightCards: [{ type: "community", communityIndex: 2 }],
     },
     {
       trigger: "showdown",
       title: "The Fool as a King",
-      body: "The Fool becomes a King, giving you 10 → J → Q → K → A — a royal flush. This beats Mystic's pair of Aces.",
+      body: "The Fool is a wildcard — it becomes whatever card best completes each player's hand. For you, it becomes a King, giving you 10 → J → Q → K → A — a royal flush. For Mystic, it becomes an Ace, completing four of a kind. A royal flush beats four of a kind.",
+      highlightCards: [
+        { type: "hole",      playerId: "hero", cardIndex: 0 },
+        { type: "hole",      playerId: "hero", cardIndex: 1 },
+        { type: "community", communityIndex: 1 },
+        { type: "community", communityIndex: 2 },
+        { type: "community", communityIndex: 4 },
+      ],
     },
     {
       trigger: "round-end",

@@ -13,6 +13,7 @@ import { Box, Stack } from "@mui/material";
 import { PlayingCard } from "../Card/PlayingCard";
 import { DealtCard } from "../Card/DealtCard";
 import type { StandardCard } from "../../types/types";
+import { useTutorialOptional } from "../../tutorial/TutorialContext";
 
 const dealOut = keyframes`
   from { opacity: 1; transform: scale(1) translateY(0); }
@@ -37,6 +38,8 @@ interface PlayerCardsProps {
   isHero?: boolean;
   /** Incremented when this player's cards are replaced by the Magician redraw effect. */
   redrawSeed?: number;
+  /** The player's ID — used for tutorial card spotlight. */
+  playerId?: string;
 }
 
 export function PlayerCards({
@@ -50,7 +53,9 @@ export function PlayerCards({
   dealerAnchorId,
   isHero = false,
   redrawSeed = 0,
+  playerId,
 }: PlayerCardsProps) {
+  const highlights = useTutorialOptional()?.highlightCards ?? null;
   // Local card buffer — holds old cards during the exit animation so they stay
   // visible while fading out before the new cards deal in.
   const [displayCards, setDisplayCards] = useState<StandardCard[]>(holeCards);
@@ -117,6 +122,11 @@ export function PlayerCards({
               selectedCard != null &&
               card.value === selectedCard.value &&
               card.suit === selectedCard.suit;
+            const isHighlighted =
+              highlights != null &&
+              highlights.some(
+                (h) => h.type === "hole" && h.playerId === playerId && h.cardIndex === i
+              );
             return (
               <Box
                 key={`${wheelRound}-${cardKey}-${i}`}
@@ -135,6 +145,10 @@ export function PlayerCards({
                   transition: "transform 0.15s ease",
                   outline: isSelected ? "2px solid gold" : "none",
                   borderRadius: 1,
+                  lineHeight: 0,
+                  ...(isHighlighted
+                    ? { position: "relative", zIndex: 1295, boxShadow: "0 0 18px 6px rgba(201,169,110,0.75)" }
+                    : {}),
                 }}
               >
                 <DealtCard

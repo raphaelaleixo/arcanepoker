@@ -1,0 +1,54 @@
+<h2>How should tutorial narration appear?</h2>
+<p class="subtitle">At key moments (after flop, arcana reveal, showdown), text needs to explain what happened. Pick the style that fits best.</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#1a1a2e;padding:12px;border-radius:8px;font-family:monospace">
+      <div style="background:#0f3460;border-radius:8px;padding:8px;margin-bottom:8px;opacity:0.4;font-size:11px;color:#aaa;text-align:center">[poker table — cards visible]</div>
+      <div style="background:rgba(0,0,0,0.85);border:1px solid #7b5ea7;border-radius:8px;padding:12px;color:#e0e0e0;font-size:11px">
+        <div style="color:#c9a96e;font-size:10px;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">📜 Tutorial</div>
+        <div style="margin-bottom:8px">Your Page of Hearts connects with the Ace, 2, 3, and 4 on the board — forming a straight: <strong>Page → A → 2 → 3 → 4</strong>.</div>
+        <button style="background:#7b5ea7;border:none;color:white;padding:4px 12px;border-radius:4px;font-size:10px;cursor:pointer">Continue →</button>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Overlay Panel</h3>
+      <p>A semi-transparent panel slides up from the bottom over the game table. Game is paused. Player dismisses with "Continue".</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#1a1a2e;padding:12px;border-radius:8px;font-family:monospace">
+      <div style="display:flex;align-items:center;justify-content:center;min-height:100px;background:#0f3460;border-radius:8px;position:relative">
+        <div style="opacity:0.3;font-size:11px;color:#aaa">[table behind]</div>
+        <div style="position:absolute;background:#1a1a2e;border:2px solid #c9a96e;border-radius:12px;padding:14px;color:#e0e0e0;font-size:11px;max-width:90%;text-align:center">
+          <div style="color:#c9a96e;font-size:13px;font-weight:bold;margin-bottom:6px">The Page in a Straight</div>
+          <div style="margin-bottom:10px;color:#bbb">Page → A → 2 → 3 → 4 is a valid straight. The Page connects before the Ace.</div>
+          <button style="background:#c9a96e;border:none;color:#1a1a2e;padding:5px 16px;border-radius:4px;font-size:11px;cursor:pointer;font-weight:bold">Got it</button>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Centered Modal</h3>
+      <p>A dialog box appears centered over the table with a title and explanation. Clean, focused. Player clicks "Got it" to dismiss.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#1a1a2e;padding:12px;border-radius:8px;font-family:monospace;display:flex;gap:8px">
+      <div style="flex:1;background:#0f3460;border-radius:8px;padding:8px;font-size:10px;color:#aaa;text-align:center;display:flex;align-items:center;justify-content:center">[table — fully visible]</div>
+      <div style="width:140px;background:#12122a;border-left:2px solid #7b5ea7;border-radius:0 8px 8px 0;padding:10px;color:#e0e0e0;font-size:10px">
+        <div style="color:#c9a96e;text-transform:uppercase;letter-spacing:1px;font-size:9px;margin-bottom:6px">Step 3 / 8</div>
+        <div style="font-weight:bold;margin-bottom:4px;color:#fff">Page in a Straight</div>
+        <div style="color:#bbb;line-height:1.4;margin-bottom:8px">Your Page connects before the Ace: Page → A → 2 → 3 → 4.</div>
+        <button style="background:#7b5ea7;border:none;color:white;padding:3px 8px;border-radius:4px;font-size:9px;cursor:pointer;width:100%">Next →</button>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Side Panel</h3>
+      <p>A persistent sidebar on the right shows the current tutorial step and narration. Table stays fully visible. Shows progress (e.g., "Step 3/8").</p>
+    </div>
+  </div>
+
+</div>
