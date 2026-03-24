@@ -84,7 +84,7 @@ export function PlayerSeat({
           }}
         />
       )}
-      {/* Player name and stack */}
+
       {/* <Typography
         variant="caption"
         sx={{
@@ -134,6 +134,7 @@ export function PlayerSeat({
         redrawSeed={state.holeCardChangeSeeds?.[player.id] ?? 0}
         playerId={player.id}
       />
+      {/* Player name and stack */}
       <Box
         sx={{
           display: "flex",

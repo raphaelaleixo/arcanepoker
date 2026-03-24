@@ -2,7 +2,7 @@
  * Raise-amount control: label row showing the current raise value and an MUI Slider.
  * Pure presentational — raiseAmount state lives in ActionBar.
  */
-import { Box, Slider, Stack, Typography } from "@mui/material";
+import { Box, Slider } from "@mui/material";
 
 interface RaiseSliderProps {
   /** Current slider value (controlled). */
@@ -25,23 +25,16 @@ export function RaiseSlider({
 }: RaiseSliderProps) {
   return (
     <Box sx={{ px: 1, mb: 1 }}>
-      <Stack direction="row" justifyContent="space-between" sx={{ mb: 0.5 }}>
-        <Typography variant="caption" sx={{ color: "silver.light" }}>
-          Raise amount
-        </Typography>
-        <Typography variant="caption" sx={{ color: "gold.main", fontWeight: "bold" }}>
-          {value}
-        </Typography>
-      </Stack>
       <Slider
         value={value}
         min={minRaise}
         max={maxRaise}
         step={bigBlind}
         disabled={disabled}
+        valueLabelDisplay="on"
         onChange={(_e, v) => onChange(v as number)}
         sx={{
-          color: "gold.main",
+          color: "primary.main",
           "& .MuiSlider-thumb": { borderColor: "gold.dark" },
         }}
       />

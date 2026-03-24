@@ -61,12 +61,12 @@ export function ActionButtons({
       sx={{
         "& > *": {
           flexGrow: 1,
+          width: "100%",
         },
       }}
     >
       <Button
-        variant="contained"
-        color="error"
+        variant="outlined"
         size="small"
         onClick={onFold}
         disabled={foldDisabled}
@@ -82,7 +82,6 @@ export function ActionButtons({
       {canCheck ? (
         <Button
           variant="contained"
-          color="success"
           size="small"
           onClick={onCheckOrCall}
           disabled={checkDisabled}
@@ -99,7 +98,6 @@ export function ActionButtons({
       ) : callExceedsStack ? (
         <Button
           variant="contained"
-          color="info"
           size="small"
           onClick={onCheckOrCall}
           sx={{
@@ -114,7 +112,6 @@ export function ActionButtons({
       ) : (
         <Button
           variant="contained"
-          color="info"
           size="small"
           onClick={onCheckOrCall}
           sx={{
