@@ -115,20 +115,39 @@ export function PokerTable() {
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
-          zIndex: 999,
-          pointerEvents: "none",
-          background:
-            'url("/public/art/circleBackground.svg") center center / cover no-repeat',
           display: "grid",
           gridTemplateColumns: "auto auto auto",
           gridTemplateRows: "auto auto auto auto auto",
         }}
       >
+        <Box
+          sx={{
+            gridColumn: "1 / 4",
+            gridRow: "1 / 5",
+            p: "3em",
+          }}
+        >
+          <Box
+            component="img"
+            src="/public/art/circleBackground.svg"
+            sx={{
+              height: "100%",
+              width: "100%",
+              objectFit: "cover",
+              borderRadius: "16px",
+              overflow: "hidden",
+            }}
+          />
+        </Box>
         {bot1 && (
           <PlayerSeat
             player={bot1}
             playerIndex={state.players.indexOf(bot1)}
             isActive={activePlayer?.id === bot1.id}
+            sx={{
+              gridColumn: 1,
+              gridRow: 1,
+            }}
           />
         )}
         {bot2 && (
