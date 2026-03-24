@@ -2,8 +2,12 @@
  * Renders the action chip, hand rank label, and bet/all-in line for a player seat.
  * Pure presentational — receives all data as props from PlayerSeat.
  */
-import { Box, Chip, Typography } from "@mui/material";
-import { actionLabel, actionColor, formatHandRank } from "../../utils/cardUtils";
+import { Box, Typography } from "@mui/material";
+import {
+  actionLabel,
+  actionColor,
+  formatHandRank,
+} from "../../utils/cardUtils";
 
 interface PlayerStatusBarProps {
   currentAction: string | null;
@@ -43,16 +47,18 @@ export function PlayerStatusBar({
             transition: "opacity 250ms ease",
           }}
         >
-          <Chip
-            label={currentAction ? actionLabel(currentAction) : "\u00A0"}
-            color={currentAction ? actionColor(currentAction) : "default"}
-            size="small"
+          <Typography
             sx={{
+              color: currentAction ? actionColor(currentAction) : "default",
               fontSize: "0.65rem",
               height: 18,
+              fontWeight: "bold",
+              textTransform: "uppercase",
               visibility: currentAction ? "visible" : "hidden",
             }}
-          />
+          >
+            {currentAction ? actionLabel(currentAction) : "\u00A0"}
+          </Typography>
         </Box>
 
         {/* Hand rank — fades in at showdown */}
@@ -61,7 +67,7 @@ export function PlayerStatusBar({
             gridArea: "1 / 1",
             display: "flex",
             justifyContent: "center",
-            opacity: showHandResult ? 1 : 0,
+            opacity: showHandResult ? 1 : 1,
             pointerEvents: showHandResult ? "auto" : "none",
             transition: "opacity 250ms ease",
           }}
@@ -69,14 +75,15 @@ export function PlayerStatusBar({
           <Typography
             variant="caption"
             sx={{
-              color: isWinner ? "gold.light" : "silver.light",
+              color: isWinner ? "primary.main" : "silver.light",
               fontSize: "0.65rem",
-              fontStyle: "italic",
+              fontWeight: "bold",
               textAlign: "center",
               visibility: handResult ? "visible" : "hidden",
             }}
           >
             {handResult ? formatHandRank(handResult.rankName) : "\u00A0"}
+            {isWinner ? " ★" : ""}
           </Typography>
         </Box>
       </Box>
@@ -90,7 +97,10 @@ export function PlayerStatusBar({
           color: "gold.main",
           fontSize: "0.65rem",
           mt: 0.25,
-          visibility: (currentBet > 0 || isAllIn) && !showHandResult ? "visible" : "hidden",
+          visibility:
+            (currentBet > 0 || isAllIn) && !showHandResult
+              ? "visible"
+              : "hidden",
         }}
       >
         {currentBet > 0 ? `Bet: ${currentBet}` : "\u00A0"}

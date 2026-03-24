@@ -63,7 +63,7 @@ export function PlayerSeat({
         position: "relative",
         borderRadius: 2,
         p: 1.5,
-        minWidth: { xs: 140, sm: 160 },
+        //minWidth: { xs: 140, sm: 160 },
         opacity: player.folded ? 0.55 : 1,
         transition: "opacity 0.3s",
         ...sx,
@@ -85,7 +85,7 @@ export function PlayerSeat({
         />
       )}
       {/* Player name and stack */}
-      <Typography
+      {/* <Typography
         variant="caption"
         sx={{
           display: "block",
@@ -111,7 +111,15 @@ export function PlayerSeat({
           />
         )}{" "}
         &mdash; &#9824; {player.stack}
-      </Typography>
+      </Typography> */}
+      <PlayerStatusBar
+        currentAction={player.currentAction ?? null}
+        currentBet={player.currentBet}
+        isAllIn={player.isAllIn}
+        handResult={handResult}
+        isWinner={isWinner}
+        showHandResult={showHandResult}
+      />
 
       <PlayerCards
         holeCards={player.holeCards}
@@ -126,15 +134,26 @@ export function PlayerSeat({
         redrawSeed={state.holeCardChangeSeeds?.[player.id] ?? 0}
         playerId={player.id}
       />
-
-      <PlayerStatusBar
-        currentAction={player.currentAction ?? null}
-        currentBet={player.currentBet}
-        isAllIn={player.isAllIn}
-        handResult={handResult}
-        isWinner={isWinner}
-        showHandResult={showHandResult}
-      />
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          mt: 0,
+          position: "relative",
+          zIndex: 2,
+          width: "fit-content",
+          mx: "auto",
+          "& > *": { lineHeight: 1 },
+        }}
+      >
+        <Typography variant="caption" fontWeight="bold" fontSize="0.65em">
+          {player.name}
+        </Typography>
+        <Typography variant="caption" fontWeight={800} fontSize="0.75em">
+          {player.stack}
+        </Typography>
+      </Box>
     </Box>
   );
 }
