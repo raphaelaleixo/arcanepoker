@@ -20,7 +20,11 @@ import type { StoreGameState, GameAction } from "../../store/storeTypes";
 import { HERO_ID_CONST } from "../../store/initialState";
 
 interface TableOverlayContentProps {
-  cardPickInteraction: "priestess-reveal" | "chariot-pass" | "star-discard" | null;
+  cardPickInteraction:
+    | "priestess-reveal"
+    | "chariot-pass"
+    | "star-discard"
+    | null;
   selectedCard: StandardCard | null;
   stage: string;
   pendingInteraction: StoreGameState["pendingInteraction"];
@@ -62,14 +66,18 @@ export function TableOverlayContent({
       cardPickInteraction === "priestess-reveal"
         ? "Click a card to reveal it to all players."
         : cardPickInteraction === "star-discard"
-        ? "Click a card to discard and redraw it."
-        : "Click a card to pass it to the player on your left.";
+          ? "Click a card to discard and redraw it."
+          : "Click a card to pass it to the player on your left.";
 
     return (
       <Stack direction="column" alignItems="center" spacing={0.5}>
         <Typography
           variant="caption"
-          sx={{ color: "secondary.light", fontSize: "0.7rem", fontStyle: "italic" }}
+          sx={{
+            color: "secondary.light",
+            fontSize: "0.7rem",
+            fontStyle: "italic",
+          }}
         >
           {instructionText}
         </Typography>
@@ -106,7 +114,10 @@ export function TableOverlayContent({
                 py: 1,
                 color: "silver.light",
                 borderColor: "silver.dark",
-                "&:hover": { borderColor: "silver.light", background: "rgba(255,255,255,0.05)" },
+                "&:hover": {
+                  borderColor: "silver.light",
+                  background: "rgba(255,255,255,0.05)",
+                },
               }}
             >
               Keep Both
@@ -123,27 +134,24 @@ export function TableOverlayContent({
       <Stack direction="column" alignItems="center" spacing={0.5}>
         <Button
           variant="contained"
-          size="large"
           onClick={() => dispatch({ type: "RESOLVE_PAGE_CHALLENGE" })}
           sx={{
-            px: 5,
-            py: 1,
             background: "linear-gradient(135deg, #7B3F00, #3E1F00)",
             border: "1px solid",
             borderColor: "gold.main",
             color: "gold.light",
             letterSpacing: "0.08em",
-            "&:hover": {
-              background: "linear-gradient(135deg, #A0522D, #5C2E00)",
-              borderColor: "gold.light",
-            },
           }}
         >
           Challenge of the Page
         </Button>
         <Typography
           variant="caption"
-          sx={{ color: "silver.light", fontSize: "0.65rem", fontStyle: "italic" }}
+          sx={{
+            color: "silver.light",
+            fontSize: "0.65rem",
+            fontStyle: "italic",
+          }}
         >
           The winner holds a Page — all others pay {bigBlind} chips.
         </Typography>
@@ -155,21 +163,14 @@ export function TableOverlayContent({
   if (pendingInteraction?.type === "arcana-reveal") {
     return (
       <Button
-        variant="contained"
-        size="large"
+        variant="outlined"
+        size="small"
         onClick={() => dispatch({ type: "REVEAL_ARCANA" })}
         sx={{
-          px: 5,
-          py: 1,
-          background: "linear-gradient(135deg, #4a1a6e, #1a0a2e)",
           border: "1px solid",
           borderColor: "secondary.main",
           color: "secondary.light",
           letterSpacing: "0.08em",
-          "&:hover": {
-            background: "linear-gradient(135deg, #6c3483, #2d0f4e)",
-            borderColor: "secondary.light",
-          },
         }}
       >
         Reveal Arcana
@@ -180,15 +181,24 @@ export function TableOverlayContent({
   // ── Showdown ──────────────────────────────────────────────────────────────
   if (stage === "showdown" && pendingInteraction === null) {
     return (
-      <Stack direction="row" spacing={1} alignItems="center">
+      <Stack
+        direction="row"
+        spacing={1}
+        alignItems="center"
+        sx={{
+          width: "100%",
+          "& > *": {
+            flexGrow: 1,
+            width: "100%",
+          },
+        }}
+      >
         {(communityCards.length > 0 || winnerIds.includes(HERO_ID_CONST)) && (
           <Button
             variant="outlined"
-            size="large"
+            size="small"
             onClick={onShowTarot}
             sx={{
-              px: 3,
-              py: 1,
               borderColor: "secondary.main",
               color: "secondary.light",
               letterSpacing: "0.05em",
@@ -198,16 +208,14 @@ export function TableOverlayContent({
               },
             }}
           >
-            Read These Cards
+            Tarot reading
           </Button>
         )}
         <Button
           variant="contained"
-          size="large"
+          size="small"
           onClick={onNextHand}
           sx={{
-            px: 5,
-            py: 1,
             background: "linear-gradient(135deg, #2E7D32, #1B5E20)",
             border: "1px solid",
             borderColor: "gold.dark",
@@ -218,7 +226,7 @@ export function TableOverlayContent({
             },
           }}
         >
-          {isFinalHand ? "View Final Results" : "Next Hand →"}
+          {isFinalHand ? "Final Results" : "Next Hand"}
         </Button>
       </Stack>
     );
