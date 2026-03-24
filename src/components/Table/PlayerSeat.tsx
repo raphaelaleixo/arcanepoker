@@ -3,7 +3,7 @@
  * the action chip / hand rank status bar.
  * Calls useGame() directly; each seat independently subscribes to state.
  */
-import { Box, Typography } from "@mui/material";
+import { Box, SxProps, Typography } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { keyframes } from "@emotion/react";
 import { useGame } from "../../store/useGame";
@@ -26,6 +26,7 @@ interface PlayerSeatProps {
   onCardClick?: (card: StandardCard) => void;
   /** The currently selected card during an inline card-pick interaction. */
   selectedCard?: StandardCard | null;
+  sx?: SxProps;
 }
 
 export function PlayerSeat({
@@ -35,6 +36,7 @@ export function PlayerSeat({
   isActive = false,
   onCardClick,
   selectedCard,
+  sx,
 }: PlayerSeatProps) {
   const { state } = useGame();
 
@@ -50,7 +52,10 @@ export function PlayerSeat({
   // Hero is always face-up. Non-folded players at a real showdown (with a
   // hand result) are face-up. Bluff-wins (no handResult) stay hidden.
   // Justice: the chosen player's cards are revealed for all to see.
-  const showFaceUp = isHero || (isShowdown && !player.folded && !!handResult) || isJusticeRevealed;
+  const showFaceUp =
+    isHero ||
+    (isShowdown && !player.folded && !!handResult) ||
+    isJusticeRevealed;
 
   return (
     <Box
@@ -62,6 +67,7 @@ export function PlayerSeat({
         maxWidth: 200,
         opacity: player.folded ? 0.55 : 1,
         transition: "opacity 0.3s",
+        ...sx,
       }}
     >
       {isActive && !player.folded && (
@@ -93,7 +99,19 @@ export function PlayerSeat({
           textOverflow: "ellipsis",
         }}
       >
-        {player.name}{isWinner ? " ★" : ""}{isJusticeRevealed && <VisibilityIcon sx={{ fontSize: "0.75rem", ml: 0.4, verticalAlign: "middle", color: "secondary.light" }} />} &mdash; &#9824; {player.stack}
+        {player.name}
+        {isWinner ? " ★" : ""}
+        {isJusticeRevealed && (
+          <VisibilityIcon
+            sx={{
+              fontSize: "0.75rem",
+              ml: 0.4,
+              verticalAlign: "middle",
+              color: "secondary.light",
+            }}
+          />
+        )}{" "}
+        &mdash; &#9824; {player.stack}
       </Typography>
 
       <PlayerCards

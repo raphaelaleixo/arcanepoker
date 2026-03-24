@@ -24,26 +24,38 @@ export function CommunityArea({ sx }: CommunityAreaProps) {
 
   const pendingArcanaCard =
     state.pendingInteraction?.type === "arcana-reveal"
-      ? (state.pendingInteraction as { type: "arcana-reveal"; arcanaCard: ArcanaCard }).arcanaCard
+      ? (
+          state.pendingInteraction as {
+            type: "arcana-reveal";
+            arcanaCard: ArcanaCard;
+          }
+        ).arcanaCard
       : null;
 
   const arcanaData =
     state.activeArcana != null
-      ? (tarot.arcana as Record<string, { fullName: string; gameEffect?: string }>)[
-          state.activeArcana.card.value
-        ]
+      ? (
+          tarot.arcana as Record<
+            string,
+            { fullName: string; gameEffect?: string }
+          >
+        )[state.activeArcana.card.value]
       : null;
 
   // Pre-fetch from pending card so the description box has stable dimensions before reveal.
   const displayArcanaData =
     arcanaData ??
     (pendingArcanaCard
-      ? (tarot.arcana as Record<string, { fullName: string; gameEffect?: string }>)[
-          pendingArcanaCard.value
-        ]
+      ? (
+          tarot.arcana as Record<
+            string,
+            { fullName: string; gameEffect?: string }
+          >
+        )[pendingArcanaCard.value]
       : null);
 
-  const arcanaCardToShow = pendingArcanaCard ?? state.activeArcana?.card ?? null;
+  const arcanaCardToShow =
+    pendingArcanaCard ?? state.activeArcana?.card ?? null;
 
   return (
     <Box
@@ -55,7 +67,7 @@ export function CommunityArea({ sx }: CommunityAreaProps) {
         gap: 1.5,
         p: 2,
         borderRadius: 3,
-        minWidth: { xs: "100%", md: 320 },
+        //minWidth: { xs: "100%", md: 320 },
         ...sx,
       }}
     >

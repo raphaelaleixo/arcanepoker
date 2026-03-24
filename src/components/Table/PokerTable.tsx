@@ -85,7 +85,10 @@ export function PokerTable() {
     isFinalHand: state.isFinalHand,
     onConfirmCardPick: confirmCardPick,
     onKeepBothStar: keepBothStar,
-    onNextHand: () => { setShowTarot(false); dispatch({ type: "NEXT_HAND" }); },
+    onNextHand: () => {
+      setShowTarot(false);
+      dispatch({ type: "NEXT_HAND" });
+    },
     onShowTarot: () => setShowTarot(true),
     dispatch,
   });
@@ -94,41 +97,81 @@ export function PokerTable() {
     <Box
       sx={{
         minHeight: "100vh",
-        backgroundImage: "linear-gradient(to bottom, #252525 0%, black 100%)",
         display: "flex",
         flexDirection: "column",
         p: { xs: 1, sm: 2 },
         gap: { xs: 1, sm: 2 },
         boxSizing: "border-box",
         overflow: "hidden",
+        width: "800px",
+        height: "360px",
       }}
     >
-      {/* Top row: bots at positions 1 and 2 */}
-      <Stack
-        direction={{ xs: "column", sm: "row" }}
-        spacing={1}
-        justifyContent="center"
-        alignItems="center"
+      <Box
+        sx={{
+          position: "absolute",
+          height: "800px",
+          width: "360px",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          zIndex: 999,
+          pointerEvents: "none",
+          background:
+            'url("/public/art/circleBackground.svg") center center / cover no-repeat',
+          display: "grid",
+          gridTemplateColumns: "auto auto auto",
+          gridTemplateRows: "auto auto auto auto auto",
+        }}
       >
-        {bot1 && <PlayerSeat player={bot1} playerIndex={state.players.indexOf(bot1)} isActive={activePlayer?.id === bot1.id} />}
-        {bot2 && <PlayerSeat player={bot2} playerIndex={state.players.indexOf(bot2)} isActive={activePlayer?.id === bot2.id} />}
-      </Stack>
+        {bot1 && (
+          <PlayerSeat
+            player={bot1}
+            playerIndex={state.players.indexOf(bot1)}
+            isActive={activePlayer?.id === bot1.id}
+          />
+        )}
+        {bot2 && (
+          <PlayerSeat
+            player={bot2}
+            playerIndex={state.players.indexOf(bot2)}
+            isActive={activePlayer?.id === bot2.id}
+            sx={{
+              gridColumn: 3,
+              gridRow: 1,
+            }}
+          />
+        )}
+        <CommunityArea
+          sx={{
+            gridRow: 2,
+            gridColumnStart: 1,
+            gridColumnEnd: 4,
+          }}
+        />
+        {bot3 && (
+          <PlayerSeat
+            player={bot3}
+            playerIndex={state.players.indexOf(bot3)}
+            isActive={activePlayer?.id === bot3.id}
+            sx={{
+              gridColumn: 1,
+              gridRow: 3,
+            }}
+          />
+        )}
 
-      {/* Middle row: bot3 | community area | bot4 */}
-      <Stack
-        direction={{ xs: "column", md: "row" }}
-        spacing={1}
-        alignItems="center"
-        justifyContent="center"
-        flex={1}
-      >
-        {bot3 && <PlayerSeat player={bot3} playerIndex={state.players.indexOf(bot3)} isActive={activePlayer?.id === bot3.id} />}
-        <CommunityArea sx={{ flex: 1 }} />
-        {bot4 && <PlayerSeat player={bot4} playerIndex={state.players.indexOf(bot4)} isActive={activePlayer?.id === bot4.id} />}
-      </Stack>
-
-      {/* Bottom row: hero seat */}
-      <Stack direction="row" justifyContent="center">
+        {bot4 && (
+          <PlayerSeat
+            player={bot4}
+            playerIndex={state.players.indexOf(bot4)}
+            isActive={activePlayer?.id === bot4.id}
+            sx={{
+              gridColumn: 3,
+              gridRow: 3,
+            }}
+          />
+        )}
         {hero && (
           <PlayerSeat
             player={hero}
@@ -137,24 +180,38 @@ export function PokerTable() {
             isActive={activePlayer?.id === hero.id}
             onCardClick={cardPickInteraction ? handleCardPick : undefined}
             selectedCard={cardPickInteraction ? selectedCard : undefined}
+            sx={{
+              gridRow: 4,
+              gridColumnStart: 1,
+              gridColumnEnd: 4,
+            }}
           />
         )}
-      </Stack>
-
-      {/* Action bar */}
-      <Box
-        sx={{
-          borderTop: "1px solid rgba(255,255,255,0.08)",
-          pt: 2,
-          display: "flex",
-          justifyContent: "center",
-        }}
-      >
-        <ActionBar isVisible={isHeroTurn} overlayContent={overlayContent} />
+        {/* Action bar */}
+        <Box
+          sx={{
+            borderTop: "1px solid rgba(255,255,255,0.08)",
+            pt: 2,
+            display: "flex",
+            justifyContent: "center",
+            gridRow: 5,
+            gridColumnStart: 1,
+            gridColumnEnd: 4,
+          }}
+        >
+          <ActionBar isVisible={isHeroTurn} overlayContent={overlayContent} />
+        </Box>
       </Box>
-
       {/* Overlay modals */}
-      {showTarot && <TarotModal onClose={() => setShowTarot(false)} onNextHand={() => { setShowTarot(false); dispatch({ type: "NEXT_HAND" }); }} />}
+      {showTarot && (
+        <TarotModal
+          onClose={() => setShowTarot(false)}
+          onNextHand={() => {
+            setShowTarot(false);
+            dispatch({ type: "NEXT_HAND" });
+          }}
+        />
+      )}
       <InteractionModal />
       <GameOverModal />
       <DealerChip />
@@ -179,7 +236,10 @@ export function PokerTable() {
       >
         ⚗ DEV
       </Button>
-      <PlaygroundDrawer open={playgroundOpen} onClose={() => setPlaygroundOpen(false)} />
+      <PlaygroundDrawer
+        open={playgroundOpen}
+        onClose={() => setPlaygroundOpen(false)}
+      />
       <TutorialOverlay />
     </Box>
   );

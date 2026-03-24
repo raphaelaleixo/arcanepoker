@@ -40,7 +40,7 @@ export const PlayingCard: FC<PlayingCard> = ({
     <Box
       className="ApPlayingCard-root"
       sx={{
-        width: small ? "3em" : "6em",
+        width: small ? "2.5em" : "6em",
         aspectRatio: small ? "5/7" : "5/9",
         borderRadius: small ? 1 : 2,
         boxSizing: "border-box",
@@ -54,7 +54,7 @@ export const PlayingCard: FC<PlayingCard> = ({
           : null,
         transformStyle: "preserve-3d",
         transform: flipped ? "rotateY(180deg)" : "rotateY(0)",
-        boxShadow: "rgba(99, 99, 99, 0.5) 0px 2px 8px 0px",
+        boxShadow: "rgba(0, 0, 0, 0.5) 0px 2px 8px 0px",
         ...sx,
       }}
     >

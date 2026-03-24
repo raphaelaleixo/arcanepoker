@@ -42,22 +42,39 @@ export function ActionButtons({
 }: ActionButtonsProps) {
   const tut = tutorialAllowedAction ?? null;
 
-  const checkCallKey = canCheck ? "check" : callExceedsStack ? "all-in" : "call";
+  const checkCallKey = canCheck
+    ? "check"
+    : callExceedsStack
+      ? "all-in"
+      : "call";
   const raiseKey = isAllIn ? "all-in" : "raise";
 
-  const foldEnabled      = !tut || tut === "fold";
+  const foldEnabled = !tut || tut === "fold";
   const checkCallEnabled = !tut || tut === checkCallKey;
-  const raiseEnabled     = !tut || tut === raiseKey;
+  const raiseEnabled = !tut || tut === raiseKey;
 
   return (
-    <Stack direction="row" spacing={1} justifyContent="center">
+    <Stack
+      direction="row"
+      spacing={1}
+      justifyContent="center"
+      sx={{
+        "& > *": {
+          flexGrow: 1,
+        },
+      }}
+    >
       <Button
         variant="contained"
         color="error"
         size="small"
         onClick={onFold}
         disabled={foldDisabled}
-        sx={!foldEnabled && tut ? { opacity: 0.45, pointerEvents: "none" } : undefined}
+        sx={
+          !foldEnabled && tut
+            ? { opacity: 0.45, pointerEvents: "none" }
+            : undefined
+        }
       >
         Fold
       </Button>
@@ -71,7 +88,9 @@ export function ActionButtons({
           disabled={checkDisabled}
           sx={{
             ...(checkDisabled ? { opacity: 0.4 } : {}),
-            ...(!checkCallEnabled && tut ? { opacity: 0.45, pointerEvents: "none" } : {}),
+            ...(!checkCallEnabled && tut
+              ? { opacity: 0.45, pointerEvents: "none" }
+              : {}),
             ...(checkCallEnabled && tut ? { border: TUTORIAL_HIGHLIGHT } : {}),
           }}
         >
@@ -84,7 +103,9 @@ export function ActionButtons({
           size="small"
           onClick={onCheckOrCall}
           sx={{
-            ...(!checkCallEnabled && tut ? { opacity: 0.45, pointerEvents: "none" } : {}),
+            ...(!checkCallEnabled && tut
+              ? { opacity: 0.45, pointerEvents: "none" }
+              : {}),
             ...(checkCallEnabled && tut ? { border: TUTORIAL_HIGHLIGHT } : {}),
           }}
         >
@@ -97,7 +118,9 @@ export function ActionButtons({
           size="small"
           onClick={onCheckOrCall}
           sx={{
-            ...(!checkCallEnabled && tut ? { opacity: 0.45, pointerEvents: "none" } : {}),
+            ...(!checkCallEnabled && tut
+              ? { opacity: 0.45, pointerEvents: "none" }
+              : {}),
             ...(checkCallEnabled && tut ? { border: TUTORIAL_HIGHLIGHT } : {}),
           }}
         >
@@ -112,11 +135,15 @@ export function ActionButtons({
         onClick={onRaiseOrAllIn}
         disabled={heroStack === 0}
         sx={{
-          ...(!raiseEnabled && tut ? { opacity: 0.45, pointerEvents: "none" } : {}),
+          ...(!raiseEnabled && tut
+            ? { opacity: 0.45, pointerEvents: "none" }
+            : {}),
           ...(raiseEnabled && tut ? { border: TUTORIAL_HIGHLIGHT } : {}),
         }}
       >
-        {isAllIn ? `All-In (${heroStack})` : `${toCall === 0 ? "Bet" : "Raise"} ${clampedRaise}`}
+        {isAllIn
+          ? `All-In (${heroStack})`
+          : `${toCall === 0 ? "Bet" : "Raise"} ${clampedRaise}`}
       </Button>
     </Stack>
   );

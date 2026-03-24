@@ -95,7 +95,12 @@ export function PlayerCards({
   return (
     <Box
       data-dealer-anchor={dealerAnchorId}
-      sx={{ position: "relative", display: "flex", justifyContent: "center", mb: 0.5 }}
+      sx={{
+        position: "relative",
+        display: "flex",
+        justifyContent: "center",
+        mb: 0.5,
+      }}
     >
       <Stack
         direction="row"
@@ -125,7 +130,10 @@ export function PlayerCards({
             const isHighlighted =
               highlights != null &&
               highlights.some(
-                (h) => h.type === "hole" && h.playerId === playerId && h.cardIndex === i
+                (h) =>
+                  h.type === "hole" &&
+                  h.playerId === playerId &&
+                  h.cardIndex === i,
               );
             return (
               <Box
@@ -137,17 +145,21 @@ export function PlayerCards({
                       ? "rotate(-6deg) translateY(-10px)"
                       : "rotate(6deg) translateY(-10px)"
                     : i === 0
-                    ? "rotate(-6deg)"
-                    : "rotate(6deg)",
+                      ? "rotate(-6deg)"
+                      : "rotate(6deg)",
                   transformOrigin: "bottom center",
-                  ml: i === 0 ? 0 : -1.5,
+                  ml: i === 0 ? 0 : -0.75,
                   cursor: onCardClick ? "pointer" : "default",
                   transition: "transform 0.15s ease",
                   outline: isSelected ? "2px solid gold" : "none",
                   borderRadius: 1,
                   lineHeight: 0,
                   ...(isHighlighted
-                    ? { position: "relative", zIndex: 1295, boxShadow: "0 0 18px 6px rgba(201,169,110,0.75)" }
+                    ? {
+                        position: "relative",
+                        zIndex: 1295,
+                        boxShadow: "0 0 18px 6px rgba(201,169,110,0.75)",
+                      }
                     : {}),
                 }}
               >
@@ -157,17 +169,30 @@ export function PlayerCards({
                   suit={faceUp ? card.suit : undefined}
                   flipped={faceUp}
                   dealIndex={playerIndex * 2 + i}
-                  revealDelay={!isHero ? 200 + playerIndex * 300 + i * 100 : undefined}
+                  revealDelay={
+                    !isHero ? 200 + playerIndex * 300 + i * 100 : undefined
+                  }
                 />
               </Box>
             );
           })
         ) : (
           <>
-            <Box sx={{ transform: "rotate(-6deg)", transformOrigin: "bottom center" }}>
+            <Box
+              sx={{
+                transform: "rotate(-6deg)",
+                transformOrigin: "bottom center",
+              }}
+            >
               <PlayingCard small />
             </Box>
-            <Box sx={{ transform: "rotate(6deg)", transformOrigin: "bottom center", ml: -1.5 }}>
+            <Box
+              sx={{
+                transform: "rotate(6deg)",
+                transformOrigin: "bottom center",
+                ml: -0.5,
+              }}
+            >
               <PlayingCard small />
             </Box>
           </>

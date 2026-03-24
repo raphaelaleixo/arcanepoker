@@ -20,7 +20,10 @@ interface ActionBarProps {
   overlayContent?: ReactNode;
 }
 
-export function ActionBar({ isVisible = true, overlayContent }: ActionBarProps) {
+export function ActionBar({
+  isVisible = true,
+  overlayContent,
+}: ActionBarProps) {
   const { state, dispatch } = useGame();
   const tutorial = useTutorialOptional();
   const tutorialAllowedAction = tutorial?.tutorialAllowedAction ?? null;
@@ -31,9 +34,7 @@ export function ActionBar({ isVisible = true, overlayContent }: ActionBarProps) 
   const devilActive = state.activeArcana?.effectKey === "devil-double-raise";
   // Devil: first actor in each post-flop round must bet (checking is forbidden).
   const devilMustBet =
-    devilActive &&
-    state.roundActors.length === 0 &&
-    state.currentBet === 0;
+    devilActive && state.roundActors.length === 0 && state.currentBet === 0;
   const judgementFoldBlocked =
     state.activeArcana?.effectKey === "judgement-no-fold" &&
     state.judgementCommittedIds.includes(HERO_ID_CONST);
@@ -43,11 +44,15 @@ export function ActionBar({ isVisible = true, overlayContent }: ActionBarProps) 
     ? Math.max(state.currentBet * 2, hero.currentBet + state.bigBlind)
     : state.bigBlind;
   const minRaise = Math.max(minRaiseCalc, state.bigBlind);
-  const effectiveMax = hero ? Math.max(minRaise, hero.stack + hero.currentBet) : minRaise;
+  const effectiveMax = hero
+    ? Math.max(minRaise, hero.stack + hero.currentBet)
+    : minRaise;
   const callExceedsStack = hero ? toCall >= hero.stack : false;
 
   const [raiseAmount, setRaiseAmount] = useState<number>(minRaise);
-  useEffect(() => { setRaiseAmount(minRaise); }, [minRaise]);
+  useEffect(() => {
+    setRaiseAmount(minRaise);
+  }, [minRaise]);
 
   if (!hero) return null;
 
@@ -56,7 +61,10 @@ export function ActionBar({ isVisible = true, overlayContent }: ActionBarProps) 
   const isAllIn = clampedRaise >= effectiveMax;
 
   function handleFold() {
-    dispatch({ type: "PLAYER_ACTION", payload: { playerId: HERO_ID_CONST, action: "fold" } });
+    dispatch({
+      type: "PLAYER_ACTION",
+      payload: { playerId: HERO_ID_CONST, action: "fold" },
+    });
   }
 
   function handleCheckOrCall() {
@@ -68,11 +76,18 @@ export function ActionBar({ isVisible = true, overlayContent }: ActionBarProps) 
 
   function handleRaiseOrAllIn() {
     if (isAllIn) {
-      dispatch({ type: "PLAYER_ACTION", payload: { playerId: HERO_ID_CONST, action: "all-in" } });
+      dispatch({
+        type: "PLAYER_ACTION",
+        payload: { playerId: HERO_ID_CONST, action: "all-in" },
+      });
     } else {
       dispatch({
         type: "PLAYER_ACTION",
-        payload: { playerId: HERO_ID_CONST, action: "raise", amount: clampedRaise },
+        payload: {
+          playerId: HERO_ID_CONST,
+          action: "raise",
+          amount: clampedRaise,
+        },
       });
     }
   }
@@ -80,12 +95,8 @@ export function ActionBar({ isVisible = true, overlayContent }: ActionBarProps) 
   return (
     <Box
       sx={{
-        p: 2,
-        borderRadius: 2,
-        background: "rgba(0,0,0,0.5)",
-        border: "1px solid rgba(255,255,255,0.1)",
+        py: 2,
         width: "100%",
-        maxWidth: 600,
       }}
     >
       {/*

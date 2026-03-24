@@ -52,6 +52,7 @@ export function HomePage() {
           <Typography
             variant="h1"
             sx={{
+              textAlign: "center",
               textBox: "trim-both ex alphabetic",
             }}
           >

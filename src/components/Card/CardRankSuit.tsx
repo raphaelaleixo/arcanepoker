@@ -118,8 +118,9 @@ export const CardRankSuit: FC<CardRankSuitProps> = ({
         position: "relative",
         zIndex: 1,
         "& > svg": {
-          width: small ? "1em" : "1.5em",
+          width: small ? "0.75em" : "1.5em",
           height: "auto",
+          flexShrink: 0,
         },
         ...sx,
       }}
@@ -130,7 +131,7 @@ export const CardRankSuit: FC<CardRankSuitProps> = ({
         sx={{
           mb: small ? "0.1rem" : "0.25rem",
           letterSpacing: "-2.5px",
-          fontSize: small ? "1.15em" : "1.75em",
+          fontSize: small ? "1em" : "1.75em",
         }}
       >
         {rank === "0" ? "Ø" : rank}

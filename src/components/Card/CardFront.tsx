@@ -32,8 +32,8 @@ export const CardFront: FC<PlayingCard> = ({
     suit === "arcana"
       ? "secondary.dark"
       : suit === "hearts" || suit === "diamonds"
-      ? "redSuit.main"
-      : "blackSuit.main";
+        ? "redSuit.main"
+        : "blackSuit.main";
 
   const shadowColor = "gold.dark";
 
@@ -87,7 +87,7 @@ export const CardFront: FC<PlayingCard> = ({
           top: small ? "70%" : "50%",
           left: small ? "50%" : "50%",
           transform: small
-            ? "translate(-50%, -50%) scale(0.2)"
+            ? "translate(-50%, -50%) scale(0.15)"
             : "translate(-50%, -50%) scale(0.3)",
           color: suit === "arcana" ? "secondary.dark" : suitColor,
           zIndex: 0,
