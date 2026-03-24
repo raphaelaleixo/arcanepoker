@@ -62,12 +62,15 @@ export function ArcanaDisplay({
         <Box
           sx={{
             display: "inline-block",
-            animation: pendingArcanaCard ? `${arcanaRiseIn} 500ms ease-out both` : undefined,
+            animation: pendingArcanaCard
+              ? `${arcanaRiseIn} 500ms ease-out both`
+              : undefined,
           }}
         >
           <Box
             sx={{
               display: "inline-block",
+              lineHeight: 0,
               borderRadius: 1,
               animation: pendingArcanaCard
                 ? `${arcanaFloatBob} 2.4s ease-in-out 500ms infinite`
@@ -89,14 +92,7 @@ export function ArcanaDisplay({
         {/* Description box: fixed size, CSS grid stack inside */}
         <Box
           sx={{
-            border: "1px solid",
-            borderColor: "secondary.dark",
-            borderRadius: 2,
-            p: 1,
-            maxWidth: 180,
             minWidth: 120,
-            background: "rgba(108,52,131,0.2)",
-            textAlign: "center",
           }}
         >
           {/*
@@ -117,11 +113,17 @@ export function ArcanaDisplay({
                 justifyContent: "center",
               }}
             >
-              <Typography variant="caption" sx={{ color: "secondary.light", fontStyle: "italic" }}>
+              <Typography
+                variant="caption"
+                sx={{
+                  color: "secondary.light",
+                  fontStyle: "italic",
+                  width: "100%",
+                }}
+              >
                 An arcana stirs...
               </Typography>
             </Box>
-
             {/* Revealed name + effect — visible after reveal */}
             <Box
               sx={{
@@ -135,12 +137,14 @@ export function ArcanaDisplay({
                 variant="caption"
                 sx={{
                   display: "block",
-                  color: "secondary.main",
+                  color: "primary.main",
                   fontWeight: "bold",
-                  fontSize: "0.75rem",
+                  fontSize: "0.875rem",
+                  fontFamily: "Young Serif, serif",
+                  lineHeight: 1.1,
                 }}
               >
-                {displayArcanaData?.fullName}
+                {arcanaCardToShow?.value} - {displayArcanaData?.fullName}
               </Typography>
               {displayArcanaData?.gameEffect && (
                 <Typography
@@ -149,8 +153,8 @@ export function ArcanaDisplay({
                     display: "block",
                     color: "silver.light",
                     fontSize: "0.65rem",
-                    fontStyle: "italic",
                     mt: 0.25,
+                    lineHeight: 1.1,
                   }}
                 >
                   {displayArcanaData.gameEffect}
