@@ -139,6 +139,13 @@ export function PokerTable() {
             }}
           />
         </Box>
+        <CommunityArea
+          sx={{
+            gridRow: 1,
+            gridColumnStart: 1,
+            gridColumnEnd: 4,
+          }}
+        />
         {bot1 && (
           <PlayerSeat
             player={bot1}
@@ -146,7 +153,7 @@ export function PokerTable() {
             isActive={activePlayer?.id === bot1.id}
             sx={{
               gridColumn: 1,
-              gridRow: 1,
+              gridRow: 2,
             }}
           />
         )}
@@ -157,17 +164,10 @@ export function PokerTable() {
             isActive={activePlayer?.id === bot2.id}
             sx={{
               gridColumn: 3,
-              gridRow: 1,
+              gridRow: 2,
             }}
           />
         )}
-        <CommunityArea
-          sx={{
-            gridRow: 2,
-            gridColumnStart: 1,
-            gridColumnEnd: 4,
-          }}
-        />
         {bot3 && (
           <PlayerSeat
             player={bot3}

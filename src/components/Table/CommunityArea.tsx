@@ -65,12 +65,16 @@ export function CommunityArea({ sx }: CommunityAreaProps) {
         alignItems: "center",
         justifyContent: "center",
         gap: 1.5,
-        p: 2,
         borderRadius: 3,
         //minWidth: { xs: "100%", md: 320 },
         ...sx,
       }}
     >
+      <ArcanaDisplay
+        arcanaCardToShow={arcanaCardToShow}
+        pendingArcanaCard={pendingArcanaCard}
+        displayArcanaData={displayArcanaData}
+      />
       <CommunityCards
         communityCards={state.communityCards}
         totalSlots={totalSlots}
@@ -89,12 +93,6 @@ export function CommunityArea({ sx }: CommunityAreaProps) {
         winnerIds={state.winnerIds}
         players={state.players}
         ruinsPot={state.ruinsPot}
-      />
-
-      <ArcanaDisplay
-        arcanaCardToShow={arcanaCardToShow}
-        pendingArcanaCard={pendingArcanaCard}
-        displayArcanaData={displayArcanaData}
       />
     </Box>
   );

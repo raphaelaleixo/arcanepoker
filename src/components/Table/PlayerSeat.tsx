@@ -64,7 +64,6 @@ export function PlayerSeat({
         borderRadius: 2,
         p: 1.5,
         minWidth: { xs: 140, sm: 160 },
-        maxWidth: 200,
         opacity: player.folded ? 0.55 : 1,
         transition: "opacity 0.3s",
         ...sx,

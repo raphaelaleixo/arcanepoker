@@ -140,13 +140,13 @@ export function PlayerCards({
                 key={`${wheelRound}-${cardKey}-${i}`}
                 onClick={onCardClick ? () => onCardClick(card) : undefined}
                 sx={{
-                  transform: isSelected
-                    ? i === 0
-                      ? "rotate(-6deg) translateY(-10px)"
-                      : "rotate(6deg) translateY(-10px)"
-                    : i === 0
-                      ? "rotate(-6deg)"
-                      : "rotate(6deg)",
+                  // transform: isSelected
+                  //   ? i === 0
+                  //     ? "rotate(-6deg) translateY(-10px)"
+                  //     : "rotate(6deg) translateY(-10px)"
+                  //   : i === 0
+                  //     ? "rotate(-6deg)"
+                  //     : "rotate(6deg)",
                   transformOrigin: "bottom center",
                   ml: i === 0 ? 0 : -0.75,
                   cursor: onCardClick ? "pointer" : "default",
