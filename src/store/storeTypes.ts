@@ -72,7 +72,7 @@ export interface StoreGameState {
   // ── Arcana ───────────────────────────────────────────────────────────────────
   arcanaDeck: ArcanaCard[];
   activeArcana: ActiveArcana | null;
-  arcanaTriggeredThisRound: boolean;
+  arcanaTriggeredThisGame: boolean;
 
   // ── Session ──────────────────────────────────────────────────────────────────
   handNumber: number;

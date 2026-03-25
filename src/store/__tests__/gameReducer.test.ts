@@ -46,10 +46,10 @@ describe("FORCE_ARCANA", () => {
     expect(next.activeArcana?.effectKey).toBe("strength-invert");
   });
 
-  it("sets arcanaTriggeredThisRound: true after force", () => {
+  it("sets arcanaTriggeredThisGame: true after force", () => {
     const state = makePreFlopState();
     const next = gameReducer(state, { type: "FORCE_ARCANA", payload: { value: "8" as ArcanaValue } });
-    expect(next.arcanaTriggeredThisRound).toBe(true);
+    expect(next.arcanaTriggeredThisGame).toBe(true);
   });
 
   it("bypasses hierophantShield when forcing", () => {
@@ -418,5 +418,37 @@ describe("checkPageTrigger with arcanaOverride", () => {
       payload: { playerId: "hero", action: "check" },
     });
     expect(next.arcanaDeck.length).toBe(deckLengthBefore);
+  });
+});
+
+// ─── arcanaTriggeredThisGame persists across hands ────────────────────────────
+
+describe("arcanaTriggeredThisGame", () => {
+  it("persists across NEXT_HAND — once triggered, no second arcana draw this game", () => {
+    // Simulate a game where arcana was already drawn in hand 1
+    const hand1State: StoreGameState = {
+      ...makePreFlopState(),
+      arcanaTriggeredThisGame: true,
+    };
+
+    const afterNextHand = gameReducer(hand1State, { type: "NEXT_HAND" });
+
+    // Flag must survive the hand transition
+    expect(afterNextHand.arcanaTriggeredThisGame).toBe(true);
+  });
+
+  it("resets to false only on START_GAME", () => {
+    const triggered: StoreGameState = {
+      ...makePreFlopState(),
+      arcanaTriggeredThisGame: true,
+    };
+
+    // NEXT_HAND keeps it
+    const afterNext = gameReducer(triggered, { type: "NEXT_HAND" });
+    expect(afterNext.arcanaTriggeredThisGame).toBe(true);
+
+    // START_GAME resets it
+    const fresh = gameReducer(afterNext, { type: "START_GAME" });
+    expect(fresh.arcanaTriggeredThisGame).toBe(false);
   });
 });

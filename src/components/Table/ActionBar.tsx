@@ -97,17 +97,19 @@ export function ActionBar({
       sx={{
         py: 2,
         width: "100%",
+        // Elevate above the tutorial backdrop (z-index 1290) when active
+        ...(tutorial && { position: "relative", zIndex: 1300 }),
       }}
     >
       {/*
-        CSS grid stack: action controls and overlayContent share gridArea "1/1".
-        Opacity transitions swap between them with no layout shift.
+        Action controls define the container height.
+        overlayContent is absolutely positioned so it never contributes to
+        the measured height — no layout shift when overlay appears or changes.
       */}
-      <Box sx={{ display: "grid" }}>
-        {/* Action controls */}
+      <Box sx={{ position: "relative" }}>
+        {/* Action controls — always occupies layout space */}
         <Box
           sx={{
-            gridArea: "1 / 1",
             opacity: isVisible && !overlayContent ? 1 : 0,
             pointerEvents: isVisible && !overlayContent ? "auto" : "none",
             transition: "opacity 200ms ease",
@@ -137,10 +139,17 @@ export function ActionBar({
           />
         </Box>
 
-        {/* Overlay content — same grid cell, fades in when provided */}
+        {/* Overlay content — absolutely positioned so it doesn't affect height.
+            top/left/right anchor with minHeight:"100%" lets short overlays stay
+            centered (flex) while tall content (TutorialNarrationContent) grows
+            downward instead of overflowing upward into the hero-seat area. */}
         <Box
           sx={{
-            gridArea: "1 / 1",
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            minHeight: "100%",
             opacity: overlayContent ? 1 : 0,
             pointerEvents: overlayContent ? "auto" : "none",
             transition: "opacity 200ms ease",

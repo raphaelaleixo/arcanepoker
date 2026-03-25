@@ -146,7 +146,7 @@ function checkPageTrigger(
   state: StoreGameState,
   newCards: StandardCard[]
 ): StoreGameState {
-  if (state.arcanaTriggeredThisRound) return state;
+  if (state.arcanaTriggeredThisGame) return state;
   if (!newCards.some((c) => c.value === "0")) return state;
 
   let arcanaCard: ArcanaCard;
@@ -167,7 +167,7 @@ function checkPageTrigger(
     ...state,
     arcanaDeck: remainingArcanaDeck,
     arcanaOverride: null, // Consumed — clear so it cannot fire again
-    arcanaTriggeredThisRound: true,
+    arcanaTriggeredThisGame: true,
     pendingInteraction: { type: "arcana-reveal", arcanaCard },
   };
 }
@@ -438,7 +438,6 @@ function startHand(state: StoreGameState): StoreGameState {
     dealerIndex: state.dealerIndex,
     activePlayerIndex: utgIdx,
     roundActors: [],
-    arcanaTriggeredThisRound: false,
     activeArcana: null,
     empress6thCardDealt: false,
     temperanceCandidates: null,
@@ -652,7 +651,7 @@ function applyArcana(
   const base: StoreGameState = {
     ...state,
     activeArcana,
-    arcanaTriggeredThisRound: true,
+    arcanaTriggeredThisGame: true,
     isFinalHand: state.isFinalHand || arcanaCard.value === "21",
   };
 
@@ -1108,7 +1107,6 @@ function prepareNextHand(state: StoreGameState): StoreGameState {
     dealerIndex: newDealer % activePlayers.length,
     handNumber: state.handNumber + 1,
     activeArcana: null,
-    arcanaTriggeredThisRound: false,
     justiceRevealedPlayerId: null,
     moonHiddenCommunityIndex: null,
     // ruinsPot carries forward; mark it ready to be awarded at next showdown
@@ -1166,7 +1164,7 @@ export function gameReducer(
       const resetState: StoreGameState = {
         ...state,
         activeArcana: null,
-        arcanaTriggeredThisRound: false,
+        arcanaTriggeredThisGame: false,
       };
       return applyArcana(resetState, arcanaCard);
     }
@@ -1218,7 +1216,7 @@ export function gameReducer(
         currentBet: tutBbPaid,
         potSize: tutSbPaid + tutBbPaid,
         roundActors: [],
-        arcanaTriggeredThisRound: false,
+        arcanaTriggeredThisGame: false,
         activeArcana: null,
         pendingInteraction: null,
         foolCardIndex: null,

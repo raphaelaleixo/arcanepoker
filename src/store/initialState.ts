@@ -87,7 +87,7 @@ export function createInitialState(): StoreGameState {
 
     arcanaDeck: setupArcanaDeck(),
     activeArcana: null,
-    arcanaTriggeredThisRound: false,
+    arcanaTriggeredThisGame: false,
 
     handNumber: 1,
     isFinalHand: false,

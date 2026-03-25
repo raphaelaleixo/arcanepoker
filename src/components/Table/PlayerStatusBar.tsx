@@ -47,7 +47,7 @@ export function PlayerStatusBar({
             sx={{
               color: currentAction ? actionColor(currentAction) : "default",
               fontSize: "0.65rem",
-              height: 18,
+              height: "1.125rem",
               fontWeight: "bold",
               textTransform: "uppercase",
               visibility: currentAction ? "visible" : "hidden",
