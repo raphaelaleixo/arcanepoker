@@ -25,12 +25,15 @@ export interface EvalOptions {
   emperorActive: boolean;
   /** Fool (Arcana 0): Page cards are wildcards */
   foolActive: boolean;
+  /** Hierophant (Arcana 5): flush beats straight (standard poker order) */
+  hierophantActive: boolean;
 }
 
 export const DEFAULT_EVAL_OPTIONS: EvalOptions = {
   strengthActive: false,
   emperorActive: false,
   foolActive: false,
+  hierophantActive: false,
 };
 
 // ─── Internal helpers ─────────────────────────────────────────────────────────
@@ -145,7 +148,8 @@ function aceLowVal(card: StandardCard, desc: number[]): number {
 function evaluateFive(
   five: StandardCard[],
   inverted: boolean,
-  emperorActive: boolean
+  emperorActive: boolean,
+  hierophantActive = false
 ): EvaluatedHand {
   const sorted = [...five].sort(
     (a, b) => numVal(b, inverted) - numVal(a, inverted)
@@ -193,11 +197,11 @@ function evaluateFive(
     kickers = groupKickers(groups, inverted);
   } else if (straight) {
     rankName = "straight";
-    rankValue = 5;
+    rankValue = hierophantActive ? 4 : 5;
     kickers = [straightTop(desc)];
   } else if (flush) {
     rankName = "flush";
-    rankValue = 4;
+    rankValue = hierophantActive ? 5 : 4;
     kickers = cardKickers(sorted, inverted);
   } else if (counts[0] === 3) {
     rankName = "three-of-a-kind";
@@ -239,7 +243,8 @@ function evaluateFive(
 function bestFromCombos(
   cards: StandardCard[],
   inverted: boolean,
-  emperorActive: boolean
+  emperorActive: boolean,
+  hierophantActive = false
 ): EvaluatedHand {
   if (cards.length < 5) {
     // Fewer than 5 cards (e.g. Hermit with 2 hole cards): detect groups
@@ -292,7 +297,7 @@ function bestFromCombos(
 
   let best: EvaluatedHand | null = null;
   for (const combo of combinations(cards, 5)) {
-    const result = evaluateFive(combo, inverted, emperorActive);
+    const result = evaluateFive(combo, inverted, emperorActive, hierophantActive);
     if (!best || compareHands(result, best) > 0) best = result;
   }
   return best!;
@@ -303,13 +308,14 @@ function bestFromCombos(
 function evaluateWithFool(
   available: StandardCard[],
   inverted: boolean,
-  emperorActive: boolean
+  emperorActive: boolean,
+  hierophantActive = false
 ): EvaluatedHand {
   const pages = available.filter((c) => c.value === "0");
   const nonPages = available.filter((c) => c.value !== "0");
 
   if (pages.length === 0) {
-    return bestFromCombos(available, inverted, emperorActive);
+    return bestFromCombos(available, inverted, emperorActive, hierophantActive);
   }
 
   // Exactly ONE Page acts as the Fool wildcard — the Fool arcana injects a single
@@ -333,7 +339,7 @@ function evaluateWithFool(
 
   for (const c of candidates) {
     const hand = [...base, c];
-    const result = bestFromCombos(hand, inverted, emperorActive);
+    const result = bestFromCombos(hand, inverted, emperorActive, hierophantActive);
     if (!best || compareHands(result, best) > 0) best = result;
   }
 
@@ -353,13 +359,13 @@ export function evaluateBestHand(
   available: StandardCard[],
   options: EvalOptions = DEFAULT_EVAL_OPTIONS
 ): EvaluatedHand {
-  const { strengthActive, emperorActive, foolActive } = options;
+  const { strengthActive, emperorActive, foolActive, hierophantActive } = options;
 
   if (foolActive) {
-    return evaluateWithFool(available, strengthActive, emperorActive);
+    return evaluateWithFool(available, strengthActive, emperorActive, hierophantActive);
   }
 
-  return bestFromCombos(available, strengthActive, emperorActive);
+  return bestFromCombos(available, strengthActive, emperorActive, hierophantActive);
 }
 
 /**

@@ -8,7 +8,7 @@ const ARCANA: { name: string; effect: string }[] = [
   { name: "The High Priestess",effect: "All active players reveal one hole card face up." },
   { name: "The Empress",       effect: "A 6th community card is dealt after the River." },
   { name: "The Emperor",       effect: "All hands are treated as high-card hands. Players compare highest card, then next highest, and so on." },
-  { name: "The Hierophant",    effect: "Reveal 3 upcoming Arcana; players still in the round vote on which applies. The dealer breaks ties. Discard the other two." },
+  { name: "The Hierophant",    effect: "Purges the game of Pages: all Pages are removed from the draw deck, and any Page currently in play is replaced with a new card. For this round, flushes beat straights." },
   { name: "The Lovers",        effect: "The pot is split between the two best hands." },
   { name: "The Chariot",       effect: "Active players pass one hole card to the left." },
   { name: "Strength",          effect: "Card values are inverted — 2 is highest, Ace is lowest, Page becomes highest." },

@@ -96,7 +96,7 @@ export type ArcanaEffectKey =
   | "priestess-reveal"      // 2  – each player reveals one hole card
   | "empress-sixth-card"    // 3  – extra community card after river
   | "emperor-highcard"      // 4  – all hands evaluated as high-card (ignore rank)
-  | "hierophant-vote"       // 5  – reveal 3 arcana; players vote; dealer breaks ties
+  | "hierophant-no-pages"   // 5  – purge Pages from deck/cards; flush beats straight
   | "lovers-split-pot"      // 6  – pot split between two best hands
   | "chariot-pass-left"     // 7  – each active player passes one hole card left
   | "strength-invert"       // 8  – card values inverted (2 high, A low)
@@ -128,7 +128,6 @@ export type PendingInteraction =
   | { type: "chariot-pass"; playerId: string; receivedCard?: StandardCard } // hero picks a card to pass
   | { type: "temperance-pick"; playerId: string }     // hero picks 1 of 3 river cards (candidates in state)
   | { type: "star-discard"; playerId: string }         // hero decides whether to swap
-  | { type: "hierophant-vote"; options: [ArcanaCard, ArcanaCard, ArcanaCard] } // hero votes on which arcana to apply
   | { type: "magician-redraw"; playerId: string }      // hero decides whether to redraw both hole cards
   | { type: "tarot-reading" }                          // first-win tarot modal
   | { type: "priestess-reveal"; playerId: string };    // hero picks a hole card to reveal
@@ -143,10 +142,6 @@ export interface ArcaneGameState {
   activeArcana: ActiveArcana | null;
   /** Has an arcana already been triggered this round? (one per round limit) */
   arcanaTriggeredThisRound: boolean;
-  /** Hierophant: the 3 arcana cards players are voting on (null when not active) */
-  hierophantOptions: [ArcanaCard, ArcanaCard, ArcanaCard] | null;
-  /** Hierophant: map of playerId → chosen arcana value */
-  hierophantVotes: Record<string, string>;
   /** Full major arcana draw pile for this game session */
   arcanaDeck: ArcanaCard[];
 

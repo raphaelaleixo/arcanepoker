@@ -34,6 +34,7 @@ export function buildEvalOptions(state: StoreGameState): EvalOptions {
     strengthActive: key === "strength-invert",
     emperorActive: key === "emperor-highcard",
     foolActive: key === "fool-wildcard",
+    hierophantActive: key === "hierophant-no-pages",
   };
 }
 
@@ -658,30 +659,43 @@ function applyArcana(
   switch (effectKey) {
     // ── Immediate effects ─────────────────────────────────────────────────────
 
-    case "hierophant-vote": {
-      // Draw 3 more arcana cards for the vote
-      const [opt1, opt2, opt3, ...remainingArcanaDeck] = base.arcanaDeck;
-      if (!opt1 || !opt2 || !opt3) {
-        // Not enough arcana left — skip (no effect)
-        return base;
-      }
-      const options: [ArcanaCard, ArcanaCard, ArcanaCard] = [opt1, opt2, opt3];
+    case "hierophant-no-pages": {
+      // Step 1: strip Pages from remaining deck
+      let newDeck = base.deck.filter((c) => c.value !== "0");
 
-      // Bots vote: each active bot picks randomly from the 3 options
-      const hierophantVotes: Record<string, string> = {};
-      for (const p of base.players.filter((pl) => pl.type === "ai" && !pl.folded)) {
-        const pick = options[Math.floor(Math.random() * options.length)];
-        hierophantVotes[p.id] = pick.value;
-      }
+      // Step 2: replace Pages in community cards
+      const newCommunityCards = base.communityCards.map((c) => {
+        if (c.value !== "0") return c;
+        const [repl, ...rest] = newDeck;
+        if (!repl) return c; // deck exhausted — keep page as fallback
+        newDeck = rest;
+        return repl;
+      });
+
+      // Step 3: replace Pages in hole cards; track which players changed
+      const holeCardChangeSeeds = { ...base.holeCardChangeSeeds };
+      const newPlayers = base.players.map((p) => {
+        if (p.folded) return p;
+        let changed = false;
+        const newHoleCards = p.holeCards.map((c) => {
+          if (c.value !== "0") return c;
+          const [repl, ...rest] = newDeck;
+          if (!repl) return c;
+          newDeck = rest;
+          changed = true;
+          return repl;
+        });
+        if (changed) holeCardChangeSeeds[p.id] = (holeCardChangeSeeds[p.id] ?? 0) + 1;
+        return changed ? { ...p, holeCards: newHoleCards } : p;
+      });
 
       return {
         ...base,
-        arcanaDeck: remainingArcanaDeck,
-        hierophantOptions: options,
-        hierophantVotes,
-        pendingInteraction: heroFolded(base)
-          ? null
-          : { type: "hierophant-vote", options },
+        deck: newDeck,
+        communityCards: newCommunityCards,
+        players: newPlayers,
+        communityChangeKey: base.communityChangeKey + 1,
+        holeCardChangeSeeds,
       };
     }
 
@@ -1045,49 +1059,6 @@ function resolvePriestess(
   };
 }
 
-// ─── Hierophant vote resolution ───────────────────────────────────────────────
-
-function resolveHierophant(
-  state: StoreGameState,
-  heroChoice: ArcanaCard["value"]
-): StoreGameState {
-  const options = state.hierophantOptions;
-  if (!options) return { ...state, pendingInteraction: null };
-
-  // Tally votes (bots + hero)
-  const allVotes: Record<string, string> = { ...state.hierophantVotes, [HERO_ID]: heroChoice };
-  const tally: Record<string, number> = {};
-  for (const value of Object.values(allVotes)) {
-    tally[value] = (tally[value] ?? 0) + 1;
-  }
-
-  const maxVotes = Math.max(...Object.values(tally));
-  const tied = options.filter((c) => (tally[c.value] ?? 0) === maxVotes);
-
-  let winner: ArcanaCard;
-  if (tied.length === 1) {
-    winner = tied[0];
-  } else {
-    // Dealer tiebreaker: use the dealer's vote if they voted for a tied card
-    const dealer = state.players[state.dealerIndex];
-    const dealerVote = dealer ? allVotes[dealer.id] : undefined;
-    const dealerPick = tied.find((c) => c.value === dealerVote);
-    winner = dealerPick ?? tied[Math.floor(Math.random() * tied.length)];
-  }
-
-  const cleanState: StoreGameState = {
-    ...state,
-    pendingInteraction: null,
-    hierophantOptions: null,
-    hierophantVotes: {},
-    // Restore the arcanaTriggeredThisRound flag so applyArcana doesn't block
-    arcanaTriggeredThisRound: false,
-    activeArcana: null,
-  };
-
-  return applyArcana(cleanState, winner);
-}
-
 // ─── Challenge of the Page ────────────────────────────────────────────────────
 
 function resolvePageChallenge(state: StoreGameState): StoreGameState {
@@ -1140,8 +1111,6 @@ function prepareNextHand(state: StoreGameState): StoreGameState {
     arcanaTriggeredThisRound: false,
     justiceRevealedPlayerId: null,
     moonHiddenCommunityIndex: null,
-    hierophantOptions: null,
-    hierophantVotes: {},
     // ruinsPot carries forward; mark it ready to be awarded at next showdown
     ruinsPotReady: state.ruinsPot > 0,
   };
@@ -1175,9 +1144,6 @@ export function gameReducer(
 
     case "RESOLVE_PRIESTESS":
       return resolvePriestess(state, action.payload.card);
-
-    case "RESOLVE_HIEROPHANT":
-      return resolveHierophant(state, action.payload.choice);
 
     case "REVEAL_ARCANA": {
       if (state.pendingInteraction?.type !== "arcana-reveal") return state;

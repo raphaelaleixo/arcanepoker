@@ -8,10 +8,11 @@
  *   - chariot-pass      Card-pick: click a card to pass it left
  *   - arcana-reveal     One button: flip the pending arcana card
  *   - page-challenge    One button: trigger the Page bounty
+ *   - magician-redraw   Two buttons: Redraw / Keep Hand
  *   - showdown          Two buttons: Read These Cards (tarot) / Next Hand
  *
  * Interactions handled in InteractionModal (multi-choice dialogs with minimize):
- *   - star-discard, moon-swap, magician-guess, judgement-return
+ *   - star-discard, moon-swap, judgement-return
  */
 import { Button, Stack, Typography } from "@mui/material";
 import type React from "react";
@@ -175,6 +176,51 @@ export function TableOverlayContent({
       >
         Reveal Arcana
       </Button>
+    );
+  }
+
+  // ── Magician Redraw ───────────────────────────────────────────────────────
+  if (pendingInteraction?.type === "magician-redraw") {
+    return (
+      <Stack direction="column" alignItems="center" spacing={0.5}>
+        <Typography
+          variant="caption"
+          sx={{ color: "secondary.light", fontSize: "0.7rem", fontStyle: "italic" }}
+        >
+          Discard both hole cards and draw two new ones — or keep your current hand.
+        </Typography>
+        <Stack direction="row" spacing={1}>
+          <Button
+            variant="contained"
+            size="large"
+            onClick={() => dispatch({ type: "RESOLVE_MAGICIAN", payload: { redraw: true } })}
+            sx={{
+              px: 4, py: 1,
+              background: "linear-gradient(135deg, #4a1a6e, #1a0a2e)",
+              border: "1px solid",
+              borderColor: "gold.main",
+              color: "gold.light",
+              letterSpacing: "0.08em",
+              "&:hover": { background: "linear-gradient(135deg, #6c3483, #2d0f4e)", borderColor: "gold.light" },
+            }}
+          >
+            Redraw
+          </Button>
+          <Button
+            variant="outlined"
+            size="large"
+            onClick={() => dispatch({ type: "RESOLVE_MAGICIAN", payload: { redraw: false } })}
+            sx={{
+              px: 3, py: 1,
+              color: "silver.light",
+              borderColor: "silver.dark",
+              "&:hover": { borderColor: "silver.light", background: "rgba(255,255,255,0.05)" },
+            }}
+          >
+            Keep Hand
+          </Button>
+        </Stack>
+      </Stack>
     );
   }
 

@@ -430,7 +430,7 @@ export default {
       description:
         "The Hierophant symbolizes tradition, conformity, and spiritual guidance. It represents a need to follow established rules and values. This card suggests a need to seek wisdom and guidance from established institutions. It's a reminder to honor tradition and seek spiritual growth.",
       gameEffect:
-        "Reveal the next 3 Arcana cards. All players still in the round vote on which applies. The dealer breaks ties. Discard the other two.",
+        "Purges the game of Pages: all Pages are removed from the draw deck, and any Page currently in play (hole cards or community) is replaced with a new card. For this round, flushes beat straights.",
     },
     "6": {
       fullName: "The Lovers",

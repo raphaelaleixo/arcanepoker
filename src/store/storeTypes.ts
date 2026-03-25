@@ -73,10 +73,6 @@ export interface StoreGameState {
   arcanaDeck: ArcanaCard[];
   activeArcana: ActiveArcana | null;
   arcanaTriggeredThisRound: boolean;
-  /** Hierophant: the 3 arcana cards being voted on (null when not active). */
-  hierophantOptions: [ArcanaCard, ArcanaCard, ArcanaCard] | null;
-  /** Hierophant: map of playerId → chosen arcana card value. */
-  hierophantVotes: Record<string, string>;
 
   // ── Session ──────────────────────────────────────────────────────────────────
   handNumber: number;
@@ -142,7 +138,6 @@ export type GameAction =
   | { type: "NEXT_HAND" }
   | { type: "FORCE_ARCANA"; payload: { value: ArcanaValue } }
   | { type: "RESOLVE_PRIESTESS"; payload: { card: StandardCard } }
-  | { type: "RESOLVE_HIEROPHANT"; payload: { choice: ArcanaValue } }
   | {
       type: "TUTORIAL_OVERRIDE_DEAL";
       payload: {
@@ -161,7 +156,7 @@ export const ARCANA_EFFECT_KEYS: ArcanaEffectKey[] = [
   "priestess-reveal",       // 2
   "empress-sixth-card",     // 3
   "emperor-highcard",       // 4
-  "hierophant-vote",        // 5
+  "hierophant-no-pages",    // 5
   "lovers-split-pot",       // 6
   "chariot-pass-left",      // 7
   "strength-invert",        // 8
