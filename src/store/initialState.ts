@@ -80,6 +80,8 @@ export function createInitialState(): StoreGameState {
     smallBlind: SMALL_BLIND,
     potSize: 0,
     currentBet: 0,
+    totalContributions: {},
+    pots: [],
     dealerIndex: 0,
     activePlayerIndex: 0,
 

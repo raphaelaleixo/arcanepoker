@@ -41,6 +41,13 @@ export interface HandResultEntry {
   rankValue: number;
 }
 
+// ─── Side pot ─────────────────────────────────────────────────────────────────
+
+export interface Pot {
+  amount: number;
+  eligiblePlayerIds: string[];
+}
+
 // ─── Full store state ─────────────────────────────────────────────────────────
 
 export interface StoreGameState {
@@ -56,6 +63,10 @@ export interface StoreGameState {
   potSize: number;
   /** Highest bet placed by any player this betting round. */
   currentBet: number;
+  /** Cumulative chips each player has wagered this hand (across all streets). */
+  totalContributions: Record<string, number>;
+  /** Computed at showdown only. Empty during active play. */
+  pots: Pot[];
   dealerIndex: number;
   /** Index of the player whose turn it currently is. */
   activePlayerIndex: number;

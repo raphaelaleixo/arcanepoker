@@ -19,6 +19,7 @@ import type {
   GameAction,
   GamePlayer,
   HandResultEntry,
+  Pot,
 } from "./storeTypes";
 import { ARCANA_EFFECT_KEYS } from "./storeTypes";
 import { createInitialState, HERO_ID_CONST } from "./initialState";
@@ -41,6 +42,61 @@ export function buildEvalOptions(state: StoreGameState): EvalOptions {
 /** Players that are still eligible to bet (not folded, not all-in). */
 function eligiblePlayers(players: GamePlayer[]): GamePlayer[] {
   return players.filter((p) => !p.folded && !p.isAllIn);
+}
+
+/**
+ * Compute main pot and side pots from cumulative player contributions.
+ * All-in players cap out at the level they contributed.
+ * Folded players' chips stay in pots but lose eligibility.
+ */
+function calculatePots(
+  players: GamePlayer[],
+  totalContributions: Record<string, number>
+): Pot[] {
+  const pots: Pot[] = [];
+  const remaining: Record<string, number> = { ...totalContributions };
+
+  const allInLevels = [
+    ...new Set(
+      players
+        .filter((p) => p.isAllIn)
+        .map((p) => totalContributions[p.id] ?? 0)
+    ),
+  ].sort((a, b) => a - b);
+
+  let prevLevel = 0;
+
+  for (const level of allInLevels) {
+    const slice = level - prevLevel;
+    let amount = 0;
+    const eligiblePlayerIds: string[] = [];
+
+    for (const p of players) {
+      const contrib = remaining[p.id] ?? 0;
+      if (contrib <= 0) continue;
+      const taken = Math.min(contrib, slice);
+      amount += taken;
+      remaining[p.id] = contrib - taken;
+      if (!p.folded) eligiblePlayerIds.push(p.id);
+    }
+
+    if (amount > 0) {
+      pots.push({ amount, eligiblePlayerIds });
+    }
+    prevLevel = level;
+  }
+
+  const finalAmount = Object.values(remaining).reduce((s, v) => s + (v ?? 0), 0);
+  if (finalAmount > 0) {
+    // Only players whose remaining contribution is > 0 are eligible for this pot.
+    // This correctly excludes all-in players whose stack was fully covered by prior levels.
+    const eligiblePlayerIds = players
+      .filter((p) => !p.folded && (remaining[p.id] ?? 0) > 0)
+      .map((p) => p.id);
+    pots.push({ amount: finalAmount, eligiblePlayerIds });
+  }
+
+  return pots;
 }
 
 /** True when the current betting round is finished. */
@@ -304,24 +360,53 @@ function evaluateShowdown(state: StoreGameState): StoreGameState {
       return { playerId: p.id, hand };
     });
 
-  let winnerIds = findWinners(handEntries);
+  const ruinsBonus = state.ruinsPotReady ? state.ruinsPot : 0;
+  const totalPot = state.potSize + ruinsBonus;
 
-  // Lovers: split between the two best hands
+  let winnerIds: string[];
+  let newPlayers: GamePlayer[];
+
   if (state.activeArcana?.effectKey === "lovers-split-pot") {
-    const sorted = [...handEntries].sort((a, b) =>
-      compareHands(b.hand, a.hand)
-    );
+    // Lovers bypasses side-pot logic — split full pot between two best hands
+    const sorted = [...handEntries].sort((a, b) => compareHands(b.hand, a.hand));
     winnerIds =
       sorted.length >= 2
         ? [sorted[0].playerId, sorted[1].playerId]
-        : winnerIds;
-  }
+        : [sorted[0].playerId];
+    const perWinner = Math.floor(totalPot / winnerIds.length);
+    newPlayers = state.players.map((p) =>
+      winnerIds.includes(p.id) ? { ...p, stack: p.stack + perWinner } : p
+    );
+  } else {
+    const pots = calculatePots(state.players, state.totalContributions);
 
-  const totalPot = state.potSize + (state.ruinsPotReady ? state.ruinsPot : 0);
-  const perWinner = Math.floor(totalPot / winnerIds.length);
-  const newPlayers = state.players.map((p) =>
-    winnerIds.includes(p.id) ? { ...p, stack: p.stack + perWinner } : p
-  );
+    // Add ruins bonus to the last (largest) pot
+    const potsWithRuins = pots.map((pot, i) =>
+      i === pots.length - 1
+        ? { ...pot, amount: pot.amount + ruinsBonus }
+        : pot
+    );
+
+    newPlayers = [...state.players] as GamePlayer[];
+    const allWinnerIds = new Set<string>();
+
+    for (const pot of potsWithRuins) {
+      const eligibleEntries = handEntries.filter((e) =>
+        pot.eligiblePlayerIds.includes(e.playerId)
+      );
+      if (eligibleEntries.length === 0) continue;
+      const potWinners = findWinners(eligibleEntries);
+      const perWinner = Math.floor(pot.amount / potWinners.length);
+      for (const wId of potWinners) {
+        allWinnerIds.add(wId);
+        const idx = newPlayers.findIndex((p) => p.id === wId);
+        if (idx !== -1) {
+          newPlayers[idx] = { ...newPlayers[idx], stack: newPlayers[idx].stack + perWinner };
+        }
+      }
+    }
+    winnerIds = [...allWinnerIds];
+  }
 
   const handResults: HandResultEntry[] = handEntries.map((e) => ({
     playerId: e.playerId,
@@ -340,6 +425,8 @@ function evaluateShowdown(state: StoreGameState): StoreGameState {
     stage: "showdown",
     players: newPlayers,
     potSize: 0,
+    pots: [],
+    totalContributions: {},
     potWon: totalPot,
     ruinsPot: state.ruinsPotReady ? 0 : state.ruinsPot,
     ruinsPotReady: false,
@@ -369,6 +456,8 @@ function goToLastPlayerWins(
     stage: "showdown",
     players: updated,
     potSize: 0,
+    pots: [],
+    totalContributions: {},
     potWon: pot,
     winnerIds: [winnerId],
     handResults: [],
@@ -435,6 +524,11 @@ function startHand(state: StoreGameState): StoreGameState {
     communityCards: [],
     potSize: sbPaid + bbPaid,
     currentBet: bbPaid,
+    totalContributions: {
+      [players[sbIdx].id]: sbPaid,
+      [players[bbIdx].id]: bbPaid,
+    },
+    pots: [],
     dealerIndex: state.dealerIndex,
     activePlayerIndex: utgIdx,
     roundActors: [],
@@ -567,6 +661,12 @@ function processPlayerAction(
   }
 
   const newPot = state.potSize + potDelta;
+  const newTotalContributions = potDelta > 0
+    ? {
+        ...state.totalContributions,
+        [playerId]: (state.totalContributions[playerId] ?? 0) + potDelta,
+      }
+    : state.totalContributions;
 
   // Hanged Man: if a player just went all-in and the effect is active, deal them an extra hole card
   let hangedManDeck = state.deck;
@@ -613,6 +713,7 @@ function processPlayerAction(
     players,
     deck: hangedManDeck,
     potSize: newPot,
+    totalContributions: newTotalContributions,
     currentBet: newCurrentBet,
     roundActors: newRoundActors,
     judgementCommittedIds,

@@ -452,3 +452,226 @@ describe("arcanaTriggeredThisGame", () => {
     expect(fresh.arcanaTriggeredThisGame).toBe(false);
   });
 });
+
+// ─── Side pot distribution ────────────────────────────────────────────────────
+
+describe("side pot distribution (evaluateShowdown)", () => {
+  // Community cards that don't form straights or flushes: 2♥ 3♦ 9♣ J♠ Q♥
+  const COMMUNITY: StandardCard[] = [
+    { value: "2", suit: "hearts" },
+    { value: "3", suit: "diamonds" },
+    { value: "9", suit: "clubs" },
+    { value: "J", suit: "spades" },
+    { value: "Q", suit: "hearts" },
+  ];
+
+  /**
+   * Build a river state with three active players and custom contributions.
+   * Uses Death arcana (value "13") to immediately trigger evaluateShowdown.
+   */
+  function makeSidePotState({
+    bot1AllIn,
+    bot1Cards,
+    bot2Cards,
+    heroCards,
+    bot1Contribution,
+    bot2Contribution,
+    heroContribution,
+  }: {
+    bot1AllIn: boolean;
+    bot1Cards: [StandardCard, StandardCard];
+    bot2Cards: [StandardCard, StandardCard];
+    heroCards: [StandardCard, StandardCard];
+    bot1Contribution: number;
+    bot2Contribution: number;
+    heroContribution: number;
+  }): StoreGameState {
+    const base = makePreFlopState();
+    const potSize = bot1Contribution + bot2Contribution + heroContribution;
+
+    return {
+      ...base,
+      stage: "river" as const,
+      communityCards: COMMUNITY,
+      potSize,
+      totalContributions: {
+        "bot-swords": bot1Contribution,
+        "bot-pentacles": bot2Contribution,
+        hero: heroContribution,
+      },
+      players: base.players.map((p) => {
+        if (p.id === "bot-swords") {
+          return {
+            ...p,
+            holeCards: bot1Cards,
+            isAllIn: bot1AllIn,
+            stack: bot1AllIn ? 0 : 1000 - bot1Contribution,
+            folded: false,
+          };
+        }
+        if (p.id === "bot-pentacles") {
+          return { ...p, holeCards: bot2Cards, folded: false };
+        }
+        if (p.id === "hero") {
+          return { ...p, holeCards: heroCards, folded: false };
+        }
+        // Fold all other bots so they don't interfere
+        return { ...p, folded: true };
+      }),
+    };
+  }
+
+  it("no all-ins: single pot covers all eligible players and winner gets all", () => {
+    // Bot-swords has AA (best), bot-pentacles has KK, hero has 76o (worst)
+    // No all-ins, equal contributions → one pot of 120, bot-swords wins all
+    const state = makeSidePotState({
+      bot1AllIn: false,
+      bot1Cards: [{ value: "A", suit: "spades" }, { value: "A", suit: "diamonds" }],
+      bot2Cards: [{ value: "K", suit: "spades" }, { value: "K", suit: "diamonds" }],
+      heroCards:  [{ value: "6", suit: "spades" }, { value: "7", suit: "hearts" }],
+      bot1Contribution: 40,
+      bot2Contribution: 40,
+      heroContribution: 40,
+    });
+
+    const next = gameReducer(state, {
+      type: "FORCE_ARCANA",
+      payload: { value: "13" as ArcanaValue },
+    });
+
+    const swords = next.players.find((p) => p.id === "bot-swords")!;
+    expect(next.stage).toBe("showdown");
+    expect(next.potWon).toBe(120);
+    expect(swords.stack).toBe(swords.stack); // winner gains pot
+    expect(next.winnerIds).toContain("bot-swords");
+    expect(next.winnerIds).not.toContain("hero");
+  });
+
+  it("all-in player with best hand wins main pot only; second-best wins side pot", () => {
+    // bot-swords: all-in for 20 (AA = best), bot-pentacles: 40 (KK = 2nd), hero: 40 (76o = worst)
+    // Main pot = 60 (all eligible), side pot = 40 (pentacles + hero)
+    const state = makeSidePotState({
+      bot1AllIn: true,
+      bot1Cards: [{ value: "A", suit: "spades" }, { value: "A", suit: "diamonds" }],
+      bot2Cards: [{ value: "K", suit: "spades" }, { value: "K", suit: "diamonds" }],
+      heroCards:  [{ value: "6", suit: "spades" }, { value: "7", suit: "hearts" }],
+      bot1Contribution: 20,
+      bot2Contribution: 40,
+      heroContribution: 40,
+    });
+
+    // Set stacks to reflect contributions
+    const stateWithStacks: StoreGameState = {
+      ...state,
+      players: state.players.map((p) => {
+        if (p.id === "bot-swords")   return { ...p, stack: 0 };         // all-in
+        if (p.id === "bot-pentacles") return { ...p, stack: 960 };
+        if (p.id === "hero")          return { ...p, stack: 960 };
+        return p;
+      }),
+    };
+
+    const next = gameReducer(stateWithStacks, {
+      type: "FORCE_ARCANA",
+      payload: { value: "13" as ArcanaValue },
+    });
+
+    const swords    = next.players.find((p) => p.id === "bot-swords")!;
+    const pentacles = next.players.find((p) => p.id === "bot-pentacles")!;
+    const hero      = next.players.find((p) => p.id === "hero")!;
+
+    // bot-swords wins main pot (60): started at 0, now +60
+    expect(swords.stack).toBe(60);
+    // bot-pentacles wins side pot (40): started at 960, now +40
+    expect(pentacles.stack).toBe(960 + 40);
+    // hero loses everything
+    expect(hero.stack).toBe(960);
+    expect(next.potWon).toBe(100);
+  });
+
+  it("all-in player with worst hand loses; best-hand player wins both pots", () => {
+    // bot-swords: all-in for 20 (76o = worst), bot-pentacles: 40 (AA = best), hero: 40 (KK = 2nd)
+    // Main pot = 60 (all eligible), side pot = 40 (pentacles + hero)
+    // bot-pentacles wins AA over KK → wins both pots = 100
+    const state = makeSidePotState({
+      bot1AllIn: true,
+      bot1Cards: [{ value: "6", suit: "spades" }, { value: "7", suit: "hearts" }],
+      bot2Cards: [{ value: "A", suit: "spades" }, { value: "A", suit: "diamonds" }],
+      heroCards:  [{ value: "K", suit: "spades" }, { value: "K", suit: "diamonds" }],
+      bot1Contribution: 20,
+      bot2Contribution: 40,
+      heroContribution: 40,
+    });
+
+    const stateWithStacks: StoreGameState = {
+      ...state,
+      players: state.players.map((p) => {
+        if (p.id === "bot-swords")    return { ...p, stack: 0 };
+        if (p.id === "bot-pentacles") return { ...p, stack: 960 };
+        if (p.id === "hero")          return { ...p, stack: 960 };
+        return p;
+      }),
+    };
+
+    const next = gameReducer(stateWithStacks, {
+      type: "FORCE_ARCANA",
+      payload: { value: "13" as ArcanaValue },
+    });
+
+    const swords    = next.players.find((p) => p.id === "bot-swords")!;
+    const pentacles = next.players.find((p) => p.id === "bot-pentacles")!;
+    const hero      = next.players.find((p) => p.id === "hero")!;
+
+    // bot-pentacles wins main pot (60) + side pot (40) = 100
+    expect(pentacles.stack).toBe(960 + 100);
+    // bot-swords loses (had 0 stack, wins nothing from main pot it loses)
+    expect(swords.stack).toBe(0);
+    // hero loses
+    expect(hero.stack).toBe(960);
+  });
+
+  it("totalContributions and pots are reset to empty after showdown", () => {
+    const state = makeSidePotState({
+      bot1AllIn: true,
+      bot1Cards: [{ value: "A", suit: "spades" }, { value: "A", suit: "diamonds" }],
+      bot2Cards: [{ value: "K", suit: "spades" }, { value: "K", suit: "diamonds" }],
+      heroCards:  [{ value: "6", suit: "spades" }, { value: "7", suit: "hearts" }],
+      bot1Contribution: 20,
+      bot2Contribution: 40,
+      heroContribution: 40,
+    });
+
+    const next = gameReducer(state, {
+      type: "FORCE_ARCANA",
+      payload: { value: "13" as ArcanaValue },
+    });
+
+    expect(next.pots).toEqual([]);
+    expect(next.totalContributions).toEqual({});
+  });
+
+  it("goToLastPlayerWins resets totalContributions and pots", () => {
+    // All bots fold → hero is last player and wins via goToLastPlayerWins
+    const base = makePreFlopState();
+    const state: StoreGameState = {
+      ...base,
+      potSize: 60,
+      totalContributions: { hero: 40, "bot-swords": 20 },
+      pots: [],
+      players: base.players.map((p) =>
+        p.id === "hero" ? p : { ...p, folded: true }
+      ),
+    };
+
+    // Any hero action now triggers goToLastPlayerWins since only hero remains
+    const next = gameReducer(state, {
+      type: "PLAYER_ACTION",
+      payload: { playerId: "hero", action: "check" },
+    });
+
+    expect(next.stage).toBe("showdown");
+    expect(next.totalContributions).toEqual({});
+    expect(next.pots).toEqual([]);
+    expect(next.winnerIds).toContain("hero");
+  });
+});
