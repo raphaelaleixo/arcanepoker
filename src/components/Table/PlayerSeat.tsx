@@ -5,17 +5,12 @@
  */
 import { Box, SxProps, Typography } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import { keyframes } from "@emotion/react";
 import { useGame } from "../../store/useGame";
 import type { GamePlayer } from "../../store/storeTypes";
 import type { StandardCard } from "../../types/types";
 import { PlayerCards } from "./PlayerCards";
 import { PlayerStatusBar } from "./PlayerStatusBar";
 
-const pulse = keyframes`
-  0%, 100% { transform: scale(1); opacity: 0.85; }
-  50% { transform: scale(1.7); opacity: 0.3; }
-`;
 
 interface PlayerSeatProps {
   player: GamePlayer;
@@ -69,21 +64,6 @@ export function PlayerSeat({
         ...sx,
       }}
     >
-      {isActive && !player.folded && (
-        <Box
-          sx={{
-            position: "absolute",
-            top: 6,
-            right: 6,
-            width: 7,
-            height: 7,
-            borderRadius: "50%",
-            bgcolor: "gold.main",
-            opacity: 0.85,
-            animation: `${pulse} 1.4s ease-in-out infinite`,
-          }}
-        />
-      )}
       <PlayerStatusBar
         currentAction={player.currentAction ?? null}
         handResult={handResult}
@@ -127,6 +107,7 @@ export function PlayerSeat({
         isHero={isHero}
         redrawSeed={state.holeCardChangeSeeds?.[player.id] ?? 0}
         playerId={player.id}
+        isActive={isActive && !player.folded}
       />
       {/* Player name and stack */}
       <Box

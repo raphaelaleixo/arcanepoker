@@ -10,6 +10,7 @@
 import { useEffect, useRef, useState } from "react";
 import { keyframes } from "@emotion/react";
 import { Box, Stack } from "@mui/material";
+import type { Theme } from "@mui/material/styles";
 import { PlayingCard } from "../Card/PlayingCard";
 import { DealtCard } from "../Card/DealtCard";
 import type { StandardCard } from "../../types/types";
@@ -40,6 +41,8 @@ interface PlayerCardsProps {
   redrawSeed?: number;
   /** The player's ID — used for tutorial card spotlight. */
   playerId?: string;
+  /** When true, applies a secondary-color glow behind the cards. */
+  isActive?: boolean;
 }
 
 export function PlayerCards({
@@ -54,6 +57,7 @@ export function PlayerCards({
   isHero = false,
   redrawSeed = 0,
   playerId,
+  isActive = false,
 }: PlayerCardsProps) {
   const highlights = useTutorialOptional()?.highlightCards ?? null;
   // Local card buffer — holds old cards during the exit animation so they stay
@@ -106,14 +110,20 @@ export function PlayerCards({
         direction="row"
         justifyContent="center"
         alignItems="flex-end"
-        sx={
-          isExiting
+        sx={{
+          ...(isExiting
             ? {
                 animation: `${dealOut} 280ms ease-in both`,
                 pointerEvents: "none",
               }
-            : {}
-        }
+            : {}),
+          ...(isActive
+            ? {
+                filter: (theme: Theme) =>
+                  `drop-shadow(0 0 8px ${theme.palette.secondary.main}99)`,
+              }
+            : {}),
+        }}
       >
         {displayCards.length > 0 ? (
           displayCards.map((card, i) => {
