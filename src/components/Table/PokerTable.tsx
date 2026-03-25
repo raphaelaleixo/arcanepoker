@@ -19,12 +19,17 @@ import { PlaygroundDrawer } from "../Dev/PlaygroundDrawer";
 import { DealerChip } from "./DealerChip";
 import { TableOverlayContent } from "./TableOverlayContent";
 import { TutorialOverlay } from "../Tutorial/TutorialOverlay";
+import { useTutorialOptional } from "../../tutorial/TutorialContext";
+import { TutorialNarrationContent } from "../Tutorial/TutorialNarrationContent";
 import { ArcanaDisplayCard } from "./ArcanaDisplayCard";
 
 const BETTING_STAGES = ["pre-flop", "flop", "turn", "river", "empress"];
 
 export function PokerTable() {
   const { state, dispatch } = useGame();
+  const tutorial = useTutorialOptional();
+  const isTutorial = tutorial?.isTutorial ?? false;
+  const narration = tutorial?.narration ?? null;
   const [showTarot, setShowTarot] = useState(false);
   const [playgroundOpen, setPlaygroundOpen] = useState(false);
   const [selectedCard, setSelectedCard] = useState<StandardCard | null>(null);
@@ -72,27 +77,30 @@ export function PokerTable() {
   const bot3 = state.players.find((p) => p.position === 3);
   const bot4 = state.players.find((p) => p.position === 4);
 
-  // Call as a plain function (not JSX) so it can return undefined.
-  // If constructed as <TableOverlayContent .../> it would always be a
-  // ReactElement (truthy), making ActionBar's overlay guard permanently on.
-  const overlayContent = TableOverlayContent({
-    cardPickInteraction,
-    selectedCard,
-    stage: state.stage,
-    pendingInteraction: state.pendingInteraction,
-    winnerIds: state.winnerIds,
-    communityCards: state.communityCards,
-    bigBlind: state.bigBlind,
-    isFinalHand: state.isFinalHand,
-    onConfirmCardPick: confirmCardPick,
-    onKeepBothStar: keepBothStar,
-    onNextHand: () => {
-      setShowTarot(false);
-      dispatch({ type: "NEXT_HAND" });
-    },
-    onShowTarot: () => setShowTarot(true),
-    dispatch,
-  });
+  // In tutorial mode, skip TableOverlayContent entirely — the tutorial manages
+  // all interactive flow via pendingDispatchOnDismiss automatically.
+  // This also prevents the arcana-reveal button from flashing during the 100ms
+  // gap between dismissNarration() and the REVEAL_ARCANA dispatch.
+  const overlayContent = isTutorial
+    ? (narration ? <TutorialNarrationContent /> : undefined)
+    : TableOverlayContent({
+        cardPickInteraction,
+        selectedCard,
+        stage: state.stage,
+        pendingInteraction: state.pendingInteraction,
+        winnerIds: state.winnerIds,
+        communityCards: state.communityCards,
+        bigBlind: state.bigBlind,
+        isFinalHand: state.isFinalHand,
+        onConfirmCardPick: confirmCardPick,
+        onKeepBothStar: keepBothStar,
+        onNextHand: () => {
+          setShowTarot(false);
+          dispatch({ type: "NEXT_HAND" });
+        },
+        onShowTarot: () => setShowTarot(true),
+        dispatch,
+      });
 
   const pendingArcanaCard =
     state.pendingInteraction?.type === "arcana-reveal"
@@ -240,7 +248,7 @@ export function PokerTable() {
             gridColumnEnd: 4,
           }}
         >
-          <ActionBar isVisible={isHeroTurn} overlayContent={overlayContent} />
+          <ActionBar isVisible={isHeroTurn || (isTutorial && narration !== null)} overlayContent={overlayContent} />
         </Box>
       </Box>
       {/* Overlay modals */}
