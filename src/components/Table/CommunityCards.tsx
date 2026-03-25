@@ -54,7 +54,9 @@ export function CommunityCards({
         const card = communityCards[i];
         const isHighlighted =
           highlights != null &&
-          highlights.some((h) => h.type === "community" && h.communityIndex === i);
+          highlights.some(
+            (h) => h.type === "community" && h.communityIndex === i,
+          );
         if (card) {
           // Turn/river cards are dealt individually, so each resets stagger to 0.
           const di = i < 3 ? i : 0;
@@ -64,7 +66,17 @@ export function CommunityCards({
             return (
               <Box
                 key={`${wheelRound}-fool-${communityChangeKey}-${i}`}
-                sx={{ lineHeight: 0, ...(isHighlighted ? { position: "relative", zIndex: 1295, borderRadius: 1, boxShadow: "0 0 18px 6px rgba(201,169,110,0.75)" } : {}) }}
+                sx={{
+                  lineHeight: 0,
+                  ...(isHighlighted
+                    ? {
+                        position: "relative",
+                        zIndex: 1295,
+                        borderRadius: 1,
+                        boxShadow: "0 0 18px 6px rgba(201,169,110,0.75)",
+                      }
+                    : {}),
+                }}
               >
                 <DealtCard
                   small
@@ -83,7 +95,17 @@ export function CommunityCards({
             return (
               <Box
                 key={`${wheelRound}-moon-${communityChangeKey}-${i}`}
-                sx={{ lineHeight: 0, ...(isHighlighted ? { position: "relative", zIndex: 1295, borderRadius: 1, boxShadow: "0 0 18px 6px rgba(201,169,110,0.75)" } : {}) }}
+                sx={{
+                  lineHeight: 0,
+                  ...(isHighlighted
+                    ? {
+                        position: "relative",
+                        zIndex: 1295,
+                        borderRadius: 1,
+                        boxShadow: "0 0 18px 6px rgba(201,169,110,0.75)",
+                      }
+                    : {}),
+                }}
               >
                 <DealtCard
                   small
@@ -99,7 +121,17 @@ export function CommunityCards({
           return (
             <Box
               key={`${wheelRound}-${i}`}
-              sx={{ lineHeight: 0, ...(isHighlighted ? { position: "relative", zIndex: 1295, borderRadius: 1, boxShadow: "0 0 18px 6px rgba(201,169,110,0.75)" } : {}) }}
+              sx={{
+                lineHeight: 0,
+                ...(isHighlighted
+                  ? {
+                      position: "relative",
+                      zIndex: 1295,
+                      borderRadius: 1,
+                      boxShadow: "0 0 18px 6px rgba(201,169,110,0.75)",
+                    }
+                  : {}),
+              }}
             >
               <DealtCard
                 small
@@ -116,12 +148,17 @@ export function CommunityCards({
           <Box
             key={i}
             sx={{
-              width: "3em",
+              width: "2.5em",
               aspectRatio: "5/7",
               borderRadius: 1,
-              border: "1px dashed rgba(255,255,255,0.2)",
-              background: "rgba(0,0,0,0.2)",
-              ...(isHighlighted ? { position: "relative", zIndex: 1295, boxShadow: "0 0 18px 6px rgba(201,169,110,0.75)" } : {}),
+
+              ...(isHighlighted
+                ? {
+                    position: "relative",
+                    zIndex: 1295,
+                    boxShadow: "0 0 18px 6px rgba(201,169,110,0.75)",
+                  }
+                : {}),
             }}
           />
         );

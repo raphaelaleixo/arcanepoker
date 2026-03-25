@@ -19,6 +19,7 @@ import { PlaygroundDrawer } from "../Dev/PlaygroundDrawer";
 import { DealerChip } from "./DealerChip";
 import { TableOverlayContent } from "./TableOverlayContent";
 import { TutorialOverlay } from "../Tutorial/TutorialOverlay";
+import { ArcanaDisplayCard } from "./ArcanaDisplayCard";
 
 const BETTING_STAGES = ["pre-flop", "flop", "turn", "river", "empress"];
 
@@ -93,6 +94,19 @@ export function PokerTable() {
     dispatch,
   });
 
+  const pendingArcanaCard =
+    state.pendingInteraction?.type === "arcana-reveal"
+      ? (
+          state.pendingInteraction as {
+            type: "arcana-reveal";
+            arcanaCard: ArcanaCard;
+          }
+        ).arcanaCard
+      : null;
+
+  const arcanaCardToShow =
+    pendingArcanaCard ?? state.activeArcana?.card ?? null;
+
   return (
     <Box
       sx={{
@@ -111,7 +125,8 @@ export function PokerTable() {
         sx={{
           position: "absolute",
           height: "800px",
-          width: "360px",
+          width: "calc(100% - 3em)",
+          maxWidth: "500px",
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
@@ -124,7 +139,7 @@ export function PokerTable() {
           sx={{
             gridColumn: "1 / 4",
             gridRow: "1 / 5",
-            p: "3em",
+            p: "6em 3em",
           }}
         >
           <Box
@@ -136,6 +151,8 @@ export function PokerTable() {
               objectFit: "cover",
               borderRadius: "16px",
               overflow: "hidden",
+              border: "1px solid",
+              borderColor: "#333",
             }}
           />
         </Box>
@@ -206,6 +223,10 @@ export function PokerTable() {
             }}
           />
         )}
+        <ArcanaDisplayCard
+          pendingArcanaCard={pendingArcanaCard}
+          arcanaCardToShow={arcanaCardToShow}
+        />
         {/* Action bar */}
         <Box
           sx={{

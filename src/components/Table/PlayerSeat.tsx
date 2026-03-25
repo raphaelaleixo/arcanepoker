@@ -140,12 +140,12 @@ export function PlayerSeat({
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          mt: 0,
+          mt: "0.35em",
           position: "relative",
           zIndex: 2,
           width: "fit-content",
           mx: "auto",
-          "& > *": { lineHeight: 1 },
+          "& > *": { lineHeight: 0.95 },
         }}
       >
         <Typography variant="caption" fontWeight="bold" fontSize="0.65em">

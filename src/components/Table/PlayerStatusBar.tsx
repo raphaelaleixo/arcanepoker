@@ -92,6 +92,7 @@ export function PlayerStatusBar({
       <Typography
         variant="caption"
         sx={{
+          position: "absolute",
           display: "block",
           textAlign: "center",
           color: "gold.main",

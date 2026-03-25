@@ -44,7 +44,7 @@ export function ArcanaDisplay({
   displayArcanaData,
 }: ArcanaDisplayProps) {
   return (
-    <Box sx={{ display: "grid", width: "100%" }}>
+    <Box sx={{ display: "grid", width: "100%", pt: 2 }}>
       {/* Arcana card + description — same grid cell, fades in when active */}
       <Stack
         direction="row"
@@ -52,43 +52,13 @@ export function ArcanaDisplay({
         alignItems="center"
         justifyContent="center"
         sx={{
+          height: "5em",
           gridArea: "1 / 1",
           opacity: arcanaCardToShow ? 1 : 0,
           pointerEvents: arcanaCardToShow ? "auto" : "none",
           transition: "opacity 400ms ease",
         }}
       >
-        {/* Card animates in and bobs while pending */}
-        <Box
-          sx={{
-            display: "inline-block",
-            animation: pendingArcanaCard
-              ? `${arcanaRiseIn} 500ms ease-out both`
-              : undefined,
-          }}
-        >
-          <Box
-            sx={{
-              display: "inline-block",
-              lineHeight: 0,
-              borderRadius: 1,
-              animation: pendingArcanaCard
-                ? `${arcanaFloatBob} 2.4s ease-in-out 500ms infinite`
-                : undefined,
-              boxShadow: pendingArcanaCard
-                ? "0 0 12px 4px rgba(179, 57, 219, 0.55)"
-                : undefined,
-            }}
-          >
-            <PlayingCard
-              small
-              rank={arcanaCardToShow?.value}
-              suit={arcanaCardToShow?.suit}
-              flipped={!!arcanaCardToShow && !pendingArcanaCard}
-            />
-          </Box>
-        </Box>
-
         {/* Description box: fixed size, CSS grid stack inside */}
         <Box
           sx={{
@@ -119,6 +89,7 @@ export function ArcanaDisplay({
                   color: "secondary.light",
                   fontStyle: "italic",
                   width: "100%",
+                  textAlign: "center",
                 }}
               >
                 An arcana stirs...
@@ -131,6 +102,7 @@ export function ArcanaDisplay({
                 opacity: pendingArcanaCard ? 0 : 1,
                 pointerEvents: pendingArcanaCard ? "none" : "auto",
                 transition: "opacity 300ms ease",
+                textAlign: "center",
               }}
             >
               <Typography
@@ -139,7 +111,7 @@ export function ArcanaDisplay({
                   display: "block",
                   color: "primary.main",
                   fontWeight: "bold",
-                  fontSize: "0.875rem",
+                  fontSize: "0.9rem",
                   fontFamily: "Young Serif, serif",
                   lineHeight: 1.1,
                 }}
@@ -152,7 +124,8 @@ export function ArcanaDisplay({
                   sx={{
                     display: "block",
                     color: "silver.light",
-                    fontSize: "0.65rem",
+                    fontSize: "0.75rem",
+                    fontWeight: 500,
                     mt: 0.25,
                     lineHeight: 1.1,
                   }}
