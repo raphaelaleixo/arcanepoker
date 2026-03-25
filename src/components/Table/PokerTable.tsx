@@ -132,7 +132,7 @@ export function PokerTable() {
           right: 0,
           mx: "auto",
           display: "grid",
-          gridTemplateColumns: "auto auto auto",
+          gridTemplateColumns: "auto 1fr auto",
           gridTemplateRows: "auto auto auto auto auto",
         }}
       >

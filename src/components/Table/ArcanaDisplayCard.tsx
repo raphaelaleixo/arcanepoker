@@ -38,7 +38,36 @@ export function ArcanaDisplayCard({
 }: ArcanaDisplayProps) {
   return (
     <Box
-      sx={{ display: "grid", width: "100%", gridRow: "2 / 4", gridColumn: "2" }}
+      sx={{
+        display: "grid",
+        width: "100%",
+        gridRow: "2 / 4",
+        gridColumn: "2",
+        position: "relative",
+        zIndex: -1,
+        "&:before, &:after": {
+          content: "''",
+          display: "block",
+          position: "absolute",
+          width: "100%",
+          maxWidth: "10em",
+          aspectRatio: "69/57",
+          backgroundImage: "url(art/background-table.svg)",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          top: 0,
+          left: "50%",
+          transform: "translateX(-50%)",
+
+          opacity: 0.3,
+        },
+        "&:after": {
+          zIndex: -1,
+          transform: "translateX(-50%) rotate(180deg)",
+          top: "auto",
+          bottom: 0,
+        },
+      }}
     >
       {/* Arcana card + description — same grid cell, fades in when active */}
       <Stack

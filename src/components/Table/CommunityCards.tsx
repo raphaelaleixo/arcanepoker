@@ -58,7 +58,7 @@ export function CommunityCards({
   const highlights = useTutorialOptional()?.highlightCards ?? null;
 
   return (
-    <Stack direction="row" spacing={0.75} alignItems="center">
+    <Stack direction="row" spacing={0.75} alignItems="center" useFlexGap>
       {Array.from({ length: totalSlots }).map((_, i) => {
         const card = communityCards[i];
         const isHighlighted =
@@ -93,7 +93,9 @@ export function CommunityCards({
               }}
             >
               {card && (
-                <Box sx={{ position: "absolute", top: 0, left: 0, lineHeight: 0 }}>
+                <Box
+                  sx={{ position: "absolute", top: 0, left: 0, lineHeight: 0 }}
+                >
                   <DealtCard
                     small
                     rank={"0" as ArcanaCard["value"]}
@@ -124,7 +126,9 @@ export function CommunityCards({
               }}
             >
               {card && (
-                <Box sx={{ position: "absolute", top: 0, left: 0, lineHeight: 0 }}>
+                <Box
+                  sx={{ position: "absolute", top: 0, left: 0, lineHeight: 0 }}
+                >
                   <DealtCard
                     small
                     rank={card.value}
@@ -160,7 +164,9 @@ export function CommunityCards({
             }}
           >
             {card && (
-              <Box sx={{ position: "absolute", top: 0, left: 0, lineHeight: 0 }}>
+              <Box
+                sx={{ position: "absolute", top: 0, left: 0, lineHeight: 0 }}
+              >
                 <DealtCard
                   small
                   rank={card.value}
