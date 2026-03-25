@@ -38,7 +38,9 @@ export function PlayerStatusBar({
             gridArea: "1 / 1",
             display: "flex",
             justifyContent: "center",
-            opacity: 1,
+            opacity: showHandResult ? 0 : 1,
+            pointerEvents: showHandResult ? "none" : "auto",
+            transition: "opacity 250ms ease",
           }}
         >
           <Typography

@@ -11,7 +11,6 @@ import type { StandardCard } from "../../types/types";
 import { PlayerCards } from "./PlayerCards";
 import { PlayerStatusBar } from "./PlayerStatusBar";
 
-
 interface PlayerSeatProps {
   player: GamePlayer;
   playerIndex: number;
@@ -38,7 +37,6 @@ export function PlayerSeat({
   const isShowdown = state.stage === "showdown";
   const priestessCard = state.priestessRevealedCards?.[player.id] ?? null;
 
-  const showHandResult = isShowdown && !player.folded;
   const handResult = state.handResults.find((r) => r.playerId === player.id);
   const isWinner = state.winnerIds.includes(player.id);
 
@@ -68,7 +66,7 @@ export function PlayerSeat({
         currentAction={player.currentAction ?? null}
         handResult={handResult}
         isWinner={isWinner}
-        showHandResult={showHandResult}
+        showHandResult={isShowdown && !player.folded && !!handResult}
       />
       {isJusticeRevealed && (
         <Box
@@ -129,6 +127,9 @@ export function PlayerSeat({
           fontSize="0.65em"
           fontFamily="Young Serif"
           color="gold.main"
+          sx={{
+            wordWrap: "nowrap",
+          }}
         >
           {player.name}
         </Typography>

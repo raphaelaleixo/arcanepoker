@@ -7,8 +7,6 @@ describe('PlayerStatusBar', () => {
     const { container } = render(
       <PlayerStatusBar
         currentAction={null}
-        currentBet={0}
-        isAllIn={false}
         handResult={undefined}
         isWinner={false}
         showHandResult={false}
@@ -17,31 +15,45 @@ describe('PlayerStatusBar', () => {
     expect(container.firstChild).not.toBeNull();
   });
 
-  it('renders with an active action', () => {
-    const { container } = render(
+  it('action chip is visible when showHandResult is false', () => {
+    const { getByText } = render(
       <PlayerStatusBar
         currentAction="raise"
-        currentBet={100}
-        isAllIn={false}
         handResult={undefined}
         isWinner={false}
         showHandResult={false}
       />
     );
-    expect(container.firstChild).not.toBeNull();
+    const actionEl = getByText('raise', { exact: false });
+    expect(actionEl).toBeTruthy();
+    expect(actionEl.style.visibility).not.toBe('hidden');
   });
 
-  it('renders at showdown with a hand result', () => {
-    const { container } = render(
+  it('action chip text is still in DOM when showHandResult is true (opacity fades via CSS)', () => {
+    const { getByText } = render(
+      <PlayerStatusBar
+        currentAction="raise"
+        handResult={undefined}
+        isWinner={false}
+        showHandResult={true}
+      />
+    );
+    // Element remains in DOM (opacity 0 via CSS), not removed
+    const actionEl = getByText('raise', { exact: false });
+    expect(actionEl).toBeTruthy();
+  });
+
+  it('hand rank is visible at showdown', () => {
+    const { getByText } = render(
       <PlayerStatusBar
         currentAction={null}
-        currentBet={0}
-        isAllIn={false}
         handResult={{ rankName: 'two-pair' }}
         isWinner={true}
         showHandResult={true}
       />
     );
-    expect(container.firstChild).not.toBeNull();
+    const rankEl = getByText(/two pair/i);
+    expect(rankEl).toBeTruthy();
+    expect(rankEl.style.visibility).not.toBe('hidden');
   });
 });

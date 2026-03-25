@@ -132,47 +132,6 @@ export type PendingInteraction =
   | { type: "tarot-reading" }                          // first-win tarot modal
   | { type: "priestess-reveal"; playerId: string };    // hero picks a hole card to reveal
 
-// ─── Extended game state ──────────────────────────────────────────────────────
-
-export type BettingRound = "pre-flop" | "flop" | "turn" | "river";
-
-export interface ArcaneGameState {
-  // ── Arcana ────────────────────────────────────────────────────────────────
-  /** The currently active Major Arcana card for this round (null if none) */
-  activeArcana: ActiveArcana | null;
-  /** Has an arcana already been triggered this round? (one per round limit) */
-  arcanaTriggeredThisRound: boolean;
-  /** Full major arcana draw pile for this game session */
-  arcanaDeck: ArcanaCard[];
-
-  // ── Game session ──────────────────────────────────────────────────────────
-  handNumber: number;
-  bigBlind: number;
-  smallBlind: number;
-  /** Set true once the hero wins their first hand — triggers Tarot Reading modal */
-  hasWonFirstHand: boolean;
-  /** World card (21) was reached — this is the final hand */
-  isFinalHand: boolean;
-
-  // ── Pending UI interaction ────────────────────────────────────────────────
-  pendingInteraction: PendingInteraction | null;
-
-  // ── Empress: track if a 6th community card should be dealt ───────────────
-  empress6thCardDealt: boolean;
-
-  // ── Moon: index of the community card hidden until showdown ─────────────
-  moonHiddenCommunityIndex: number | null;
-  /** Justice: playerId whose entire hand is revealed face-up this round */
-  justiceRevealedPlayerId: string | null;
-  /** Tower: chips set aside to be awarded to the winner of the next round */
-  ruinsPot: number;
-  /** Tower: true once the next hand starts — ruins pot is ready to be awarded */
-  ruinsPotReady: boolean;
-
-  // ── Temperance: the three candidate river cards ──────────────────────────
-  temperanceCandidates: [StandardCard, StandardCard, StandardCard] | null;
-}
-
 // ─── Tarot reading (LLM integration) ─────────────────────────────────────────
 
 export interface TarotReadingRequest {
