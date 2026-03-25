@@ -127,9 +127,10 @@ export function PokerTable() {
           height: "800px",
           width: "calc(100% - 3em)",
           maxWidth: "500px",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
+          top: "calc(50% - 400px)",
+          left: 0,
+          right: 0,
+          mx: "auto",
           display: "grid",
           gridTemplateColumns: "auto auto auto",
           gridTemplateRows: "auto auto auto auto auto",
@@ -220,7 +221,7 @@ export function PokerTable() {
               gridRow: 4,
               gridColumnStart: 1,
               gridColumnEnd: 4,
-              transform: "translateY(-2em)",
+              mt: "-2em",
             }}
           />
         )}

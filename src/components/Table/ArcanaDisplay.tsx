@@ -41,9 +41,11 @@ export function ArcanaDisplay({
         sx={{
           height: "5em",
           gridArea: "1 / 1",
-          opacity: arcanaCardToShow ? 1 : 0,
+          opacity: arcanaCardToShow ? 1 : 1,
           pointerEvents: arcanaCardToShow ? "auto" : "none",
           transition: "opacity 400ms ease",
+          borderBottom: "1px solid rgba(255,255,255,0.08)",
+          mb: 2,
         }}
       >
         {/* Description box: fixed size, CSS grid stack inside */}
@@ -74,9 +76,11 @@ export function ArcanaDisplay({
                 variant="caption"
                 sx={{
                   color: "secondary.light",
-                  fontStyle: "italic",
                   width: "100%",
                   textAlign: "center",
+                  fontWeight: "bold",
+                  fontSize: "0.9rem",
+                  fontFamily: "Young Serif, serif",
                 }}
               >
                 An arcana stirs...
@@ -86,7 +90,7 @@ export function ArcanaDisplay({
             <Box
               sx={{
                 gridArea: "1 / 1",
-                opacity: pendingArcanaCard ? 0 : 1,
+                opacity: arcanaCardToShow && !pendingArcanaCard ? 1 : 0,
                 pointerEvents: pendingArcanaCard ? "none" : "auto",
                 transition: "opacity 300ms ease",
                 textAlign: "center",
