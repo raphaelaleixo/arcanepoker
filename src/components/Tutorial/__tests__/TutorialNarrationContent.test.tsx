@@ -34,9 +34,9 @@ describe('TutorialNarrationContent', () => {
     expect(getByText(/Lowest card in isolation/)).not.toBeNull();
   });
 
-  it('renders TUTORIAL label in uppercase', () => {
+  it('renders the label with title', () => {
     const { getByText } = render(<TutorialNarrationContent />);
-    expect(getByText(/TUTORIAL/i)).not.toBeNull();
+    expect(getByText(/Tutorial · The Page Card/)).not.toBeNull();
   });
 
   it('calls dismissNarration when Next button is clicked', () => {
