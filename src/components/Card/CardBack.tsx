@@ -30,16 +30,17 @@ export const CardBack: FC<PlayingCard> = ({ small = false, sx }) => {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
+        gap: small ? "0px" : "8px",
         svg: {
-          width: "1.25em",
+          width: small ? "1.25em" : "3em",
           height: "auto",
           fill: "currentcolor",
           "&:nth-of-type(2)": {
-            width: "0.75em",
+            width: small ? "0.75em" : "1.5em",
             my: "0.25em",
             path: {
               stroke: "currentcolor",
-              strokeWidth: 7,
+              strokeWidth: small ? 7 : 9,
               fill: "none",
             },
           },

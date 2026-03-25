@@ -7,20 +7,7 @@
  * via a CSS grid stack so no layout shift occurs.
  */
 import { Box, Stack, Typography } from "@mui/material";
-import { keyframes } from "@emotion/react";
-import { PlayingCard } from "../Card/PlayingCard";
 import type { ArcanaCard } from "../../types/types";
-
-// Keyframes live here — they are only used by ArcanaDisplay after the split.
-const arcanaRiseIn = keyframes`
-  from { opacity: 0; transform: translateY(30px) scale(0.85); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
-`;
-
-const arcanaFloatBob = keyframes`
-  0%, 100% { transform: translateY(0); }
-  50%       { transform: translateY(-5px); }
-`;
 
 interface ArcanaDisplayProps {
   /** The arcana card to show (pending or active). Null hides the whole display. */
