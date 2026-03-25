@@ -78,6 +78,7 @@ export function CommunityArea({ sx }: CommunityAreaProps) {
       <CommunityCards
         communityCards={state.communityCards}
         totalSlots={totalSlots}
+        empressActive={state.activeArcana?.effectKey === "empress-sixth-card"}
         foolCardIndex={state.foolCardIndex}
         moonHiddenCommunityIndex={state.moonHiddenCommunityIndex}
         moonAffectedIndex={state.moonAffectedIndex}
