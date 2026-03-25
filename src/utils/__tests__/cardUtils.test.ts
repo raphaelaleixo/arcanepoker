@@ -9,8 +9,8 @@ describe('actionLabel', () => {
     expect(actionLabel('raise')).toBe('Raise');
     expect(actionLabel('bet')).toBe('Bet');
     expect(actionLabel('all-in')).toBe('All-In');
-    expect(actionLabel('smallBlind')).toBe('SB');
-    expect(actionLabel('bigBlind')).toBe('BB');
+    expect(actionLabel('smallBlind')).toBe('Small Blind');
+    expect(actionLabel('bigBlind')).toBe('Big Blind');
   });
 
   it('returns the raw value for unknown actions', () => {
@@ -19,14 +19,14 @@ describe('actionLabel', () => {
 });
 
 describe('actionColor', () => {
-  it('returns error for fold', () => expect(actionColor('fold')).toBe('error'));
+  it('returns error for fold', () => expect(actionColor('fold')).toBe('rgb(239, 68, 68)'));
   it('returns warning for aggressive actions', () => {
-    expect(actionColor('raise')).toBe('warning');
-    expect(actionColor('bet')).toBe('warning');
-    expect(actionColor('all-in')).toBe('warning');
+    expect(actionColor('raise')).toBe('rgb(245, 158, 11)');
+    expect(actionColor('bet')).toBe('rgb(245, 158, 11)');
+    expect(actionColor('all-in')).toBe('rgb(245, 158, 11)');
   });
-  it('returns info for call', () => expect(actionColor('call')).toBe('info'));
-  it('returns success for check', () => expect(actionColor('check')).toBe('success'));
+  it('returns info for call', () => expect(actionColor('call')).toBe('rgb(34, 197, 94)'));
+  it('returns success for check', () => expect(actionColor('check')).toBe('rgb(34, 197, 94)'));
   it('returns default for unknown', () => expect(actionColor('unknown')).toBe('default'));
 });
 

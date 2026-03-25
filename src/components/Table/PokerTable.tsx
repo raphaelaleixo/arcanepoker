@@ -221,7 +221,6 @@ export function PokerTable() {
               gridRow: 4,
               gridColumnStart: 1,
               gridColumnEnd: 4,
-              mt: "-2em",
             }}
           />
         )}

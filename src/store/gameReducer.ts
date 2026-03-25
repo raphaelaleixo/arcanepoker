@@ -409,16 +409,20 @@ function startHand(state: StoreGameState): StoreGameState {
   }
 
   // Post blinds (don't add to roundActors — blinds aren't voluntary actions)
+  const sbPaid = Math.min(state.smallBlind, players[sbIdx].stack);
+  const bbPaid = Math.min(state.bigBlind, players[bbIdx].stack);
   players[sbIdx] = {
     ...players[sbIdx],
-    currentBet: state.smallBlind,
-    stack: players[sbIdx].stack - state.smallBlind,
+    currentBet: sbPaid,
+    stack: players[sbIdx].stack - sbPaid,
+    isAllIn: players[sbIdx].stack <= state.smallBlind,
     currentAction: "smallBlind",
   };
   players[bbIdx] = {
     ...players[bbIdx],
-    currentBet: state.bigBlind,
-    stack: players[bbIdx].stack - state.bigBlind,
+    currentBet: bbPaid,
+    stack: players[bbIdx].stack - bbPaid,
+    isAllIn: players[bbIdx].stack <= state.bigBlind,
     currentAction: "bigBlind",
   };
 
@@ -428,8 +432,8 @@ function startHand(state: StoreGameState): StoreGameState {
     players,
     deck: remaining,
     communityCards: [],
-    potSize: state.smallBlind + state.bigBlind,
-    currentBet: state.bigBlind,
+    potSize: sbPaid + bbPaid,
+    currentBet: bbPaid,
     dealerIndex: state.dealerIndex,
     activePlayerIndex: utgIdx,
     roundActors: [],
@@ -1217,13 +1221,16 @@ export function gameReducer(
         // at the correct tutorial positions. p.currentBet holds whatever was posted.
         const cleanStack = p.stack + p.currentBet;
 
+        const sbPaidT = isSB ? Math.min(state.smallBlind, cleanStack) : 0;
+        const bbPaidT = isBB ? Math.min(state.bigBlind, cleanStack) : 0;
+        const paid = sbPaidT || bbPaidT;
         return {
           ...p,
           holeCards: scripted ?? p.holeCards,
-          currentBet: isSB ? state.smallBlind : isBB ? state.bigBlind : 0,
-          stack: cleanStack - (isSB ? state.smallBlind : isBB ? state.bigBlind : 0),
+          currentBet: paid,
+          stack: cleanStack - paid,
           folded: false,
-          isAllIn: false,
+          isAllIn: (isSB && cleanStack <= state.smallBlind) || (isBB && cleanStack <= state.bigBlind),
           currentAction: isSB
             ? ("smallBlind" as const)
             : isBB
@@ -1232,6 +1239,9 @@ export function gameReducer(
         };
       });
 
+      const tutSbPaid = players[sbIdx].currentBet;
+      const tutBbPaid = players[bbIdx].currentBet;
+
       return {
         ...state,
         stage: "pre-flop",
@@ -1239,8 +1249,8 @@ export function gameReducer(
         communityCards: [],
         dealerIndex,
         activePlayerIndex: utgIdx,
-        currentBet: state.bigBlind,
-        potSize: state.smallBlind + state.bigBlind,
+        currentBet: tutBbPaid,
+        potSize: tutSbPaid + tutBbPaid,
         roundActors: [],
         arcanaTriggeredThisRound: false,
         activeArcana: null,

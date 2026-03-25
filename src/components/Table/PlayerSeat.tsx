@@ -139,7 +139,7 @@ export function PlayerSeat({
           zIndex: 2,
           width: "fit-content",
           mx: "auto",
-          "& > *": { lineHeight: 0.9, my: "0.12em" },
+          "&& > *": { lineHeight: 1, my: "0.1em" },
         }}
       >
         <Typography

@@ -151,7 +151,8 @@ export function CommunityCards({
               width: "2.5em",
               aspectRatio: "5/7",
               borderRadius: 1,
-
+              background: "black",
+              border: "1px solid rgba(255,255,255,0.2)",
               ...(isHighlighted
                 ? {
                     position: "relative",

@@ -31,7 +31,7 @@ export function PlayerStatusBar({
         share the same space. Opacity transitions swap between them without any
         layout shift — the container height never changes.
       */}
-      <Box sx={{ display: "grid", mt: 0.5 }}>
+      <Box sx={{ display: "grid", mt: 0.5, height: "1.125rem" }}>
         {/* Action chip — fades out at showdown */}
         <Box
           sx={{
@@ -60,6 +60,7 @@ export function PlayerStatusBar({
         {/* Hand rank — fades in at showdown */}
         <Box
           sx={{
+            height: "1.125rem",
             gridArea: "1 / 1",
             display: "flex",
             justifyContent: "center",
