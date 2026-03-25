@@ -1,11 +1,17 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, fireEvent } from '@testing-library/react';
-import { TutorialNarrationContent } from '../TutorialNarrationContent';
 
 const mockDismiss = vi.fn();
+const mockUseTutorial = vi.fn();
 
 vi.mock('../../../tutorial/TutorialContext', () => ({
-  useTutorial: () => ({
+  useTutorial: () => mockUseTutorial(),
+}));
+
+import { TutorialNarrationContent } from '../TutorialNarrationContent';
+
+function makeNarrationMock() {
+  return {
     isTutorial: true as const,
     narration: { title: 'The Page Card', body: 'Lowest card in isolation.' },
     dismissNarration: mockDismiss,
@@ -13,8 +19,13 @@ vi.mock('../../../tutorial/TutorialContext', () => ({
     isComplete: false,
     highlightCards: null,
     currentRound: 1 as const,
-  }),
-}));
+  };
+}
+
+beforeEach(() => {
+  mockUseTutorial.mockReturnValue(makeNarrationMock());
+  mockDismiss.mockClear();
+});
 
 describe('TutorialNarrationContent', () => {
   it('renders the narration title and body', () => {
@@ -32,5 +43,11 @@ describe('TutorialNarrationContent', () => {
     const { getByText } = render(<TutorialNarrationContent />);
     fireEvent.click(getByText('Next →'));
     expect(mockDismiss).toHaveBeenCalledOnce();
+  });
+
+  it('renders nothing when narration is null', () => {
+    mockUseTutorial.mockReturnValue({ ...makeNarrationMock(), narration: null });
+    const { container } = render(<TutorialNarrationContent />);
+    expect(container.firstChild).toBeNull();
   });
 });
