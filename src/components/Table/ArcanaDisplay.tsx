@@ -6,8 +6,14 @@
  * and the name/effect fades in. Both states share the same container height
  * via a CSS grid stack so no layout shift occurs.
  */
+import { keyframes } from "@emotion/react";
 import { Box, Stack, Typography } from "@mui/material";
 import type { ArcanaCard } from "../../types/types";
+
+const stirsPulse = keyframes`
+  0%, 100% { opacity: 0.4; }
+  50%       { opacity: 1; }
+`;
 
 interface ArcanaDisplayProps {
   /** The arcana card to show (pending or active). Null hides the whole display. */
@@ -81,6 +87,7 @@ export function ArcanaDisplay({
                   fontWeight: "bold",
                   fontSize: "0.9rem",
                   fontFamily: "Young Serif, serif",
+                  animation: `${stirsPulse} 2s ease-in-out infinite`,
                 }}
               >
                 An arcana stirs...
