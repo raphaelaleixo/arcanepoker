@@ -401,7 +401,7 @@ export default {
       description:
         "The Magician symbolizes power, skill, and manifestation. It represents the ability to harness your inner resources and create your reality. This card suggests a need to be confident and resourceful. It's a reminder to trust your abilities and take action.",
       gameEffect:
-        "After the final betting round, each player may discard both hole cards and draw two new ones from the deck before hands are revealed.",
+        "After the final round, each player may discard their hand and draw a new one.",
     },
     "2": {
       fullName: "The High Priestess",
@@ -422,15 +422,15 @@ export default {
       tags: ["authority", "structure", "control", "stability"],
       description:
         "The Emperor represents authority, structure, and control. It signifies a need for order and stability. This card suggests a need to be assertive and responsible. It's a reminder to take charge and create a solid foundation.",
-      gameEffect:
-        "All hands are treated as high-card hands. Pairs, straights, flushes — none of it matters. Compare your highest card, then the next, and so on.",
+      gameEffect: "All hands are treated as high-card hands.",
     },
     "5": {
       fullName: "The Hierophant",
       tags: ["tradition", "conformity", "morality", "spiritual guidance"],
       description:
         "The Hierophant symbolizes tradition, conformity, and spiritual guidance. It represents a need to follow established rules and values. This card suggests a need to seek wisdom and guidance from established institutions. It's a reminder to honor tradition and seek spiritual growth.",
-      gameEffect: "Reveal the next 3 Arcana cards. All players still in the round vote on which applies. The dealer breaks ties. Discard the other two.",
+      gameEffect:
+        "Reveal the next 3 Arcana cards. All players still in the round vote on which applies. The dealer breaks ties. Discard the other two.",
     },
     "6": {
       fullName: "The Lovers",
@@ -452,7 +452,8 @@ export default {
       tags: ["courage", "inner strength", "patience", "compassion"],
       description:
         "Strength represents courage, inner strength, and compassion. It signifies a need to overcome challenges with grace and resilience. This card suggests a need to be patient and compassionate. It's a reminder to trust your inner strength and find balance.",
-      gameEffect: "Card values are inverted — 2 is highest, Ace is lowest, Page becomes highest.",
+      gameEffect:
+        "Card values are inverted — 2 is highest, Ace is lowest, Page becomes highest.",
     },
     "9": {
       fullName: "The Hermit",
@@ -467,14 +468,15 @@ export default {
       tags: ["fate", "change", "cycles", "destiny"],
       description:
         "The Wheel of Fortune represents fate, change, and destiny. It signifies a need to embrace the cyclical nature of life and accept change. This card suggests a need to be adaptable and flexible. It's a reminder to trust the process and embrace new opportunities.",
-      gameEffect: "All players' hole cards are shuffled together and redealt. Each player receives the same number of cards they had. Community cards remain unchanged.",
+      gameEffect: "All players' hands are shuffled together and redealt.",
     },
     "11": {
       fullName: "Justice",
       tags: ["fairness", "truth", "balance", "consequences"],
       description:
         "Justice symbolizes fairness, truth, and consequences. It represents a need to be honest and accountable for your actions. This card suggests a need to be impartial and objective. It's a reminder to seek balance and justice.",
-      gameEffect: "One random player still in the round reveals all cards in their hand. Those cards remain face up for the rest of the round.",
+      gameEffect:
+        "One random player still in the round reveals all cards in their hand.",
     },
     "12": {
       fullName: "The Hanged Man",
@@ -495,49 +497,55 @@ export default {
       tags: ["balance", "harmony", "patience", "moderation"],
       description:
         "Temperance represents balance, harmony, and moderation. It signifies a need to find equilibrium and harmony in your life. This card suggests a need to be patient and adaptable. It's a reminder to seek balance and harmony.",
-      gameEffect: "Players must use both hole cards and exactly 3 of the community cards.",
+      gameEffect:
+        "Players must use both cards in hand and exactly 3 of the community cards.",
     },
     "15": {
       fullName: "The Devil",
       tags: ["shadow self", "addiction", "materialism", "restriction"],
       description:
         "The Devil symbolizes the shadow self, addiction, and restriction. It represents a need to confront your fears and limitations. This card suggests a need to be aware of your negative patterns and behaviors. It's a reminder to break free from self-imposed limitations.",
-      gameEffect: "The first player to act each post-flop street must bet — checking is forbidden for the opener.",
+      gameEffect: "The first player to act each post-flop street must bet.",
     },
     "16": {
       fullName: "The Tower",
       tags: ["sudden change", "upheaval", "revelation", "chaos"],
       description:
         "The Tower represents sudden change, upheaval, and revelation. It signifies a need to embrace unexpected change and transformation. This card suggests a need to be adaptable and resilient. It's a reminder to trust the process and find strength in chaos.",
-      gameEffect: "Half the pot (rounded up) is removed and held as a ruins pot. The ruins pot is awarded to the winner of the next round.",
+      gameEffect:
+        "Half the pot (rounded up) is removed and held as a ruins pot for the next round.",
     },
     "17": {
       fullName: "The Star",
       tags: ["hope", "inspiration", "faith", "renewal"],
       description:
         "The Star symbolizes hope, inspiration, and renewal. It represents a need to have faith and trust in the universe. This card suggests a need to be optimistic and hopeful. It's a reminder to follow your dreams and embrace new beginnings.",
-      gameEffect: "Each player may discard one hole card and draw a new one from the deck.",
+      gameEffect:
+        "Each player may discard one card and draw a new one from the deck.",
     },
     "18": {
       fullName: "The Moon",
       tags: ["intuition", "fear", "illusions", "subconscious"],
       description:
         "The Moon represents intuition, fear, and illusions. It signifies a need to trust your intuition and confront your fears. This card suggests a need to be aware of your subconscious patterns and beliefs. It's a reminder to trust your gut and seek deeper understanding.",
-      gameEffect: "One random community card is turned face down and hidden until showdown, when it is revealed and used normally.",
+      gameEffect:
+        "One random community card is redrawn face down and hidden until showdown.",
     },
     "19": {
       fullName: "The Sun",
       tags: ["joy", "success", "vitality", "optimism"],
       description:
         "The Sun symbolizes joy, success, and vitality. It represents a time of happiness, abundance, and positive energy. This card suggests a need to embrace your inner light and shine brightly. It's a reminder to be optimistic and grateful.",
-      gameEffect: "The round ends immediately and the pot is split equally among all active players.",
+      gameEffect:
+        "The round ends immediately and the pot is split equally among all active players.",
     },
     "20": {
       fullName: "Judgment",
       tags: ["renewal", "reflection", "awakening", "evaluation"],
       description:
         "Judgment symbolizes renewal, reflection, and awakening. It represents a time of self-evaluation and transformation. This card suggests a need to reflect on your past experiences and make positive changes. It's a reminder to embrace new opportunities and move forward with purpose.",
-      gameEffect: "Any player who bets or raises this hand may not fold for the remainder of the hand.",
+      gameEffect:
+        "Any player who bets or raises this hand may not fold this round.",
     },
     "21": {
       fullName: "The World",

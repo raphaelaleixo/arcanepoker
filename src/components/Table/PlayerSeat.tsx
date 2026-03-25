@@ -120,7 +120,31 @@ export function PlayerSeat({
         isWinner={isWinner}
         showHandResult={showHandResult}
       />
-
+      {isJusticeRevealed && (
+        <Box
+          sx={{
+            position: "absolute",
+            top: "42%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            zIndex: 4,
+            width: "1.5em",
+            height: "1.5em",
+            borderRadius: "50%",
+            bgcolor: "rgba(255, 255, 255, 0.8)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <VisibilityIcon
+            sx={{
+              fontSize: "0.75rem",
+              color: "secondary.dark",
+            }}
+          />
+        </Box>
+      )}
       <PlayerCards
         holeCards={player.holeCards}
         showFaceUp={showFaceUp}
