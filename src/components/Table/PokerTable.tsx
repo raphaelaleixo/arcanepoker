@@ -5,9 +5,9 @@
  * delegates all overlay UI to TableOverlayContent.
  */
 import { useState } from "react";
-import { Box, Button, Stack } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import { useGame } from "../../store/useGame";
-import type { StandardCard } from "../../types/types";
+import type { ArcanaCard, StandardCard } from "../../types/types";
 import { PlayerSeat } from "./PlayerSeat";
 import { CommunityArea } from "./CommunityArea";
 import { ActionBar } from "./ActionBar";
@@ -135,7 +135,7 @@ export function PokerTable() {
           gridTemplateRows: "auto auto auto auto auto",
         }}
       >
-        <Box
+        {/* <Box
           sx={{
             gridColumn: "1 / 4",
             gridRow: "1 / 5",
@@ -155,7 +155,7 @@ export function PokerTable() {
               borderColor: "#333",
             }}
           />
-        </Box>
+        </Box> */}
         <CommunityArea
           sx={{
             gridRow: 1,
@@ -220,6 +220,7 @@ export function PokerTable() {
               gridRow: 4,
               gridColumnStart: 1,
               gridColumnEnd: 4,
+              transform: "translateY(-2em)",
             }}
           />
         )}

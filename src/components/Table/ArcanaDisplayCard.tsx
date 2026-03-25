@@ -30,12 +30,6 @@ interface ArcanaDisplayProps {
    * When non-null, the card shows its back and the description shows the pending placeholder.
    */
   pendingArcanaCard: ArcanaCard | null;
-  /**
-   * Pre-fetched from the pending card so the description box has stable dimensions
-   * before the reveal animation. Null when no arcana is active.
-   * Shape matches tarot.arcana record values: { fullName, gameEffect? }.
-   */
-  displayArcanaData: { fullName: string; gameEffect?: string } | null;
 }
 
 export function ArcanaDisplayCard({

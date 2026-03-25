@@ -11,8 +11,6 @@ import {
 
 interface PlayerStatusBarProps {
   currentAction: string | null;
-  currentBet: number;
-  isAllIn: boolean;
   /** Present at showdown if this player's hand was evaluated. */
   handResult: { rankName: string } | undefined;
   isWinner: boolean;
@@ -22,8 +20,6 @@ interface PlayerStatusBarProps {
 
 export function PlayerStatusBar({
   currentAction,
-  currentBet,
-  isAllIn,
   handResult,
   isWinner,
   showHandResult,
@@ -87,26 +83,6 @@ export function PlayerStatusBar({
           </Typography>
         </Box>
       </Box>
-
-      {/* Bet / All-In — always occupies space, visible only when applicable */}
-      <Typography
-        variant="caption"
-        sx={{
-          position: "absolute",
-          display: "block",
-          textAlign: "center",
-          color: "gold.main",
-          fontSize: "0.65rem",
-          mt: 0.25,
-          visibility:
-            (currentBet > 0 || isAllIn) && !showHandResult
-              ? "visible"
-              : "hidden",
-        }}
-      >
-        {currentBet > 0 ? `Bet: ${currentBet}` : "\u00A0"}
-        {isAllIn ? " · All-In" : ""}
-      </Typography>
     </>
   );
 }

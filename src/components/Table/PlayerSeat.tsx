@@ -84,38 +84,8 @@ export function PlayerSeat({
           }}
         />
       )}
-
-      {/* <Typography
-        variant="caption"
-        sx={{
-          display: "block",
-          color: isHero ? "gold.light" : "silver.light",
-          fontWeight: "bold",
-          mb: 0.5,
-          fontSize: "0.75rem",
-          whiteSpace: "nowrap",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-        }}
-      >
-        {player.name}
-        {isWinner ? " ★" : ""}
-        {isJusticeRevealed && (
-          <VisibilityIcon
-            sx={{
-              fontSize: "0.75rem",
-              ml: 0.4,
-              verticalAlign: "middle",
-              color: "secondary.light",
-            }}
-          />
-        )}{" "}
-        &mdash; &#9824; {player.stack}
-      </Typography> */}
       <PlayerStatusBar
         currentAction={player.currentAction ?? null}
-        currentBet={player.currentBet}
-        isAllIn={player.isAllIn}
         handResult={handResult}
         isWinner={isWinner}
         showHandResult={showHandResult}
@@ -169,14 +139,30 @@ export function PlayerSeat({
           zIndex: 2,
           width: "fit-content",
           mx: "auto",
-          "& > *": { lineHeight: 0.95 },
+          "& > *": { lineHeight: 0.9, my: "0.12em" },
         }}
       >
-        <Typography variant="caption" fontWeight="bold" fontSize="0.65em">
+        <Typography
+          variant="caption"
+          fontWeight="bold"
+          fontSize="0.65em"
+          fontFamily="Young Serif"
+          color="gold.main"
+        >
           {player.name}
         </Typography>
         <Typography variant="caption" fontWeight={800} fontSize="0.75em">
           {player.stack}
+          {player.currentBet > 0 ? (
+            <Typography
+              variant="inherit"
+              component="span"
+              color="secondary.main"
+              sx={{ ml: 0.5 }}
+            >
+              {player.currentBet > 0 ? `(${player.currentBet})` : "\u00A0"}
+            </Typography>
+          ) : null}
         </Typography>
       </Box>
     </Box>
