@@ -214,6 +214,12 @@ export function magicianShouldRedraw(
   return hand.rankValue < 2; // redraw if high-card (0) or pair (1)
 }
 
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function roundToBigBlind(amount: number, bigBlind: number): number {
+  return Math.round(amount / bigBlind) * bigBlind;
+}
+
 // ─── Main AI decision function ────────────────────────────────────────────────
 
 export function makeAIDecision(ctx: AIContext): AIDecision {
@@ -278,7 +284,7 @@ export function makeAIDecision(ctx: AIContext): AIDecision {
     if (effectiveStrength >= 5 && aggressionMultiplier > 0) {
       const raiseAmt = Math.min(
         Math.max(
-          Math.floor(potSize * aggressionMultiplier),
+          roundToBigBlind(potSize * aggressionMultiplier, bigBlind),
           bigBlind * 2
         ),
         playerStack
@@ -294,7 +300,7 @@ export function makeAIDecision(ctx: AIContext): AIDecision {
   if (effectiveStrength >= 7 && aggressionMultiplier > 0.3) {
     const raiseAmt = Math.min(
       Math.max(
-        Math.floor(toCall * 2.5 * aggressionMultiplier),
+        roundToBigBlind(toCall * 2.5 * aggressionMultiplier, bigBlind),
         bigBlind * 3
       ),
       playerStack
