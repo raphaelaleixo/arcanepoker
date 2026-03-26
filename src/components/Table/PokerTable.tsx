@@ -77,6 +77,17 @@ export function PokerTable() {
   const bot3 = state.players.find((p) => p.position === 3);
   const bot4 = state.players.find((p) => p.position === 4);
 
+  // Mirrors the render conditions inside TableOverlayContent so that
+  // overlayContent is undefined (falsy) when nothing would show — allowing
+  // ActionBar's `overlayContent ? 1 : 0` guard to work correctly while
+  // still using JSX (required for React Fast Refresh / HMR).
+  const hasTableOverlay =
+    cardPickInteraction !== null ||
+    state.pendingInteraction?.type === "page-challenge" ||
+    state.pendingInteraction?.type === "arcana-reveal" ||
+    state.pendingInteraction?.type === "magician-redraw" ||
+    (state.stage === "showdown" && state.pendingInteraction === null);
+
   // In tutorial mode, skip TableOverlayContent entirely — the tutorial manages
   // all interactive flow via pendingDispatchOnDismiss automatically.
   // This also prevents the arcana-reveal button from flashing during the 100ms
@@ -85,26 +96,26 @@ export function PokerTable() {
     narration ? (
       <TutorialNarrationContent />
     ) : undefined
-  ) : (
-    TableOverlayContent({
-      cardPickInteraction,
-      selectedCard,
-      stage: state.stage,
-      pendingInteraction: state.pendingInteraction,
-      winnerIds: state.winnerIds,
-      communityCards: state.communityCards,
-      bigBlind: state.bigBlind,
-      isFinalHand: state.isFinalHand,
-      onConfirmCardPick: confirmCardPick,
-      onKeepBothStar: keepBothStar,
-      onNextHand: () => {
+  ) : hasTableOverlay ? (
+    <TableOverlayContent
+      cardPickInteraction={cardPickInteraction}
+      selectedCard={selectedCard}
+      stage={state.stage}
+      pendingInteraction={state.pendingInteraction}
+      winnerIds={state.winnerIds}
+      communityCards={state.communityCards}
+      bigBlind={state.bigBlind}
+      isFinalHand={state.isFinalHand}
+      onConfirmCardPick={confirmCardPick}
+      onKeepBothStar={keepBothStar}
+      onNextHand={() => {
         setShowTarot(false);
         dispatch({ type: "NEXT_HAND" });
-      },
-      onShowTarot: () => setShowTarot(true),
-      dispatch,
-    })
-  );
+      }}
+      onShowTarot={() => setShowTarot(true)}
+      dispatch={dispatch}
+    />
+  ) : undefined;
 
   const pendingArcanaCard =
     state.pendingInteraction?.type === "arcana-reveal"

@@ -4,6 +4,7 @@
  */
 import { Stack, Typography } from "@mui/material";
 import type { GamePlayer } from "../../store/storeTypes";
+import { useAnimatedValue } from "../../hooks/useAnimatedValue";
 
 interface PotDisplayProps {
   stage: string;
@@ -26,6 +27,9 @@ export function PotDisplay({
   players,
   ruinsPot,
 }: PotDisplayProps) {
+  const animatedPot = useAnimatedValue(potSize, 300);
+  const animatedBet = useAnimatedValue(currentBet, 300);
+
   const ruinsPotEl = ruinsPot > 0 ? (
     <Typography variant="body2" sx={{ color: "error.light", fontWeight: "bold" }}>
       &#x1F3F0; {ruinsPot}
@@ -65,11 +69,11 @@ export function PotDisplay({
   return (
     <Stack direction="row" spacing={2} alignItems="center" justifyContent="center" sx={{ minHeight: 24 }}>
       <Typography variant="body2" sx={{ color: "gold.main", fontWeight: "bold" }}>
-        Pot: {potSize}
+        Pot: {animatedPot}
       </Typography>
       {currentBet > 0 && (
         <Typography variant="body2" sx={{ color: "silver.light" }}>
-          Bet: {currentBet}
+          Bet: {animatedBet}
         </Typography>
       )}
       {ruinsPotEl}

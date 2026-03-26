@@ -10,6 +10,7 @@ import type { GamePlayer } from "../../store/storeTypes";
 import type { StandardCard } from "../../types/types";
 import { PlayerCards } from "./PlayerCards";
 import { PlayerStatusBar } from "./PlayerStatusBar";
+import { useAnimatedValue } from "../../hooks/useAnimatedValue";
 
 interface PlayerSeatProps {
   player: GamePlayer;
@@ -41,6 +42,7 @@ export function PlayerSeat({
   const isWinner = state.winnerIds.includes(player.id);
 
   const isJusticeRevealed = state.justiceRevealedPlayerId === player.id;
+  const animatedStack = useAnimatedValue(player.stack, 300);
 
   // Hero is always face-up. Non-folded players at a real showdown (with a
   // hand result) are face-up. Bluff-wins (no handResult) stay hidden.
@@ -134,7 +136,7 @@ export function PlayerSeat({
           {player.name}
         </Typography>
         <Typography variant="caption" fontWeight={800} fontSize="0.75em">
-          {player.stack}
+          {animatedStack}
           {player.currentBet > 0 ? (
             <Typography
               variant="inherit"

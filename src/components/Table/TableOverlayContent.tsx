@@ -42,9 +42,8 @@ interface TableOverlayContentProps {
 }
 
 /**
- * Called as a plain function (not JSX) from PokerTable so it can return
- * undefined — JSX element instantiation always produces a ReactElement object,
- * which would make ActionBar's `overlayContent ? 1 : 0` guard always truthy.
+ * Rendered via JSX from PokerTable (guarded by `hasTableOverlay`) so React
+ * Fast Refresh can hot-swap it during development.
  */
 export function TableOverlayContent({
   cardPickInteraction,
@@ -71,13 +70,13 @@ export function TableOverlayContent({
           : "Click a card to pass it to the player on your left.";
 
     return (
-      <Stack direction="column" alignItems="center" spacing={0.5}>
+      <Stack direction="column" alignItems="center" spacing={1}>
         <Typography
           variant="caption"
           sx={{
-            color: "secondary.light",
-            fontSize: "0.7rem",
-            fontStyle: "italic",
+            color: "silver.light",
+            fontSize: "0.75rem",
+            fontWeight: 500,
           }}
         >
           {instructionText}
@@ -85,42 +84,14 @@ export function TableOverlayContent({
         <Stack direction="row" spacing={1}>
           <Button
             variant="contained"
-            size="large"
+            size="small"
             disabled={!selectedCard}
             onClick={onConfirmCardPick}
-            sx={{
-              px: 5,
-              py: 1,
-              background: "linear-gradient(135deg, #4a1a6e, #1a0a2e)",
-              border: "1px solid",
-              borderColor: "secondary.main",
-              color: "secondary.light",
-              letterSpacing: "0.08em",
-              "&:hover": {
-                background: "linear-gradient(135deg, #6c3483, #2d0f4e)",
-                borderColor: "secondary.light",
-              },
-              "&.Mui-disabled": { opacity: 0.4 },
-            }}
           >
             Confirm
           </Button>
           {cardPickInteraction === "star-discard" && (
-            <Button
-              variant="outlined"
-              size="large"
-              onClick={onKeepBothStar}
-              sx={{
-                px: 3,
-                py: 1,
-                color: "silver.light",
-                borderColor: "silver.dark",
-                "&:hover": {
-                  borderColor: "silver.light",
-                  background: "rgba(255,255,255,0.05)",
-                },
-              }}
-            >
+            <Button variant="outlined" size="small" onClick={onKeepBothStar}>
               Keep Both
             </Button>
           )}
@@ -132,30 +103,24 @@ export function TableOverlayContent({
   // ── Page Challenge ────────────────────────────────────────────────────────
   if (pendingInteraction?.type === "page-challenge") {
     return (
-      <Stack direction="column" alignItems="center" spacing={0.5}>
-        <Button
-          variant="contained"
-          onClick={() => dispatch({ type: "RESOLVE_PAGE_CHALLENGE" })}
-          sx={{
-            background: "linear-gradient(135deg, #7B3F00, #3E1F00)",
-            border: "1px solid",
-            borderColor: "gold.main",
-            color: "gold.light",
-            letterSpacing: "0.08em",
-          }}
-        >
-          Challenge of the Page
-        </Button>
+      <Stack direction="column" alignItems="center" spacing={1}>
         <Typography
           variant="caption"
           sx={{
             color: "silver.light",
-            fontSize: "0.65rem",
-            fontStyle: "italic",
+            fontWeight: 500,
+            fontSize: "0.75rem",
           }}
         >
           The winner holds a Page — all others pay {bigBlind} chips.
         </Typography>
+        <Button
+          size="small"
+          variant="contained"
+          onClick={() => dispatch({ type: "RESOLVE_PAGE_CHALLENGE" })}
+        >
+          Challenge of the Page
+        </Button>
       </Stack>
     );
   }
@@ -164,15 +129,9 @@ export function TableOverlayContent({
   if (pendingInteraction?.type === "arcana-reveal") {
     return (
       <Button
-        variant="outlined"
+        variant="contained"
         size="small"
         onClick={() => dispatch({ type: "REVEAL_ARCANA" })}
-        sx={{
-          border: "1px solid",
-          borderColor: "secondary.main",
-          color: "secondary.light",
-          letterSpacing: "0.08em",
-        }}
       >
         Reveal Arcana
       </Button>
@@ -182,13 +141,13 @@ export function TableOverlayContent({
   // ── Magician Redraw ───────────────────────────────────────────────────────
   if (pendingInteraction?.type === "magician-redraw") {
     return (
-      <Stack direction="column" alignItems="center" spacing={0.5}>
+      <Stack direction="column" alignItems="center" spacing={1}>
         <Typography
           variant="caption"
           sx={{
-            color: "secondary.light",
-            fontSize: "0.7rem",
-            fontStyle: "italic",
+            color: "silver.light",
+            fontSize: "0.75rem",
+            fontWeight: 500,
           }}
         >
           Discard both hole cards and draw two new ones — or keep your current
@@ -197,42 +156,19 @@ export function TableOverlayContent({
         <Stack direction="row" spacing={1}>
           <Button
             variant="contained"
-            size="large"
+            size="small"
             onClick={() =>
               dispatch({ type: "RESOLVE_MAGICIAN", payload: { redraw: true } })
             }
-            sx={{
-              px: 4,
-              py: 1,
-              background: "linear-gradient(135deg, #4a1a6e, #1a0a2e)",
-              border: "1px solid",
-              borderColor: "gold.main",
-              color: "gold.light",
-              letterSpacing: "0.08em",
-              "&:hover": {
-                background: "linear-gradient(135deg, #6c3483, #2d0f4e)",
-                borderColor: "gold.light",
-              },
-            }}
           >
             Redraw
           </Button>
           <Button
             variant="outlined"
-            size="large"
+            size="small"
             onClick={() =>
               dispatch({ type: "RESOLVE_MAGICIAN", payload: { redraw: false } })
             }
-            sx={{
-              px: 3,
-              py: 1,
-              color: "silver.light",
-              borderColor: "silver.dark",
-              "&:hover": {
-                borderColor: "silver.light",
-                background: "rgba(255,255,255,0.05)",
-              },
-            }}
           >
             Keep Hand
           </Button>
@@ -268,5 +204,5 @@ export function TableOverlayContent({
     );
   }
 
-  return undefined;
+  return null;
 }
