@@ -813,19 +813,23 @@ function applyArcana(
 
       let poolIdx = 0;
       const wheelPlayers = base.players.map((p) => ({ ...p }));
+      const wheelHoleCardSeeds = { ...base.holeCardChangeSeeds };
       for (let i = 0; i < activePosns.length; i++) {
         const count = holeCounts[i];
-        wheelPlayers[activePosns[i]] = {
-          ...wheelPlayers[activePosns[i]],
+        const posn = activePosns[i];
+        const playerId = base.players[posn].id;
+        wheelPlayers[posn] = {
+          ...wheelPlayers[posn],
           holeCards: pooled.slice(poolIdx, poolIdx + count),
         };
+        wheelHoleCardSeeds[playerId] = (wheelHoleCardSeeds[playerId] ?? 0) + 1;
         poolIdx += count;
       }
 
       return {
         ...base,
         players: wheelPlayers,
-        wheelRound: (base.wheelRound ?? 0) + 1,
+        holeCardChangeSeeds: wheelHoleCardSeeds,
         // Clear card-specific arcana state that referenced the old cards
         temperanceCandidates: null,
         temperanceChoices: {},
@@ -1110,7 +1114,7 @@ function resolveStar(
   const players = [...state.players] as GamePlayer[];
   players[hIdx] = {
     ...hero,
-    holeCards: [...hero.holeCards.filter((c) => c !== card), dealt[0]],
+    holeCards: hero.holeCards.map((c) => (c === card ? dealt[0] : c)),
   };
 
   return {

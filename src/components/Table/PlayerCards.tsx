@@ -118,16 +118,13 @@ export function PlayerCards({
       return () => clearTimeout(t);
     }
 
-    // Magician redraw: seed increased within the same hand.
+    // Mid-hand redraw (Star, Magician, Wheel): seed increased within the same hand.
+    // Swap display cards immediately — card identity change in the key causes only
+    // the replaced card to remount and deal in. No whole-stack fade needed.
     if (redrawSeed > prevSeedRef.current) {
-      setIsExiting(true);
-      const t = setTimeout(() => {
-        setDisplayCards(holeCards);
-        setCardKey((k) => k + 1); // force DealtCard remount → dealIn
-        setIsExiting(false);
-        prevSeedRef.current = redrawSeed;
-      }, 320);
-      return () => clearTimeout(t);
+      setDisplayCards(holeCards);
+      prevSeedRef.current = redrawSeed;
+      return;
     }
 
     // Normal state update (bet, fold, etc.) — sync immediately.
@@ -188,7 +185,7 @@ export function PlayerCards({
               );
             return (
               <Box
-                key={`${cardKey}-${i}`}
+                key={`${cardKey}-${card.value}-${card.suit}`}
                 onClick={onCardClick ? () => onCardClick(card) : undefined}
                 sx={{
                   // transform: isSelected
