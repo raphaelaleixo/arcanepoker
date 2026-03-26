@@ -113,13 +113,23 @@ function isBettingRoundComplete(state: StoreGameState): boolean {
  * Find the index of the next player who still needs to act.
  * Returns null when the round is over.
  */
+/** Next non-eliminated player index clockwise from fromIndex (exclusive). */
+function nextNonElimIdx(players: GamePlayer[], fromIndex: number): number {
+  const n = players.length;
+  for (let i = 1; i <= n; i++) {
+    const idx = (fromIndex + i) % n;
+    if (!players[idx].isEliminated) return idx;
+  }
+  return (fromIndex + 1) % n; // fallback (shouldn't happen if ≥2 active)
+}
+
 function findNextActor(state: StoreGameState): number | null {
   const { players, activePlayerIndex, roundActors, currentBet } = state;
   const n = players.length;
   for (let i = 1; i < n; i++) {
     const idx = (activePlayerIndex + i) % n;
     const p = players[idx];
-    if (!p.folded && !p.isAllIn) {
+    if (!p.folded && !p.isAllIn && !p.isEliminated) {
       if (!roundActors.includes(p.id) || p.currentBet < currentBet) {
         return idx;
       }
@@ -136,7 +146,7 @@ function firstActiveAfter(players: GamePlayer[], fromIndex: number): number {
   const n = players.length;
   for (let i = 1; i <= n; i++) {
     const idx = (fromIndex + i) % n;
-    if (!players[idx].folded && !players[idx].isAllIn) return idx;
+    if (!players[idx].folded && !players[idx].isAllIn && !players[idx].isEliminated) return idx;
   }
   return fromIndex; // fallback (shouldn't happen)
 }
@@ -470,23 +480,26 @@ function goToLastPlayerWins(
 function startHand(state: StoreGameState): StoreGameState {
   const deck = shuffle(createStandardDeck());
   const n = state.players.length;
-  const sbIdx = (state.dealerIndex + 1) % n;
-  const bbIdx = (state.dealerIndex + 2) % n;
-  const utgIdx = (state.dealerIndex + 3) % n;
 
-  // Reset players
+  // Reset players; eliminated players stay folded with no cards
   const players: GamePlayer[] = state.players.map((p) => ({
     ...p,
     holeCards: [],
     currentBet: 0,
-    folded: false,
+    folded: p.isEliminated ? true : false,
     isAllIn: false,
     currentAction: undefined,
   }));
 
-  // Deal 2 hole cards each (one at a time, starting left of dealer)
+  // Compute blind positions skipping eliminated players
+  const sbIdx = nextNonElimIdx(players, state.dealerIndex);
+  const bbIdx = nextNonElimIdx(players, sbIdx);
+  const utgIdx = nextNonElimIdx(players, bbIdx);
+
+  // Deal 2 hole cards to active (non-eliminated) players only
   let remaining = deck;
-  const dealOrder = Array.from({ length: n }, (_, i) => (sbIdx + i) % n);
+  const dealOrder = Array.from({ length: n }, (_, i) => (sbIdx + i) % n)
+    .filter((idx) => !players[idx].isEliminated);
   for (let round = 0; round < 2; round++) {
     for (const idx of dealOrder) {
       const { dealt, remaining: rest } = dealCards(remaining, 1);
@@ -1203,14 +1216,18 @@ function prepareNextHand(state: StoreGameState): StoreGameState {
     return { ...state, stage: "game-over" };
   }
 
-  const n = state.players.length;
-  const newDealer = (state.dealerIndex + 1) % n;
-  const activePlayers = state.players.filter((p) => p.stack > 0);
+  // Mark newly-busted players as eliminated (keep them in state for display)
+  const updatedPlayers = state.players.map((p) =>
+    p.stack === 0 && !p.isEliminated ? { ...p, isEliminated: true } : p,
+  );
+
+  // Advance dealer to next non-eliminated player
+  const newDealer = nextNonElimIdx(updatedPlayers, state.dealerIndex);
 
   return {
     ...state,
-    players: activePlayers,
-    dealerIndex: newDealer % activePlayers.length,
+    players: updatedPlayers,
+    dealerIndex: newDealer,
     handNumber: state.handNumber + 1,
     activeArcana: null,
     justiceRevealedPlayerId: null,

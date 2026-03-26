@@ -29,6 +29,7 @@ export interface GameBot {
   currentAction?: ActionType;
   type: "ai";
   personality: BotPersonality;
+  isEliminated?: boolean;
 }
 
 export type GamePlayer = GameBot | HumanPlayer;

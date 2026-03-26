@@ -102,6 +102,7 @@ export interface BasePlayer {
   holeCards: StandardCard[];
   position: number;
   currentAction?: ActionType;
+  isEliminated?: boolean;
 }
 
 export interface AIPlayer extends BasePlayer {
