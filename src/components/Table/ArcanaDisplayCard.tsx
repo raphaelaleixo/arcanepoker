@@ -49,7 +49,7 @@ export function ArcanaDisplayCard({
           content: "''",
           display: "block",
           position: "absolute",
-          width: "100%",
+          width: "160%",
           maxWidth: "10em",
           aspectRatio: "69/57",
           backgroundImage: "url(art/background-table.svg)",

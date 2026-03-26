@@ -152,31 +152,10 @@ export function PokerTable() {
           right: 0,
           mx: "auto",
           display: "grid",
-          gridTemplateColumns: "auto 1fr auto",
+          gridTemplateColumns: "minmax(130px, 1fr) auto minmax(130px, 1fr)",
           gridTemplateRows: "auto auto auto auto auto",
         }}
       >
-        {/* <Box
-          sx={{
-            gridColumn: "1 / 4",
-            gridRow: "1 / 5",
-            p: "6em 3em",
-          }}
-        >
-          <Box
-            component="img"
-            src="/public/art/circleBackground.svg"
-            sx={{
-              height: "100%",
-              width: "100%",
-              objectFit: "cover",
-              borderRadius: "16px",
-              overflow: "hidden",
-              border: "1px solid",
-              borderColor: "#333",
-            }}
-          />
-        </Box> */}
         <CommunityArea
           sx={{
             gridRow: 1,
