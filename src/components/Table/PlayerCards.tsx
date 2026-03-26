@@ -60,6 +60,9 @@ export function PlayerCards({
   isActive = false,
 }: PlayerCardsProps) {
   const highlights = useTutorialOptional()?.highlightCards ?? null;
+  const anyHighlighted =
+    highlights != null &&
+    highlights.some((h) => h.type === "hole" && h.playerId === playerId);
   // Local card buffer — holds old cards during the exit animation so they stay
   // visible while fading out before the new cards deal in.
   const [displayCards, setDisplayCards] = useState<StandardCard[]>(holeCards);
@@ -104,6 +107,7 @@ export function PlayerCards({
         display: "flex",
         justifyContent: "center",
         mb: 0.5,
+        ...(anyHighlighted ? { zIndex: 1295 } : {}),
       }}
     >
       <Stack

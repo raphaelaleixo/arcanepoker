@@ -17,10 +17,6 @@ export function TutorialNarrationContent() {
     <Box
       sx={{
         width: "100%",
-        border: "1px solid rgba(201,169,110,0.3)",
-        borderRadius: 1,
-        px: 1.25,
-        py: 1,
       }}
     >
       {/* Row 1: label + title + button */}
@@ -40,22 +36,13 @@ export function TutorialNarrationContent() {
             textTransform: "uppercase",
             letterSpacing: "0.08em",
             lineHeight: 1,
+            fontWeight: "bold",
+            fontFamily: "Young Serif, serif",
           }}
         >
           Tutorial · {narration.title}
         </Typography>
-        <Button
-          variant="contained"
-          size="small"
-          onClick={dismissNarration}
-          sx={{
-            background: "#7b5ea7",
-            "&:hover": { background: "#9370cc" },
-            flexShrink: 0,
-            fontSize: "0.7rem",
-            py: 0.25,
-          }}
-        >
+        <Button variant="text" size="small" onClick={dismissNarration} sx={{}}>
           Next →
         </Button>
       </Box>

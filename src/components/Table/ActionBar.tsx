@@ -95,7 +95,6 @@ export function ActionBar({
   return (
     <Box
       sx={{
-        py: 2,
         width: "100%",
         // Elevate above the tutorial backdrop (z-index 1290) when active
         ...(tutorial && { position: "relative", zIndex: 1300 }),
