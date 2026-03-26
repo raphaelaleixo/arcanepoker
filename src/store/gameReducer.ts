@@ -533,6 +533,7 @@ function startHand(state: StoreGameState): StoreGameState {
     activePlayerIndex: utgIdx,
     roundActors: [],
     activeArcana: null,
+    arcanaTriggeredThisGame: false,
     empress6thCardDealt: false,
     temperanceCandidates: null,
     temperanceChoices: {},

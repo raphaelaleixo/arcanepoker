@@ -3,11 +3,17 @@
  * Handles the Fool substitution (a community card secretly replaced by the
  * Fool arcana) and the Empress sixth-card slot.
  */
+import { useEffect, useRef, useState } from "react";
 import { Box, Stack } from "@mui/material";
 import { keyframes } from "@mui/system";
 import { DealtCard } from "../Card/DealtCard";
 import type { StandardCard, ArcanaCard } from "../../types/types";
 import { useTutorialOptional } from "../../tutorial/TutorialContext";
+
+const dealOut = keyframes`
+  from { opacity: 1; }
+  to   { opacity: 0; }
+`;
 
 const slotExpand = keyframes`
   from { width: 0; min-width: 0; opacity: 0; }
@@ -57,10 +63,42 @@ export function CommunityCards({
 }: CommunityCardsProps) {
   const highlights = useTutorialOptional()?.highlightCards ?? null;
 
+  const [displayCommunityCards, setDisplayCommunityCards] = useState(communityCards);
+  const [renderedRound, setRenderedRound] = useState(wheelRound);
+  const [isExiting, setIsExiting] = useState(false);
+  const prevRoundRef = useRef(wheelRound);
+
+  useEffect(() => {
+    if (wheelRound !== prevRoundRef.current) {
+      // Round reset: animate out the old cards (still in displayCommunityCards),
+      // then swap in the new state.
+      setIsExiting(true);
+      const t = setTimeout(() => {
+        prevRoundRef.current = wheelRound;
+        setRenderedRound(wheelRound);
+        setDisplayCommunityCards(communityCards);
+        setIsExiting(false);
+      }, 300);
+      return () => clearTimeout(t);
+    }
+    // Mid-hand update (new card dealt) — sync immediately.
+    setDisplayCommunityCards(communityCards);
+  }, [communityCards, wheelRound]);
+
   return (
-    <Stack direction="row" spacing={0.75} alignItems="center" useFlexGap>
+    <Stack
+      direction="row"
+      spacing={0.75}
+      alignItems="center"
+      useFlexGap
+      sx={
+        isExiting
+          ? { animation: `${dealOut} 280ms ease-in both`, pointerEvents: "none" }
+          : undefined
+      }
+    >
       {Array.from({ length: totalSlots }).map((_, i) => {
-        const card = communityCards[i];
+        const card = displayCommunityCards[i];
         const isHighlighted =
           highlights != null &&
           highlights.some(
@@ -82,7 +120,7 @@ export function CommunityCards({
         if (i === foolCardIndex) {
           return (
             <Box
-              key={`${wheelRound}-fool-${communityChangeKey}-${i}`}
+              key={`${renderedRound}-fool-${communityChangeKey}-${i}`}
               sx={{
                 position: "relative",
                 width: "2.5em",
@@ -115,7 +153,7 @@ export function CommunityCards({
         if (i === moonAffectedIndex) {
           return (
             <Box
-              key={`${wheelRound}-moon-${communityChangeKey}-${i}`}
+              key={`${renderedRound}-moon-${communityChangeKey}-${i}`}
               sx={{
                 position: "relative",
                 width: "2.5em",
@@ -147,7 +185,7 @@ export function CommunityCards({
 
         return (
           <Box
-            key={card ? `${wheelRound}-${i}` : i}
+            key={card ? `${renderedRound}-${i}` : i}
             sx={{
               position: "relative",
               width: "2.5em",

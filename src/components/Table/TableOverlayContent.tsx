@@ -185,23 +185,34 @@ export function TableOverlayContent({
       <Stack direction="column" alignItems="center" spacing={0.5}>
         <Typography
           variant="caption"
-          sx={{ color: "secondary.light", fontSize: "0.7rem", fontStyle: "italic" }}
+          sx={{
+            color: "secondary.light",
+            fontSize: "0.7rem",
+            fontStyle: "italic",
+          }}
         >
-          Discard both hole cards and draw two new ones — or keep your current hand.
+          Discard both hole cards and draw two new ones — or keep your current
+          hand.
         </Typography>
         <Stack direction="row" spacing={1}>
           <Button
             variant="contained"
             size="large"
-            onClick={() => dispatch({ type: "RESOLVE_MAGICIAN", payload: { redraw: true } })}
+            onClick={() =>
+              dispatch({ type: "RESOLVE_MAGICIAN", payload: { redraw: true } })
+            }
             sx={{
-              px: 4, py: 1,
+              px: 4,
+              py: 1,
               background: "linear-gradient(135deg, #4a1a6e, #1a0a2e)",
               border: "1px solid",
               borderColor: "gold.main",
               color: "gold.light",
               letterSpacing: "0.08em",
-              "&:hover": { background: "linear-gradient(135deg, #6c3483, #2d0f4e)", borderColor: "gold.light" },
+              "&:hover": {
+                background: "linear-gradient(135deg, #6c3483, #2d0f4e)",
+                borderColor: "gold.light",
+              },
             }}
           >
             Redraw
@@ -209,12 +220,18 @@ export function TableOverlayContent({
           <Button
             variant="outlined"
             size="large"
-            onClick={() => dispatch({ type: "RESOLVE_MAGICIAN", payload: { redraw: false } })}
+            onClick={() =>
+              dispatch({ type: "RESOLVE_MAGICIAN", payload: { redraw: false } })
+            }
             sx={{
-              px: 3, py: 1,
+              px: 3,
+              py: 1,
               color: "silver.light",
               borderColor: "silver.dark",
-              "&:hover": { borderColor: "silver.light", background: "rgba(255,255,255,0.05)" },
+              "&:hover": {
+                borderColor: "silver.light",
+                background: "rgba(255,255,255,0.05)",
+              },
             }}
           >
             Keep Hand
@@ -240,38 +257,11 @@ export function TableOverlayContent({
         }}
       >
         {(communityCards.length > 0 || winnerIds.includes(HERO_ID_CONST)) && (
-          <Button
-            variant="outlined"
-            size="small"
-            onClick={onShowTarot}
-            sx={{
-              borderColor: "secondary.main",
-              color: "secondary.light",
-              letterSpacing: "0.05em",
-              "&:hover": {
-                borderColor: "secondary.light",
-                background: "rgba(108,52,131,0.15)",
-              },
-            }}
-          >
+          <Button variant="outlined" size="small" onClick={onShowTarot}>
             Tarot reading
           </Button>
         )}
-        <Button
-          variant="contained"
-          size="small"
-          onClick={onNextHand}
-          sx={{
-            background: "linear-gradient(135deg, #2E7D32, #1B5E20)",
-            border: "1px solid",
-            borderColor: "gold.dark",
-            color: "gold.light",
-            "&:hover": {
-              background: "linear-gradient(135deg, #388E3C, #2E7D32)",
-              borderColor: "gold.main",
-            },
-          }}
-        >
+        <Button variant="contained" size="small" onClick={onNextHand}>
           {isFinalHand ? "Final Results" : "Next Hand"}
         </Button>
       </Stack>

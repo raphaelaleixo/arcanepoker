@@ -17,8 +17,8 @@ import type { StandardCard } from "../../types/types";
 import { useTutorialOptional } from "../../tutorial/TutorialContext";
 
 const dealOut = keyframes`
-  from { opacity: 1; transform: scale(1) translateY(0); }
-  to   { opacity: 0; transform: scale(0.75) translateY(-30px); }
+  from { opacity: 1; }
+  to   { opacity: 0; }
 `;
 
 interface PlayerCardsProps {
@@ -74,12 +74,17 @@ export function PlayerCards({
   const prevWheelRef = useRef(wheelRound);
 
   useEffect(() => {
-    // New hand: wheelRound changed, so reset without exit animation.
+    // New hand: wheelRound changed — animate cards out, then swap in new cards.
     if (wheelRound !== prevWheelRef.current) {
-      prevWheelRef.current = wheelRound;
-      prevSeedRef.current = redrawSeed;
-      setDisplayCards(holeCards);
-      return;
+      setIsExiting(true);
+      const t = setTimeout(() => {
+        prevWheelRef.current = wheelRound;
+        prevSeedRef.current = redrawSeed;
+        setDisplayCards(holeCards);
+        setCardKey((k) => k + 1);
+        setIsExiting(false);
+      }, 300);
+      return () => clearTimeout(t);
     }
 
     // Magician redraw: seed increased within the same hand.

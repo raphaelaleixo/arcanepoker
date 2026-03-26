@@ -421,34 +421,35 @@ describe("checkPageTrigger with arcanaOverride", () => {
   });
 });
 
-// ─── arcanaTriggeredThisGame persists across hands ────────────────────────────
+// ─── arcanaTriggeredThisGame: one arcana per hand, no repeats across hands ─────
 
 describe("arcanaTriggeredThisGame", () => {
-  it("persists across NEXT_HAND — once triggered, no second arcana draw this game", () => {
-    // Simulate a game where arcana was already drawn in hand 1
+  it("resets on NEXT_HAND so a Page can trigger arcana in the next hand", () => {
     const hand1State: StoreGameState = {
       ...makePreFlopState(),
       arcanaTriggeredThisGame: true,
     };
-
-    const afterNextHand = gameReducer(hand1State, { type: "NEXT_HAND" });
-
-    // Flag must survive the hand transition
-    expect(afterNextHand.arcanaTriggeredThisGame).toBe(true);
+    const afterNext = gameReducer(hand1State, { type: "NEXT_HAND" });
+    expect(afterNext.arcanaTriggeredThisGame).toBe(false);
   });
 
-  it("resets to false only on START_GAME", () => {
+  it("arcanaDeck carries over across NEXT_HAND — drawn cards are gone permanently", () => {
+    const hand1State: StoreGameState = {
+      ...makePreFlopState(),
+      arcanaTriggeredThisGame: true,
+      arcanaDeck: [{ suit: "arcana", value: "1" }],
+    };
+    const afterNext = gameReducer(hand1State, { type: "NEXT_HAND" });
+    // deck shrinks; previously drawn cards never come back
+    expect(afterNext.arcanaDeck).toHaveLength(1);
+  });
+
+  it("resets arcanaTriggeredThisGame on START_GAME", () => {
     const triggered: StoreGameState = {
       ...makePreFlopState(),
       arcanaTriggeredThisGame: true,
     };
-
-    // NEXT_HAND keeps it
-    const afterNext = gameReducer(triggered, { type: "NEXT_HAND" });
-    expect(afterNext.arcanaTriggeredThisGame).toBe(true);
-
-    // START_GAME resets it
-    const fresh = gameReducer(afterNext, { type: "START_GAME" });
+    const fresh = gameReducer(triggered, { type: "START_GAME" });
     expect(fresh.arcanaTriggeredThisGame).toBe(false);
   });
 });

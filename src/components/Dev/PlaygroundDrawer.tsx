@@ -7,6 +7,7 @@ import {
   ListItem,
   Typography,
 } from "@mui/material";
+import CheckIcon from "@mui/icons-material/Check";
 import { useGame } from "../../store/useGame";
 import tarot from "../../data/tarot";
 import type { ArcanaValue } from "../../types/types";
@@ -31,6 +32,8 @@ const ARCANA_LIST = Array.from({ length: 22 }, (_, i) => {
 export function PlaygroundDrawer({ open, onClose }: PlaygroundDrawerProps) {
   const { state, dispatch } = useGame();
   const isValidStage = VALID_STAGES.includes(state.stage as typeof VALID_STAGES[number]);
+  const remainingValues = new Set(state.arcanaDeck.map((c) => c.value));
+  const dealtValues = new Set(ARCANA_LIST.map((a) => a.value).filter((v) => !remainingValues.has(v)));
 
   function handleForce(value: ArcanaValue) {
     dispatch({ type: "FORCE_ARCANA", payload: { value } });
@@ -75,6 +78,7 @@ export function PlaygroundDrawer({ open, onClose }: PlaygroundDrawerProps) {
       <List dense sx={{ overflowY: "auto", flex: 1 }}>
         {ARCANA_LIST.map(({ value, fullName, gameEffect }) => {
           const isActive = state.activeArcana?.card.value === value;
+          const wasDealt = dealtValues.has(value);
           return (
             <ListItem
               key={value}
@@ -101,6 +105,9 @@ export function PlaygroundDrawer({ open, onClose }: PlaygroundDrawerProps) {
                       color="secondary"
                       sx={{ height: 16, fontSize: "0.6rem" }}
                     />
+                  )}
+                  {wasDealt && !isActive && (
+                    <CheckIcon sx={{ fontSize: "0.85rem", color: "success.main", flexShrink: 0 }} />
                   )}
                 </Box>
                 {gameEffect && (
