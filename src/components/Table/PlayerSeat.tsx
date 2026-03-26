@@ -96,21 +96,23 @@ export function PlayerSeat({
           />
         </Box>
       )}
-      <PlayerCards
-        holeCards={player.holeCards}
-        showFaceUp={showFaceUp}
-        priestessCard={priestessCard}
-        onCardClick={onCardClick}
-        selectedCard={selectedCard}
-        playerIndex={playerIndex}
-        wheelRound={state.wheelRound}
-        dealerAnchorId={player.id}
-        isHero={isHero}
-        redrawSeed={state.holeCardChangeSeeds?.[player.id] ?? 0}
-        playerId={player.id}
-        isActive={isActive && !player.folded}
-        isDealer={isDealer}
-      />
+      <Box sx={{ opacity: player.isEliminated ? 0 : 1, transition: "opacity 0.3s" }}>
+        <PlayerCards
+          holeCards={player.holeCards}
+          showFaceUp={showFaceUp}
+          priestessCard={priestessCard}
+          onCardClick={onCardClick}
+          selectedCard={selectedCard}
+          playerIndex={playerIndex}
+          wheelRound={state.wheelRound}
+          dealerAnchorId={player.id}
+          isHero={isHero}
+          redrawSeed={state.holeCardChangeSeeds?.[player.id] ?? 0}
+          playerId={player.id}
+          isActive={isActive && !player.folded}
+          isDealer={isDealer}
+        />
+      </Box>
       {/* Player name and stack */}
       <Box
         sx={{
@@ -137,19 +139,25 @@ export function PlayerSeat({
         >
           {player.name}
         </Typography>
-        <Typography variant="caption" fontWeight={800} fontSize="0.75em">
-          {animatedStack}
-          {player.currentBet > 0 ? (
-            <Typography
-              variant="inherit"
-              component="span"
-              color="secondary.main"
-              sx={{ ml: 0.5 }}
-            >
-              {player.currentBet > 0 ? `(${player.currentBet})` : "\u00A0"}
-            </Typography>
-          ) : null}
-        </Typography>
+        {player.isEliminated ? (
+          <Typography variant="caption" fontWeight={800} fontSize="0.75em" color="error.main">
+            GAME OVER
+          </Typography>
+        ) : (
+          <Typography variant="caption" fontWeight={800} fontSize="0.75em">
+            {animatedStack}
+            {player.currentBet > 0 ? (
+              <Typography
+                variant="inherit"
+                component="span"
+                color="secondary.main"
+                sx={{ ml: 0.5 }}
+              >
+                {`(${player.currentBet})`}
+              </Typography>
+            ) : null}
+          </Typography>
+        )}
       </Box>
     </Box>
   );

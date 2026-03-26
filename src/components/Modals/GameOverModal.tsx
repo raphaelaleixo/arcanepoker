@@ -74,40 +74,68 @@ export function GameOverModal() {
       </DialogTitle>
 
       <DialogContent sx={{ py: 3 }}>
-        {heroAlive && (() => {
-          const worldInfo = tarot.arcana["21"] as { fullName: string; tags: string[]; description: string };
-          return (
-            <>
-              <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2 }}>
-                <Box sx={{ display: "inline-block", scale: 0.7, flexShrink: 0 }}>
-                  <PlayingCard rank="21" suit="arcana" flipped />
-                </Box>
-                <Stack spacing={0.5}>
-                  <Typography
-                    variant="caption"
-                    sx={{ color: "gold.main", fontWeight: "bold", fontSize: "0.875rem", fontFamily: "Young Serif, Georgia, serif" }}
+        {heroAlive &&
+          (() => {
+            const worldInfo = tarot.arcana["21"] as {
+              fullName: string;
+              tags: string[];
+              description: string;
+            };
+            return (
+              <>
+                <Stack
+                  direction="row"
+                  alignItems="center"
+                  spacing={2}
+                  sx={{ mb: 2 }}
+                >
+                  <Box
+                    sx={{ display: "inline-block", scale: 0.7, flexShrink: 0 }}
                   >
-                    {worldInfo.fullName}
-                  </Typography>
-                  <Typography
-                    variant="caption"
-                    sx={{ color: "silver.light", fontSize: "0.6rem", fontWeight: 500, textTransform: "uppercase" }}
-                  >
-                    {worldInfo.tags.join(" · ")}
-                  </Typography>
-                  <Typography
-                    variant="caption"
-                    sx={{ color: "white", fontSize: "0.75rem", lineHeight: 1.5 }}
-                  >
-                    {worldInfo.description}
-                  </Typography>
+                    <PlayingCard rank="21" suit="arcana" flipped />
+                  </Box>
+                  <Stack spacing={0.5}>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: "gold.main",
+                        fontWeight: "bold",
+                        fontSize: "0.875rem",
+                        fontFamily: "Young Serif, Georgia, serif",
+                      }}
+                    >
+                      {worldInfo.fullName}
+                    </Typography>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: "silver.light",
+                        fontSize: "0.6rem",
+                        fontWeight: 500,
+                        textTransform: "uppercase",
+                      }}
+                    >
+                      {worldInfo.tags.join(" · ")}
+                    </Typography>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: "white",
+                        fontSize: "0.75rem",
+                        lineHeight: 1.5,
+                      }}
+                    >
+                      {worldInfo.description}
+                    </Typography>
+                  </Stack>
                 </Stack>
-              </Stack>
-              <Divider sx={{ borderColor: "rgba(255,255,255,0.1)", mb: 2 }} />
-            </>
-          );
-        })()}
-        {!heroAlive && <Divider sx={{ borderColor: "rgba(255,255,255,0.1)", mb: 2 }} />}
+                <Divider sx={{ borderColor: "rgba(255,255,255,0.1)", mb: 2 }} />
+              </>
+            );
+          })()}
+        {!heroAlive && (
+          <Divider sx={{ borderColor: "rgba(255,255,255,0.1)", mb: 2 }} />
+        )}
 
         <Stack spacing={1}>
           {standings.map((player, rank) => {
