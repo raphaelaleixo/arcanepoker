@@ -121,12 +121,11 @@ export function PlayerCards({
                 pointerEvents: "none",
               }
             : {}),
-          ...(isActive
-            ? {
-                filter: (theme: Theme) =>
-                  `drop-shadow(0 0 8px ${theme.palette.secondary.main}99)`,
-              }
-            : {}),
+          filter: (theme: Theme) =>
+            isActive
+              ? `drop-shadow(0 0 8px ${theme.palette.secondary.main}99)`
+              : `drop-shadow(0 0 0px transparent)`,
+          transition: "filter 400ms ease",
         }}
       >
         {displayCards.length > 0 ? (
