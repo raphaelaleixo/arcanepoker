@@ -149,6 +149,7 @@ export type GameAction =
   | { type: "NEXT_HAND" }
   | { type: "FORCE_ARCANA"; payload: { value: ArcanaValue } }
   | { type: "RESOLVE_PRIESTESS"; payload: { card: StandardCard } }
+  | { type: "DEV_FORCE_GAME_OVER" }
   | {
       type: "TUTORIAL_OVERRIDE_DEAL";
       payload: {

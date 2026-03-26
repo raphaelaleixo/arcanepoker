@@ -15,6 +15,8 @@ import type { ArcanaValue } from "../../types/types";
 interface PlaygroundDrawerProps {
   open: boolean;
   onClose: () => void;
+  onOpenTarot: () => void;
+  onOpenGameOver: () => void;
 }
 
 const VALID_STAGES = ["pre-flop", "flop", "turn", "river"] as const;
@@ -29,7 +31,7 @@ const ARCANA_LIST = Array.from({ length: 22 }, (_, i) => {
   };
 });
 
-export function PlaygroundDrawer({ open, onClose }: PlaygroundDrawerProps) {
+export function PlaygroundDrawer({ open, onClose, onOpenTarot, onOpenGameOver }: PlaygroundDrawerProps) {
   const { state, dispatch } = useGame();
   const isValidStage = VALID_STAGES.includes(state.stage as typeof VALID_STAGES[number]);
   const remainingValues = new Set(state.arcanaDeck.map((c) => c.value));
@@ -64,6 +66,30 @@ export function PlaygroundDrawer({ open, onClose }: PlaygroundDrawerProps) {
         <Typography variant="caption" sx={{ color: "silver.dark" }}>
           Dev tool — force any arcana immediately
         </Typography>
+      </Box>
+
+      <Box sx={{ p: 2, borderBottom: "1px solid", borderColor: "rgba(155,89,182,0.2)" }}>
+        <Typography variant="caption" sx={{ color: "silver.dark", display: "block", mb: 1 }}>
+          Modal Previews
+        </Typography>
+        <Box sx={{ display: "flex", gap: 1 }}>
+          <Button
+            size="small"
+            variant="outlined"
+            onClick={onOpenTarot}
+            sx={{ fontSize: "0.65rem", py: 0.25, px: 0.75, color: "gold.main", borderColor: "gold.dark", "&:hover": { borderColor: "gold.main" } }}
+          >
+            Tarot
+          </Button>
+          <Button
+            size="small"
+            variant="outlined"
+            onClick={onOpenGameOver}
+            sx={{ fontSize: "0.65rem", py: 0.25, px: 0.75, color: "secondary.light", borderColor: "secondary.dark", "&:hover": { borderColor: "secondary.main" } }}
+          >
+            Game Over
+          </Button>
+        </Box>
       </Box>
 
       {!isValidStage && (

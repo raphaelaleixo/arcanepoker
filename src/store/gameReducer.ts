@@ -1275,6 +1275,9 @@ export function gameReducer(
       return applyArcana(resetState, arcanaCard);
     }
 
+    case "DEV_FORCE_GAME_OVER":
+      return { ...state, stage: "game-over" };
+
     case "TUTORIAL_OVERRIDE_DEAL": {
       const { dealerIndex, playerHoleCards, communityCardQueue, arcanaOverride } = action.payload;
       const n = state.players.length;

@@ -281,6 +281,8 @@ export function PokerTable() {
       <PlaygroundDrawer
         open={playgroundOpen}
         onClose={() => setPlaygroundOpen(false)}
+        onOpenTarot={() => { setPlaygroundOpen(false); setShowTarot(true); }}
+        onOpenGameOver={() => { setPlaygroundOpen(false); dispatch({ type: "DEV_FORCE_GAME_OVER" }); }}
       />
       <TutorialOverlay />
     </Box>
