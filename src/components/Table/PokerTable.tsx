@@ -81,26 +81,30 @@ export function PokerTable() {
   // all interactive flow via pendingDispatchOnDismiss automatically.
   // This also prevents the arcana-reveal button from flashing during the 100ms
   // gap between dismissNarration() and the REVEAL_ARCANA dispatch.
-  const overlayContent = isTutorial
-    ? (narration ? <TutorialNarrationContent /> : undefined)
-    : TableOverlayContent({
-        cardPickInteraction,
-        selectedCard,
-        stage: state.stage,
-        pendingInteraction: state.pendingInteraction,
-        winnerIds: state.winnerIds,
-        communityCards: state.communityCards,
-        bigBlind: state.bigBlind,
-        isFinalHand: state.isFinalHand,
-        onConfirmCardPick: confirmCardPick,
-        onKeepBothStar: keepBothStar,
-        onNextHand: () => {
-          setShowTarot(false);
-          dispatch({ type: "NEXT_HAND" });
-        },
-        onShowTarot: () => setShowTarot(true),
-        dispatch,
-      });
+  const overlayContent = isTutorial ? (
+    narration ? (
+      <TutorialNarrationContent />
+    ) : undefined
+  ) : (
+    TableOverlayContent({
+      cardPickInteraction,
+      selectedCard,
+      stage: state.stage,
+      pendingInteraction: state.pendingInteraction,
+      winnerIds: state.winnerIds,
+      communityCards: state.communityCards,
+      bigBlind: state.bigBlind,
+      isFinalHand: state.isFinalHand,
+      onConfirmCardPick: confirmCardPick,
+      onKeepBothStar: keepBothStar,
+      onNextHand: () => {
+        setShowTarot(false);
+        dispatch({ type: "NEXT_HAND" });
+      },
+      onShowTarot: () => setShowTarot(true),
+      dispatch,
+    })
+  );
 
   const pendingArcanaCard =
     state.pendingInteraction?.type === "arcana-reveal"
@@ -118,21 +122,19 @@ export function PokerTable() {
   return (
     <Box
       sx={{
-        minHeight: "100vh",
+        minHeight: "100svh",
         display: "flex",
         flexDirection: "column",
         p: { xs: 1, sm: 2 },
         gap: { xs: 1, sm: 2 },
         boxSizing: "border-box",
         overflow: "hidden",
-        width: "800px",
-        height: "360px",
       }}
     >
       <Box
         sx={{
           position: "absolute",
-          height: "800px",
+          maxHeight: "800px",
           width: "calc(100% - 3em)",
           maxWidth: "500px",
           top: "calc(50% - 400px)",
@@ -248,7 +250,10 @@ export function PokerTable() {
             gridColumnEnd: 4,
           }}
         >
-          <ActionBar isVisible={isHeroTurn || (isTutorial && narration !== null)} overlayContent={overlayContent} />
+          <ActionBar
+            isVisible={isHeroTurn || (isTutorial && narration !== null)}
+            overlayContent={overlayContent}
+          />
         </Box>
       </Box>
       {/* Overlay modals */}
