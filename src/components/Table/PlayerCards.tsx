@@ -7,12 +7,13 @@
  * When any arcana causes a hole card redraw, the old cards animate out (dealOut)
  * and the new cards deal in (dealIn) automatically via key-based remounting.
  */
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { keyframes } from "@emotion/react";
 import { Box, Stack } from "@mui/material";
 import type { Theme } from "@mui/material/styles";
 import { PlayingCard } from "../Card/PlayingCard";
 import { DealtCard } from "../Card/DealtCard";
+import { DealerBadge } from "./DealerBadge";
 import type { StandardCard } from "../../types/types";
 import { useTutorialOptional } from "../../tutorial/TutorialContext";
 
@@ -43,6 +44,8 @@ interface PlayerCardsProps {
   playerId?: string;
   /** When true, applies a secondary-color glow behind the cards. */
   isActive?: boolean;
+  /** When true, shows the dealer badge on this seat. */
+  isDealer?: boolean;
 }
 
 export function PlayerCards({
@@ -58,6 +61,7 @@ export function PlayerCards({
   redrawSeed = 0,
   playerId,
   isActive = false,
+  isDealer = false,
 }: PlayerCardsProps) {
   const highlights = useTutorialOptional()?.highlightCards ?? null;
   const anyHighlighted =
@@ -72,6 +76,33 @@ export function PlayerCards({
 
   const prevSeedRef = useRef(redrawSeed);
   const prevWheelRef = useRef(wheelRound);
+
+  // Dealer badge visibility — separate from isDealer so we can animate out.
+  const [showBadge, setShowBadge] = useState(isDealer);
+  const [badgeExiting, setBadgeExiting] = useState(false);
+  const exitTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const triggerBadgeExit = useCallback(() => {
+    setBadgeExiting(true);
+    exitTimerRef.current = setTimeout(() => {
+      setShowBadge(false);
+      setBadgeExiting(false);
+    }, 260);
+  }, []);
+
+  useEffect(() => {
+    if (isDealer) {
+      if (exitTimerRef.current) {
+        clearTimeout(exitTimerRef.current);
+        exitTimerRef.current = null;
+      }
+      setBadgeExiting(false);
+      setShowBadge(true);
+    } else if (showBadge) {
+      triggerBadgeExit();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isDealer]);
 
   useEffect(() => {
     // New hand: wheelRound changed — animate cards out, then swap in new cards.
@@ -115,24 +146,26 @@ export function PlayerCards({
         ...(anyHighlighted ? { zIndex: 1295 } : {}),
       }}
     >
-      <Stack
-        direction="row"
-        justifyContent="center"
-        alignItems="flex-end"
-        sx={{
-          ...(isExiting
-            ? {
-                animation: `${dealOut} 280ms ease-in both`,
-                pointerEvents: "none",
-              }
-            : {}),
-          filter: (theme: Theme) =>
-            isActive
-              ? `drop-shadow(0 0 8px ${theme.palette.secondary.main}99)`
-              : `drop-shadow(0 0 0px transparent)`,
-          transition: "filter 400ms ease",
-        }}
-      >
+      <Box sx={{ position: "relative", display: "inline-flex" }}>
+        {showBadge && <DealerBadge exiting={badgeExiting} />}
+        <Stack
+          direction="row"
+          justifyContent="center"
+          alignItems="flex-end"
+          sx={{
+            ...(isExiting
+              ? {
+                  animation: `${dealOut} 280ms ease-in both`,
+                  pointerEvents: "none",
+                }
+              : {}),
+            filter: (theme: Theme) =>
+              isActive
+                ? `drop-shadow(0 0 8px ${theme.palette.secondary.main}99)`
+                : `drop-shadow(0 0 0px transparent)`,
+            transition: "filter 400ms ease",
+          }}
+        >
         {displayCards.length > 0 ? (
           displayCards.map((card, i) => {
             const isPriestessRevealed =
@@ -215,7 +248,8 @@ export function PlayerCards({
             </Box>
           </>
         )}
-      </Stack>
+        </Stack>
+      </Box>
     </Box>
   );
 }

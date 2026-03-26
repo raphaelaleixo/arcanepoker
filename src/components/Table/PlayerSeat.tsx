@@ -36,6 +36,7 @@ export function PlayerSeat({
   const { state } = useGame();
 
   const isShowdown = state.stage === "showdown";
+  const isDealer = state.players[state.dealerIndex]?.id === player.id;
   const priestessCard = state.priestessRevealedCards?.[player.id] ?? null;
 
   const handResult = state.handResults.find((r) => r.playerId === player.id);
@@ -108,6 +109,7 @@ export function PlayerSeat({
         redrawSeed={state.holeCardChangeSeeds?.[player.id] ?? 0}
         playerId={player.id}
         isActive={isActive && !player.folded}
+        isDealer={isDealer}
       />
       {/* Player name and stack */}
       <Box

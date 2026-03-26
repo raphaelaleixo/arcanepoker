@@ -16,7 +16,6 @@ import { InteractionModal } from "../Modals/InteractionModal";
 import { GameOverModal } from "../Modals/GameOverModal";
 import { HERO_ID_CONST } from "../../store/initialState";
 import { PlaygroundDrawer } from "../Dev/PlaygroundDrawer";
-import { DealerChip } from "./DealerChip";
 import { TableOverlayContent } from "./TableOverlayContent";
 import { TutorialOverlay } from "../Tutorial/TutorialOverlay";
 import { useTutorialOptional } from "../../tutorial/TutorialContext";
@@ -279,7 +278,6 @@ export function PokerTable() {
       )}
       <InteractionModal />
       <GameOverModal />
-      <DealerChip />
       <Button
         size="small"
         variant="outlined"
