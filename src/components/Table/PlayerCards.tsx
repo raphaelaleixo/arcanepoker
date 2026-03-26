@@ -155,7 +155,7 @@ export function PlayerCards({
               );
             return (
               <Box
-                key={`${wheelRound}-${cardKey}-${i}`}
+                key={`${cardKey}-${i}`}
                 onClick={onCardClick ? () => onCardClick(card) : undefined}
                 sx={{
                   // transform: isSelected
