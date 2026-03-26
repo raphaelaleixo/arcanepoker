@@ -6,12 +6,14 @@ declare module "@mui/material/styles" {
     silver: { light: string; main: string; dark: string };
     redSuit: { main: string };
     blackSuit: { main: string };
+    rose: { light: string; main: string; dark: string };
   }
   interface PaletteOptions {
     gold?: { light?: string; main?: string; dark?: string };
     silver?: { light?: string; main?: string; dark?: string };
     redSuit?: { main?: string };
     blackSuit?: { main?: string };
+    rose?: { light?: string; main?: string; dark?: string };
   }
 }
 
@@ -91,6 +93,12 @@ theme = createTheme(theme, {
         main: "#CCCCCC",
       },
       name: "silver",
+    }),
+    rose: theme.palette.augmentColor({
+      color: {
+        main: "#ff5581",
+      },
+      name: "rose",
     }),
   },
 });

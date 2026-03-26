@@ -15,6 +15,8 @@ import {
 } from "@mui/material";
 import { useGame } from "../../store/useGame";
 import { HERO_ID_CONST } from "../../store/initialState";
+import { PlayingCard } from "../Card/PlayingCard";
+import tarot from "../../data/tarot";
 
 export function GameOverModal() {
   const { state, dispatch } = useGame();
@@ -39,41 +41,73 @@ export function GameOverModal() {
       slotProps={{
         paper: {
           sx: {
-            background: "linear-gradient(135deg, #1a0a2e 0%, #0a0a0a 100%)",
+            backgroundColor: "rgba(0,0,0,0.8)",
             border: "1px solid",
-            borderColor: "secondary.dark",
-            boxShadow: "0 0 40px rgba(108,52,131,0.35)",
+            borderColor: "gold.dark",
+            borderRadius: 2,
+            overflow: "hidden",
           },
         },
       }}
     >
       <DialogTitle
         sx={{
-          color: "secondary.light",
-          fontFamily: '"Georgia", "Times New Roman", serif',
+          color: "gold.main",
+          fontFamily: "Young Serif, Georgia, serif",
           textAlign: "center",
           fontSize: "1.6rem",
-          letterSpacing: "0.08em",
           borderBottom: "1px solid rgba(255,255,255,0.08)",
+          lineHeight: 1.1,
         }}
       >
         {title}
-      </DialogTitle>
-
-      <DialogContent sx={{ py: 3 }}>
         <Typography
           variant="body2"
           sx={{
             color: "silver.light",
             fontStyle: "italic",
             textAlign: "center",
-            mb: 3,
           }}
         >
           {subtitle}
         </Typography>
+      </DialogTitle>
 
-        <Divider sx={{ borderColor: "rgba(255,255,255,0.1)", mb: 2 }} />
+      <DialogContent sx={{ py: 3 }}>
+        {heroAlive && (() => {
+          const worldInfo = tarot.arcana["21"] as { fullName: string; tags: string[]; description: string };
+          return (
+            <>
+              <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2 }}>
+                <Box sx={{ display: "inline-block", scale: 0.7, flexShrink: 0 }}>
+                  <PlayingCard rank="21" suit="arcana" flipped />
+                </Box>
+                <Stack spacing={0.5}>
+                  <Typography
+                    variant="caption"
+                    sx={{ color: "gold.main", fontWeight: "bold", fontSize: "0.875rem", fontFamily: "Young Serif, Georgia, serif" }}
+                  >
+                    {worldInfo.fullName}
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    sx={{ color: "silver.light", fontSize: "0.6rem", fontWeight: 500, textTransform: "uppercase" }}
+                  >
+                    {worldInfo.tags.join(" · ")}
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    sx={{ color: "white", fontSize: "0.75rem", lineHeight: 1.5 }}
+                  >
+                    {worldInfo.description}
+                  </Typography>
+                </Stack>
+              </Stack>
+              <Divider sx={{ borderColor: "rgba(255,255,255,0.1)", mb: 2 }} />
+            </>
+          );
+        })()}
+        {!heroAlive && <Divider sx={{ borderColor: "rgba(255,255,255,0.1)", mb: 2 }} />}
 
         <Stack spacing={1}>
           {standings.map((player, rank) => {
@@ -88,7 +122,9 @@ export function GameOverModal() {
                   p: 1,
                   borderRadius: 1,
                   border: "1px solid",
-                  borderColor: isFirst ? "gold.dark" : "rgba(255,255,255,0.08)",
+                  borderColor: isFirst
+                    ? "secondary.main"
+                    : "rgba(255,255,255,0.08)",
                   background: isFirst
                     ? "rgba(255,215,0,0.07)"
                     : "rgba(0,0,0,0.2)",
@@ -97,7 +133,7 @@ export function GameOverModal() {
                 <Typography
                   variant="body2"
                   sx={{
-                    color: isFirst ? "gold.main" : "silver.light",
+                    color: isFirst ? "secondary.main" : "silver.light",
                     fontWeight: isFirst ? "bold" : "normal",
                   }}
                 >
@@ -106,9 +142,12 @@ export function GameOverModal() {
                 </Typography>
                 <Typography
                   variant="caption"
-                  sx={{ color: "rgba(255,255,255,0.5)" }}
+                  sx={{
+                    color: isFirst ? "secondary.main" : "silver.light",
+                    fontWeight: "bold",
+                  }}
                 >
-                  &#9824; {player.stack}
+                  {player.stack}
                 </Typography>
               </Box>
             );
@@ -118,21 +157,9 @@ export function GameOverModal() {
 
       <DialogActions sx={{ justifyContent: "center", pb: 2 }}>
         <Button
+          size="small"
           variant="contained"
           onClick={() => dispatch({ type: "START_GAME" })}
-          sx={{
-            px: 5,
-            py: 1,
-            background: "linear-gradient(135deg, #4a1a6e, #1a0a2e)",
-            border: "1px solid",
-            borderColor: "secondary.main",
-            color: "secondary.light",
-            letterSpacing: "0.08em",
-            "&:hover": {
-              background: "linear-gradient(135deg, #6c3483, #2d0f4e)",
-              borderColor: "secondary.light",
-            },
-          }}
         >
           Play Again
         </Button>

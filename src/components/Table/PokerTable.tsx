@@ -5,7 +5,7 @@
  * delegates all overlay UI to TableOverlayContent.
  */
 import { useState } from "react";
-import { Box, Button } from "@mui/material";
+import { Box, Button, Chip } from "@mui/material";
 import { useGame } from "../../store/useGame";
 import type { ArcanaCard, StandardCard } from "../../types/types";
 import { PlayerSeat } from "./PlayerSeat";
@@ -30,6 +30,7 @@ export function PokerTable() {
   const isTutorial = tutorial?.isTutorial ?? false;
   const narration = tutorial?.narration ?? null;
   const [showTarot, setShowTarot] = useState(false);
+  const [tarotMinimized, setTarotMinimized] = useState(false);
   const [playgroundOpen, setPlaygroundOpen] = useState(false);
   const [selectedCard, setSelectedCard] = useState<StandardCard | null>(null);
 
@@ -227,6 +228,30 @@ export function PokerTable() {
           pendingArcanaCard={pendingArcanaCard}
           arcanaCardToShow={arcanaCardToShow}
         />
+        {showTarot && tarotMinimized && (
+          <Box
+            sx={{
+              gridRow: "2 / 4",
+              gridColumn: 2,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              zIndex: 1,
+            }}
+          >
+            <Chip
+              label="The Cards Speak"
+              onClick={() => setTarotMinimized(false)}
+              sx={{
+                bgcolor: "secondary.dark",
+                color: "gold.light",
+                fontWeight: "bold",
+                cursor: "pointer",
+                "&:hover": { bgcolor: "secondary.main" },
+              }}
+            />
+          </Box>
+        )}
         {/* Action bar */}
         <Box
           sx={{
@@ -248,9 +273,13 @@ export function PokerTable() {
       {/* Overlay modals */}
       {showTarot && (
         <TarotModal
-          onClose={() => setShowTarot(false)}
+          minimized={tarotMinimized}
+          onMinimize={() => setTarotMinimized(true)}
+          onRestore={() => setTarotMinimized(false)}
+          onClose={() => { setShowTarot(false); setTarotMinimized(false); }}
           onNextHand={() => {
             setShowTarot(false);
+            setTarotMinimized(false);
             dispatch({ type: "NEXT_HAND" });
           }}
         />

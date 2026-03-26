@@ -1,9 +1,6 @@
-import { useEffect, useState } from "react";
 import {
   Box,
   Button,
-  Chip,
-  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -11,163 +8,161 @@ import {
   Divider,
   IconButton,
   Stack,
+  SvgIcon,
   Typography,
 } from "@mui/material";
 import { useGame } from "../../store/useGame";
-import { requestTarotReading } from "../../api/tarot";
 import { HERO_ID_CONST } from "../../store/initialState";
 import tarot from "../../data/tarot";
 import { PlayingCard } from "../Card/PlayingCard";
+import { evaluateBestHand } from "../../engine/handEvaluator";
+import { buildEvalOptions } from "../../store/gameReducer";
 import type {
-  ArcanaValue,
-  ArcanaSuit,
+  StandardCard,
+  ArcanaCard,
   StandardCardValue,
+  ArcanaValue,
   Suit,
+  ArcanaSuit,
 } from "../../types/types";
+import { Minimize } from "@mui/icons-material";
 
 interface TarotModalProps {
   onClose: () => void;
   onNextHand: () => void;
+  minimized: boolean;
+  onMinimize: () => void;
+  onRestore: () => void;
 }
 
-export function TarotModal({ onClose, onNextHand }: TarotModalProps) {
+type TarotEntry = {
+  fullName: string;
+  tags: string[];
+  description: string;
+  gameEffect?: string;
+};
+
+function getTarotInfo(card: StandardCard | ArcanaCard): TarotEntry | null {
+  if (card.suit === "arcana") {
+    return (tarot.arcana as Record<string, TarotEntry>)[card.value] ?? null;
+  }
+  const suitData = tarot[card.suit] as Record<string, TarotEntry>;
+  return suitData[card.value] ?? null;
+}
+
+function CardEntry({
+  card,
+  showGameEffect,
+}: {
+  card: StandardCard | ArcanaCard;
+  showGameEffect?: boolean;
+}) {
+  const info = getTarotInfo(card);
+  if (!info) return null;
+
+  return (
+    <Stack direction="row" alignItems="center" spacing={2}>
+      <Box sx={{ display: "inline-block", scale: 0.7, flexShrink: 0 }}>
+        <PlayingCard
+          rank={card.value as StandardCardValue | ArcanaValue}
+          suit={card.suit as Suit | ArcanaSuit}
+          flipped
+        />
+      </Box>
+      <Stack spacing={0}>
+        <Typography
+          variant="caption"
+          sx={{
+            color: "gold.main",
+            fontWeight: "bold",
+            fontSize: "0.875rem",
+            fontFamily: 'Young Serif, "Georgia", serif',
+          }}
+        >
+          {info.fullName}
+        </Typography>
+        <Typography
+          component="div"
+          variant="caption"
+          sx={{
+            my: 0.5,
+            color: "silver.main",
+            fontSize: "0.6rem",
+            fontWeight: 600,
+            textTransform: "uppercase",
+          }}
+        >
+          {info.tags.join(" · ")}
+        </Typography>
+        <Typography
+          variant="caption"
+          sx={{ color: "white", fontSize: "0.75rem", lineHeight: 1.5 }}
+        >
+          {info.description}
+        </Typography>
+        {showGameEffect && info.gameEffect && (
+          <Typography
+            variant="caption"
+            sx={{
+              color: "gold.light",
+              fontSize: "0.65rem",
+              fontStyle: "italic",
+              mt: 0.5,
+            }}
+          >
+            {info.gameEffect}
+          </Typography>
+        )}
+      </Stack>
+    </Stack>
+  );
+}
+
+export function TarotModal({
+  onClose,
+  onNextHand,
+  minimized,
+  onMinimize,
+}: TarotModalProps) {
   const { state } = useGame();
-  const [prophecy, setProphecy] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [minimized, setMinimized] = useState(false);
 
   const hero = state.players.find((p) => p.id === HERO_ID_CONST);
+  const heroCards = hero?.holeCards ?? [];
+  const isHermit = state.activeArcana?.effectKey === "hermit-hole-only";
 
-  const arcanaName =
-    state.activeArcana != null
-      ? ((tarot.arcana as Record<string, { fullName: string }>)[
-          state.activeArcana.card.value
-        ]?.fullName ?? null)
-      : null;
+  const available = isHermit
+    ? heroCards
+    : [...heroCards, ...state.communityCards];
+  const evalOpts = buildEvalOptions(state);
+
+  const bestCards: StandardCard[] =
+    available.length > 0
+      ? evaluateBestHand(available, evalOpts).bestFive
+      : heroCards;
 
   const arcanaCard = state.activeArcana?.card ?? null;
-
-  let arcanaSubstituted = false;
-  function communityCardDisplayProps(card: { value: string; suit: string }): {
-    rank: ArcanaValue | StandardCardValue;
-    suit: ArcanaSuit | Suit;
-  } {
-    if (card.value === "0" && arcanaCard && !arcanaSubstituted) {
-      arcanaSubstituted = true;
-      return { rank: arcanaCard.value, suit: arcanaCard.suit };
-    }
-    return { rank: card.value as StandardCardValue, suit: card.suit as Suit };
-  }
-
-  function holeCardDisplayProps(card: { value: string; suit: string }): {
-    rank: StandardCardValue;
-    suit: Suit;
-  } {
-    return { rank: card.value as StandardCardValue, suit: card.suit as Suit };
-  }
-
-  const handRank =
-    state.handResults.find((r) => r.playerId === HERO_ID_CONST)?.rankName ??
-    "high-card";
-
-  useEffect(() => {
-    let cancelled = false;
-
-    setLoading(true);
-    setProphecy(null);
-
-    const request = {
-      heroHoleCards: hero?.holeCards ?? [],
-      communityCards: state.communityCards,
-      handRank,
-      activeArcanaName: arcanaName,
-    };
-
-    requestTarotReading(request).then((res) => {
-      if (!cancelled) {
-        setProphecy(res.prophecy);
-        setLoading(false);
-      }
-    });
-
-    return () => {
-      cancelled = true;
-    };
-    // We intentionally only run on mount
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  function parseLine(line: string, key: number) {
-    const isBigPicture = line.startsWith("The Big Picture");
-    const parts = line.split(/\*\*([^*]+)\*\*/g);
-    const nodes = parts.map((part, i) =>
-      i % 2 === 1 ? (
-        <Box
-          key={i}
-          component="span"
-          sx={{ fontWeight: "bold", color: "gold.light" }}
-        >
-          {part}
-        </Box>
-      ) : (
-        part
-      ),
-    );
-    return (
-      <Typography
-        key={key}
-        variant="body1"
-        sx={{
-          color: isBigPicture ? "gold.light" : "silver.light",
-          textAlign: "left",
-          lineHeight: 1.8,
-          fontSize: isBigPicture ? "0.95rem" : "0.9rem",
-          mt: isBigPicture ? 1.5 : 1,
-          borderTop: isBigPicture ? "1px solid rgba(255,215,0,0.2)" : "none",
-          pt: isBigPicture ? 1.5 : 0,
-        }}
-      >
-        {nodes}
-      </Typography>
-    );
-  }
 
   function handleContinue() {
     onClose();
     onNextHand();
   }
 
-  if (minimized) {
-    return (
-      <Chip
-        label="The Cards Speak"
-        onClick={() => setMinimized(false)}
-        sx={{
-          position: "fixed",
-          bottom: 80,
-          right: 16,
-          zIndex: 1300,
-          bgcolor: "secondary.dark",
-          color: "gold.light",
-          fontWeight: "bold",
-          cursor: "pointer",
-          "&:hover": { bgcolor: "secondary.main" },
-        }}
-      />
-    );
-  }
+  if (minimized) return null;
 
   return (
     <Dialog
       open
       maxWidth="sm"
       fullWidth
-      PaperProps={{
-        sx: {
-          background: "linear-gradient(135deg, #0F3D20 0%, #1a0a2e 100%)",
-          border: "1px solid",
-          borderColor: "gold.dark",
-          boxShadow: "0 0 40px rgba(255,215,0,0.2)",
+      slotProps={{
+        paper: {
+          sx: {
+            backgroundColor: "rgba(0,0,0,0.8)",
+            border: "1px solid",
+            borderColor: "gold.dark",
+            borderRadius: 2,
+            overflow: "hidden",
+          },
         },
       }}
     >
@@ -177,7 +172,6 @@ export function TarotModal({ onClose, onNextHand }: TarotModalProps) {
           fontFamily: 'Young Serif, "Georgia", serif',
           textAlign: "center",
           fontSize: "1.4rem",
-          letterSpacing: "0.08em",
           borderBottom: "1px solid rgba(255,215,0,0.2)",
           display: "flex",
           alignItems: "center",
@@ -188,92 +182,44 @@ export function TarotModal({ onClose, onNextHand }: TarotModalProps) {
         Your Cards Speak
         <IconButton
           size="small"
-          onClick={() => setMinimized(true)}
-          sx={{ position: "absolute", right: 8, top: 8, color: "gold.dark" }}
+          onClick={onMinimize}
+          sx={{ position: "absolute", right: 16, top: 16, color: "gold.dark" }}
           title="Minimize"
         >
-          &#8722;
+          <SvgIcon>
+            <Minimize />
+          </SvgIcon>
         </IconButton>
       </DialogTitle>
 
-      <DialogContent
-        sx={{
-          minHeight: 160,
-          py: 3,
-        }}
-      >
-        <Stack
-          direction="row"
-          justifyContent="center"
-          alignItems="flex-end"
-          gap={2}
-          sx={{ my: 2, py: 0 }}
-        >
-          <Stack direction="row" alignItems="flex-end">
-            {(hero?.holeCards ?? []).map((card, i) => (
-              <Box
-                key={i}
-                sx={{
-                  transform: i === 0 ? "rotate(-6deg)" : "rotate(6deg)",
-                  transformOrigin: "bottom center",
-                  ml: i === 0 ? 0 : -1.5,
-                }}
-              >
-                <PlayingCard small {...holeCardDisplayProps(card)} flipped />
-              </Box>
-            ))}
-          </Stack>
-          <Divider
-            orientation="vertical"
-            flexItem
-            sx={{ borderColor: "rgba(255,215,0,0.2)" }}
-          />
-          <Stack direction="row" alignItems="flex-end" gap={0.5}>
-            {state.communityCards.map((card, i) => (
-              <PlayingCard
-                key={i}
-                small
-                {...communityCardDisplayProps(card)}
-                flipped
-              />
-            ))}
-          </Stack>
+      <DialogContent sx={{ py: 3 }}>
+        <Stack direction="column" gap={1.5}>
+          {bestCards.map((card, i) => (
+            <CardEntry key={i} card={card} />
+          ))}
         </Stack>
 
-        {loading ? (
-          <CircularProgress sx={{ color: "gold.main" }} />
-        ) : (
-          <Box sx={{ width: "100%" }}>
-            {prophecy
-              ?.replace(/\/n/g, "\n\n")
-              .split("\n")
-              .map((line, i) =>
-                line.trim() ? (
-                  parseLine(line, i)
-                ) : (
-                  <Box key={i} sx={{ height: 12 }} />
-                ),
-              )}
-          </Box>
+        {arcanaCard && (
+          <>
+            <Divider sx={{ my: 2, borderColor: "rgba(255,215,0,0.2)" }} />
+            <Typography
+              variant="overline"
+              sx={{
+                color: "gold.dark",
+                display: "block",
+                textAlign: "center",
+                mb: 1,
+              }}
+            >
+              Active Arcana
+            </Typography>
+            <CardEntry card={arcanaCard} showGameEffect />
+          </>
         )}
       </DialogContent>
 
       <DialogActions sx={{ justifyContent: "center", pb: 2 }}>
-        <Button
-          variant="contained"
-          onClick={handleContinue}
-          disabled={loading}
-          sx={{
-            px: 4,
-            background: "linear-gradient(135deg, #2E7D32, #1B5E20)",
-            border: "1px solid",
-            borderColor: "gold.dark",
-            color: "gold.light",
-            "&:hover": {
-              background: "linear-gradient(135deg, #388E3C, #2E7D32)",
-            },
-          }}
-        >
+        <Button variant="contained" size="small" onClick={handleContinue}>
           Next Hand
         </Button>
       </DialogActions>

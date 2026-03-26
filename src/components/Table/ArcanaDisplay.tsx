@@ -9,6 +9,7 @@
 import { keyframes } from "@emotion/react";
 import { Box, Stack, Typography } from "@mui/material";
 import type { ArcanaCard } from "../../types/types";
+import tarot from "../../data/tarot";
 
 const stirsPulse = keyframes`
   0%, 100% { opacity: 0.4; }
@@ -37,7 +38,7 @@ export function ArcanaDisplay({
   displayArcanaData,
 }: ArcanaDisplayProps) {
   return (
-    <Box sx={{ display: "grid", width: "100%", pt: 2 }}>
+    <Box sx={{ display: "grid", width: "100%", height: "7em", borderBottom: "1px solid rgba(255,255,255,0.08)", mb: 2 }}>
       {/* Arcana card + description — same grid cell, fades in when active */}
       <Stack
         direction="row"
@@ -45,13 +46,11 @@ export function ArcanaDisplay({
         alignItems="center"
         justifyContent="center"
         sx={{
-          height: "5em",
+          height: "100%",
           gridArea: "1 / 1",
           opacity: arcanaCardToShow ? 1 : 1,
           pointerEvents: arcanaCardToShow ? "auto" : "none",
           transition: "opacity 400ms ease",
-          borderBottom: "1px solid rgba(255,255,255,0.08)",
-          mb: 2,
         }}
       >
         {/* Description box: fixed size, CSS grid stack inside */}
@@ -131,6 +130,26 @@ export function ArcanaDisplay({
                   {displayArcanaData.gameEffect}
                 </Typography>
               )}
+              {arcanaCardToShow && (() => {
+                const tags = (tarot.arcana as Record<string, { tags?: string[] }>)[arcanaCardToShow.value]?.tags;
+                return tags?.length ? (
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      display: "block",
+                      color: "silver.light",
+                      fontSize: "0.6rem",
+                      fontWeight: 500,
+                      textTransform: "uppercase",
+                      mt: 0.5,
+                      lineHeight: 1.1,
+                      opacity: 0.8,
+                    }}
+                  >
+                    {tags.join(" · ")}
+                  </Typography>
+                ) : null;
+              })()}
             </Box>
           </Box>
         </Box>
