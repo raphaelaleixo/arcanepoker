@@ -6,7 +6,8 @@
  * and the name/effect fades in. Both states share the same container height
  * via a CSS grid stack so no layout shift occurs.
  */
-import { Box, Stack } from "@mui/material";
+import { useState } from "react";
+import { Box, Stack, Tooltip, Typography } from "@mui/material";
 import { keyframes } from "@emotion/react";
 import { PlayingCard } from "../Card/PlayingCard";
 import type { ArcanaCard } from "../../types/types";
@@ -30,12 +31,117 @@ interface ArcanaDisplayProps {
    * When non-null, the card shows its back and the description shows the pending placeholder.
    */
   pendingArcanaCard: ArcanaCard | null;
+  /** Opens the Arcana info modal when "Learn more" is clicked in the tooltip. */
+  onOpenArcanaInfo?: () => void;
 }
 
 export function ArcanaDisplayCard({
   arcanaCardToShow,
   pendingArcanaCard,
+  onOpenArcanaInfo,
 }: ArcanaDisplayProps) {
+  const [tooltipOpen, setTooltipOpen] = useState(false);
+
+  const showTooltip = !!arcanaCardToShow && !!onOpenArcanaInfo;
+
+  const tooltipTitle = (
+    <Box sx={{ textAlign: "center" }}>
+      <Typography
+        variant="caption"
+        sx={{
+          color: "white",
+          display: "block",
+          lineHeight: 1.2,
+          fontWeight: 500,
+        }}
+      >
+        A Major Arcana card.
+      </Typography>
+      <Typography
+        variant="caption"
+        component="span"
+        onMouseDown={(e) => e.stopPropagation()}
+        onClick={(e) => {
+          e.stopPropagation();
+          setTooltipOpen(false);
+          onOpenArcanaInfo!();
+        }}
+        sx={{
+          color: "gold.light",
+          cursor: "pointer",
+          textDecoration: "underline",
+          fontWeight: "bold",
+        }}
+      >
+        Learn more
+      </Typography>
+    </Box>
+  );
+
+  const card = (
+    <Box
+      sx={{
+        display: "inline-block",
+        lineHeight: 0,
+        borderRadius: 1,
+        animation: pendingArcanaCard
+          ? `${arcanaFloatBob} 2.4s ease-in-out 500ms infinite`
+          : undefined,
+        boxShadow: pendingArcanaCard
+          ? "0 0 12px 4px rgba(179, 57, 219, 0.55)"
+          : undefined,
+      }}
+    >
+      <PlayingCard
+        rank={arcanaCardToShow?.value}
+        suit={arcanaCardToShow?.suit}
+        flipped={!!arcanaCardToShow && !pendingArcanaCard}
+      />
+    </Box>
+  );
+
+  const cardContent = (
+    <Stack
+      direction="row"
+      spacing={1.5}
+      alignItems="center"
+      justifyContent="center"
+      sx={{
+        gridArea: "1 / 1",
+        opacity: arcanaCardToShow ? 1 : 0,
+        pointerEvents: arcanaCardToShow ? "auto" : "none",
+        transition: "opacity 400ms ease",
+      }}
+    >
+      {/* Card animates in and bobs while pending */}
+      <Box
+        sx={{
+          display: "inline-block",
+          scale: 0.7,
+          animation: pendingArcanaCard
+            ? `${arcanaRiseIn} 500ms ease-out both`
+            : undefined,
+        }}
+      >
+        {showTooltip ? (
+          <Tooltip
+            placement="top"
+            arrow
+            disableInteractive={false}
+            open={tooltipOpen}
+            onOpen={() => setTooltipOpen(true)}
+            onClose={() => setTooltipOpen(false)}
+            title={tooltipTitle}
+          >
+            {card}
+          </Tooltip>
+        ) : (
+          card
+        )}
+      </Box>
+    </Stack>
+  );
+
   return (
     <Box
       sx={{
@@ -44,7 +150,7 @@ export function ArcanaDisplayCard({
         gridRow: "2 / 4",
         gridColumn: "2",
         position: "relative",
-        zIndex: -1,
+        zIndex: 0,
         "&:before, &:after": {
           content: "''",
           display: "block",
@@ -58,7 +164,6 @@ export function ArcanaDisplayCard({
           top: 0,
           left: "50%",
           transform: "translateX(-50%)",
-
           opacity: 0.3,
         },
         "&:after": {
@@ -69,50 +174,7 @@ export function ArcanaDisplayCard({
         },
       }}
     >
-      {/* Arcana card + description — same grid cell, fades in when active */}
-      <Stack
-        direction="row"
-        spacing={1.5}
-        alignItems="center"
-        justifyContent="center"
-        sx={{
-          gridArea: "1 / 1",
-          opacity: arcanaCardToShow ? 1 : 0,
-          pointerEvents: arcanaCardToShow ? "auto" : "none",
-          transition: "opacity 400ms ease",
-        }}
-      >
-        {/* Card animates in and bobs while pending */}
-        <Box
-          sx={{
-            display: "inline-block",
-            scale: 0.7,
-            animation: pendingArcanaCard
-              ? `${arcanaRiseIn} 500ms ease-out both`
-              : undefined,
-          }}
-        >
-          <Box
-            sx={{
-              display: "inline-block",
-              lineHeight: 0,
-              borderRadius: 1,
-              animation: pendingArcanaCard
-                ? `${arcanaFloatBob} 2.4s ease-in-out 500ms infinite`
-                : undefined,
-              boxShadow: pendingArcanaCard
-                ? "0 0 12px 4px rgba(179, 57, 219, 0.55)"
-                : undefined,
-            }}
-          >
-            <PlayingCard
-              rank={arcanaCardToShow?.value}
-              suit={arcanaCardToShow?.suit}
-              flipped={!!arcanaCardToShow && !pendingArcanaCard}
-            />
-          </Box>
-        </Box>
-      </Stack>
+      {cardContent}
     </Box>
   );
 }

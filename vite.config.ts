@@ -50,6 +50,7 @@ function localApiPlugin(): Plugin {
 
 export default defineConfig({
   plugins: [react(), localApiPlugin()],
+  base: "./",
   test: {
     globals: true,
     environment: "jsdom",

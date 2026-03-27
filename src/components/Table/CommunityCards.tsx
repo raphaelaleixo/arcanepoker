@@ -66,12 +66,15 @@ export function CommunityCards({
 }: CommunityCardsProps) {
   const highlights = useTutorialOptional()?.highlightCards ?? null;
 
-  const [displayCommunityCards, setDisplayCommunityCards] = useState(communityCards);
+  const [displayCommunityCards, setDisplayCommunityCards] =
+    useState(communityCards);
   const [renderedRound, setRenderedRound] = useState(wheelRound);
   const [isExiting, setIsExiting] = useState(false);
   const prevRoundRef = useRef(wheelRound);
   // Tracks which slot's Page tooltip is open so we can close it programmatically.
-  const [openPageTooltipIndex, setOpenPageTooltipIndex] = useState<number | null>(null);
+  const [openPageTooltipIndex, setOpenPageTooltipIndex] = useState<
+    number | null
+  >(null);
 
   useEffect(() => {
     if (wheelRound !== prevRoundRef.current) {
@@ -98,7 +101,10 @@ export function CommunityCards({
       useFlexGap
       sx={
         isExiting
-          ? { animation: `${dealOut} 280ms ease-in both`, pointerEvents: "none" }
+          ? {
+              animation: `${dealOut} 280ms ease-in both`,
+              pointerEvents: "none",
+            }
           : undefined
       }
     >
@@ -122,15 +128,32 @@ export function CommunityCards({
 
         const pageTooltipTitle = onOpenPageInfo ? (
           <Box sx={{ textAlign: "center" }}>
-            <Typography variant="caption" sx={{ color: "white", display: "block" }}>
-              The Page (Ø) — lowest card in the deck
+            <Typography
+              variant="caption"
+              sx={{
+                color: "white",
+                display: "block",
+                lineHeight: 1.2,
+                fontWeight: 500,
+              }}
+            >
+              The Page (Ø) — lowest card
             </Typography>
             <Typography
               variant="caption"
               component="span"
               onMouseDown={(e) => e.stopPropagation()}
-              onClick={(e) => { e.stopPropagation(); setOpenPageTooltipIndex(null); onOpenPageInfo(); }}
-              sx={{ color: "gold.light", cursor: "pointer", textDecoration: "underline", fontSize: "0.65rem" }}
+              onClick={(e) => {
+                e.stopPropagation();
+                setOpenPageTooltipIndex(null);
+                onOpenPageInfo();
+              }}
+              sx={{
+                color: "gold.light",
+                cursor: "pointer",
+                textDecoration: "underline",
+                fontWeight: "bold",
+              }}
             >
               Learn more →
             </Typography>
@@ -174,7 +197,8 @@ export function CommunityCards({
         // key doesn't change on reveal, avoiding a second remount animation).
         if (i === moonAffectedIndex) {
           const moonFaceUp = i !== moonHiddenCommunityIndex;
-          const moonIsPage = card?.value === "0" && moonFaceUp && !!pageTooltipTitle;
+          const moonIsPage =
+            card?.value === "0" && moonFaceUp && !!pageTooltipTitle;
           const moonSlot = (
             <Box
               key={`${renderedRound}-moon-${communityChangeKey}-${i}`}
@@ -216,7 +240,9 @@ export function CommunityCards({
             >
               {moonSlot}
             </Tooltip>
-          ) : moonSlot;
+          ) : (
+            moonSlot
+          );
         }
 
         const isEmpressSlot = empressActive && i === 5;
@@ -271,7 +297,9 @@ export function CommunityCards({
           >
             {normalSlot}
           </Tooltip>
-        ) : normalSlot;
+        ) : (
+          normalSlot
+        );
       })}
     </Stack>
   );
