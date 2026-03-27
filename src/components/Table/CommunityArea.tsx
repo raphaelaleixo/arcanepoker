@@ -14,9 +14,11 @@ import { ArcanaDisplay } from "./ArcanaDisplay";
 interface CommunityAreaProps {
   /** Passed from PokerTable as sx={{ flex: 1 }} to fill the middle row. */
   sx?: SxProps;
+  /** Opens the Page card info modal when a Page (Ø) card is hovered. */
+  onOpenPageInfo?: () => void;
 }
 
-export function CommunityArea({ sx }: CommunityAreaProps) {
+export function CommunityArea({ sx, onOpenPageInfo }: CommunityAreaProps) {
   const { state } = useGame();
 
   const totalSlots =
@@ -84,6 +86,7 @@ export function CommunityArea({ sx }: CommunityAreaProps) {
         moonAffectedIndex={state.moonAffectedIndex}
         wheelRound={state.wheelRound}
         communityChangeKey={state.communityChangeKey}
+        onOpenPageInfo={onOpenPageInfo}
       />
 
       <PotDisplay

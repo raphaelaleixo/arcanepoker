@@ -21,6 +21,7 @@ import { TutorialOverlay } from "../Tutorial/TutorialOverlay";
 import { useTutorialOptional } from "../../tutorial/TutorialContext";
 import { TutorialNarrationContent } from "../Tutorial/TutorialNarrationContent";
 import { ArcanaDisplayCard } from "./ArcanaDisplayCard";
+import { PageInfoModal } from "../Modals/PageInfoModal";
 
 const BETTING_STAGES = ["pre-flop", "flop", "turn", "river", "empress"];
 
@@ -33,6 +34,7 @@ export function PokerTable() {
   const [tarotMinimized, setTarotMinimized] = useState(false);
   const [playgroundOpen, setPlaygroundOpen] = useState(false);
   const [selectedCard, setSelectedCard] = useState<StandardCard | null>(null);
+  const [pageInfoOpen, setPageInfoOpen] = useState(false);
 
   const cardPickInteraction =
     state.pendingInteraction?.type === "priestess-reveal" ||
@@ -163,6 +165,7 @@ export function PokerTable() {
             gridColumnStart: 1,
             gridColumnEnd: 4,
           }}
+          onOpenPageInfo={() => setPageInfoOpen(true)}
         />
         {bot1 && (
           <PlayerSeat
@@ -217,6 +220,7 @@ export function PokerTable() {
             isActive={activePlayer?.id === hero.id}
             onCardClick={cardPickInteraction ? handleCardPick : undefined}
             selectedCard={cardPickInteraction ? selectedCard : undefined}
+            onOpenPageInfo={() => setPageInfoOpen(true)}
             sx={{
               gridRow: 4,
               gridColumnStart: 1,
@@ -286,6 +290,7 @@ export function PokerTable() {
       )}
       <InteractionModal />
       <GameOverModal />
+      <PageInfoModal open={pageInfoOpen} onClose={() => setPageInfoOpen(false)} />
       <Button
         size="small"
         variant="outlined"

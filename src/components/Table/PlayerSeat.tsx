@@ -21,6 +21,8 @@ interface PlayerSeatProps {
   onCardClick?: (card: StandardCard) => void;
   /** The currently selected card during an inline card-pick interaction. */
   selectedCard?: StandardCard | null;
+  /** Opens the Page card info modal when a Page (Ø) card is hovered. */
+  onOpenPageInfo?: () => void;
   sx?: SxProps;
 }
 
@@ -31,6 +33,7 @@ export function PlayerSeat({
   isActive = false,
   onCardClick,
   selectedCard,
+  onOpenPageInfo,
   sx,
 }: PlayerSeatProps) {
   const { state } = useGame();
@@ -111,6 +114,7 @@ export function PlayerSeat({
           playerId={player.id}
           isActive={isActive && !player.folded}
           isDealer={isDealer}
+          onOpenPageInfo={onOpenPageInfo}
         />
       </Box>
       {/* Player name and stack */}

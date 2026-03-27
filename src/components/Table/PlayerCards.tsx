@@ -9,7 +9,7 @@
  */
 import { useEffect, useRef, useState, useCallback } from "react";
 import { keyframes } from "@emotion/react";
-import { Box, Stack } from "@mui/material";
+import { Box, Stack, Tooltip, Typography } from "@mui/material";
 import type { Theme } from "@mui/material/styles";
 import { PlayingCard } from "../Card/PlayingCard";
 import { DealtCard } from "../Card/DealtCard";
@@ -46,6 +46,8 @@ interface PlayerCardsProps {
   isActive?: boolean;
   /** When true, shows the dealer badge on this seat. */
   isDealer?: boolean;
+  /** Opens the Page card info modal when a Page (Ø) card is hovered. */
+  onOpenPageInfo?: () => void;
 }
 
 export function PlayerCards({
@@ -62,6 +64,7 @@ export function PlayerCards({
   playerId,
   isActive = false,
   isDealer = false,
+  onOpenPageInfo,
 }: PlayerCardsProps) {
   const highlights = useTutorialOptional()?.highlightCards ?? null;
   const anyHighlighted =
@@ -73,6 +76,8 @@ export function PlayerCards({
   const [isExiting, setIsExiting] = useState(false);
   // Incremented when new cards arrive after a redraw — forces DealtCard remount → dealIn fires.
   const [cardKey, setCardKey] = useState(0);
+  // Tracks which Page card tooltip is open (by card key string) so we can close it programmatically.
+  const [openPageTooltip, setOpenPageTooltip] = useState<string | null>(null);
 
   const prevSeedRef = useRef(redrawSeed);
   const prevWheelRef = useRef(wheelRound);
@@ -183,7 +188,10 @@ export function PlayerCards({
                   h.playerId === playerId &&
                   h.cardIndex === i,
               );
-            return (
+            const isPageCard = card.value === "0";
+            const showPageTooltip = isHero && faceUp && isPageCard && !!onOpenPageInfo;
+
+            const cardBox = (
               <Box
                 key={`${cardKey}-${card.value}-${card.suit}`}
                 onClick={onCardClick ? () => onCardClick(card) : undefined}
@@ -223,6 +231,40 @@ export function PlayerCards({
                 />
               </Box>
             );
+
+            if (showPageTooltip) {
+              const tooltipKey = `${cardKey}-${card.value}-${card.suit}`;
+              return (
+                <Tooltip
+                  key={tooltipKey}
+                  placement="top"
+                  arrow
+                  disableInteractive={false}
+                  open={openPageTooltip === tooltipKey}
+                  onOpen={() => setOpenPageTooltip(tooltipKey)}
+                  onClose={() => setOpenPageTooltip(null)}
+                  title={
+                    <Box sx={{ textAlign: "center" }}>
+                      <Typography variant="caption" sx={{ color: "white", display: "block" }}>
+                        The Page (Ø) — lowest card in the deck
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        component="span"
+                        onMouseDown={(e) => e.stopPropagation()}
+                        onClick={(e) => { e.stopPropagation(); setOpenPageTooltip(null); onOpenPageInfo!(); }}
+                        sx={{ color: "gold.light", cursor: "pointer", textDecoration: "underline", fontSize: "0.65rem" }}
+                      >
+                        Learn more →
+                      </Typography>
+                    </Box>
+                  }
+                >
+                  {cardBox}
+                </Tooltip>
+              );
+            }
+            return cardBox;
           })
         ) : (
           <>

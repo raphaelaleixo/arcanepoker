@@ -4,7 +4,7 @@
  * Fool arcana) and the Empress sixth-card slot.
  */
 import { useEffect, useRef, useState } from "react";
-import { Box, Stack } from "@mui/material";
+import { Box, Stack, Tooltip, Typography } from "@mui/material";
 import { keyframes } from "@mui/system";
 import { DealtCard } from "../Card/DealtCard";
 import type { StandardCard, ArcanaCard } from "../../types/types";
@@ -49,6 +49,8 @@ interface CommunityCardsProps {
   wheelRound: number;
   /** Incremented when any community card changes mid-hand (Fool, Moon); triggers remount → dealIn animation. */
   communityChangeKey: number;
+  /** Opens the Page card info modal when a Page (Ø) card is hovered. */
+  onOpenPageInfo?: () => void;
 }
 
 export function CommunityCards({
@@ -60,6 +62,7 @@ export function CommunityCards({
   moonAffectedIndex,
   wheelRound,
   communityChangeKey,
+  onOpenPageInfo,
 }: CommunityCardsProps) {
   const highlights = useTutorialOptional()?.highlightCards ?? null;
 
@@ -67,6 +70,8 @@ export function CommunityCards({
   const [renderedRound, setRenderedRound] = useState(wheelRound);
   const [isExiting, setIsExiting] = useState(false);
   const prevRoundRef = useRef(wheelRound);
+  // Tracks which slot's Page tooltip is open so we can close it programmatically.
+  const [openPageTooltipIndex, setOpenPageTooltipIndex] = useState<number | null>(null);
 
   useEffect(() => {
     if (wheelRound !== prevRoundRef.current) {
@@ -115,6 +120,23 @@ export function CommunityCards({
         // Turn/river cards are dealt individually, so each resets stagger to 0.
         const di = card && i < 3 ? i : 0;
 
+        const pageTooltipTitle = onOpenPageInfo ? (
+          <Box sx={{ textAlign: "center" }}>
+            <Typography variant="caption" sx={{ color: "white", display: "block" }}>
+              The Page (Ø) — lowest card in the deck
+            </Typography>
+            <Typography
+              variant="caption"
+              component="span"
+              onMouseDown={(e) => e.stopPropagation()}
+              onClick={(e) => { e.stopPropagation(); setOpenPageTooltipIndex(null); onOpenPageInfo(); }}
+              sx={{ color: "gold.light", cursor: "pointer", textDecoration: "underline", fontSize: "0.65rem" }}
+            >
+              Learn more →
+            </Typography>
+          </Box>
+        ) : null;
+
         // Fool substitution: render this slot as The Fool arcana face
         // rather than the card's true value.
         if (i === foolCardIndex) {
@@ -151,7 +173,9 @@ export function CommunityCards({
         // Moon: use a stable key (moonAffectedIndex persists through showdown so the
         // key doesn't change on reveal, avoiding a second remount animation).
         if (i === moonAffectedIndex) {
-          return (
+          const moonFaceUp = i !== moonHiddenCommunityIndex;
+          const moonIsPage = card?.value === "0" && moonFaceUp && !!pageTooltipTitle;
+          const moonSlot = (
             <Box
               key={`${renderedRound}-moon-${communityChangeKey}-${i}`}
               sx={{
@@ -171,7 +195,7 @@ export function CommunityCards({
                     small
                     rank={card.value}
                     suit={card.suit}
-                    flipped={i !== moonHiddenCommunityIndex}
+                    flipped={moonFaceUp}
                     dealIndex={di}
                     revealDelay={di * 80 + 400}
                   />
@@ -179,13 +203,29 @@ export function CommunityCards({
               )}
             </Box>
           );
+          return moonIsPage ? (
+            <Tooltip
+              key={`${renderedRound}-moon-${communityChangeKey}-${i}`}
+              placement="top"
+              arrow
+              disableInteractive={false}
+              open={openPageTooltipIndex === i}
+              onOpen={() => setOpenPageTooltipIndex(i)}
+              onClose={() => setOpenPageTooltipIndex(null)}
+              title={pageTooltipTitle}
+            >
+              {moonSlot}
+            </Tooltip>
+          ) : moonSlot;
         }
 
         const isEmpressSlot = empressActive && i === 5;
+        const slotKey = card ? `${renderedRound}-${i}` : String(i);
+        const normalIsPage = card?.value === "0" && !!pageTooltipTitle;
 
-        return (
+        const normalSlot = (
           <Box
-            key={card ? `${renderedRound}-${i}` : i}
+            key={slotKey}
             sx={{
               position: "relative",
               width: "2.5em",
@@ -217,6 +257,21 @@ export function CommunityCards({
             )}
           </Box>
         );
+
+        return normalIsPage ? (
+          <Tooltip
+            key={slotKey}
+            placement="top"
+            arrow
+            disableInteractive={false}
+            open={openPageTooltipIndex === i}
+            onOpen={() => setOpenPageTooltipIndex(i)}
+            onClose={() => setOpenPageTooltipIndex(null)}
+            title={pageTooltipTitle}
+          >
+            {normalSlot}
+          </Tooltip>
+        ) : normalSlot;
       })}
     </Stack>
   );
