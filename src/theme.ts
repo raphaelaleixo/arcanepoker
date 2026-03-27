@@ -73,7 +73,7 @@ theme = createTheme(theme, {
           ownerState: { variant?: string; color?: string };
           theme: Theme;
         }) => {
-          const palette = t.palette as Record<
+          const palette = t.palette as unknown as Record<
             string,
             { main?: string; contrastText?: string } | undefined
           >;
