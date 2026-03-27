@@ -1,4 +1,4 @@
-import { createTheme } from "@mui/material/styles";
+import { createTheme, type Theme } from "@mui/material/styles";
 
 declare module "@mui/material/styles" {
   interface Palette {
@@ -63,6 +63,44 @@ let theme = createTheme({
 });
 
 theme = createTheme(theme, {
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: ({
+          ownerState,
+          theme: t,
+        }: {
+          ownerState: { variant?: string; color?: string };
+          theme: Theme;
+        }) => {
+          const palette = t.palette as Record<
+            string,
+            { main?: string; contrastText?: string } | undefined
+          >;
+          const pc = ownerState.color ? palette[ownerState.color] : undefined;
+          return {
+            "&.Mui-disabled": {
+              opacity: 0.45,
+              pointerEvents: "none",
+              ...(ownerState.variant === "contained" && pc?.main
+                ? {
+                    backgroundColor: pc.main,
+                    color: pc.contrastText ?? "inherit",
+                    boxShadow: "none",
+                  }
+                : {}),
+              ...(ownerState.variant === "outlined" && pc?.main
+                ? { color: pc.main, borderColor: pc.main }
+                : {}),
+              ...(ownerState.variant === "text" && pc?.main
+                ? { color: pc.main }
+                : {}),
+            },
+          };
+        },
+      },
+    },
+  },
   palette: {
     redSuit: theme.palette.augmentColor({
       color: {

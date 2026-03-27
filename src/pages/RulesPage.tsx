@@ -108,10 +108,10 @@ export function RulesPage() {
             Arcane Poker uses a modified ranking where a <strong>Straight beats a Flush</strong>.
             The odds change below reflects the shift in probability from standard poker.
           </Typography>
-          <Box sx={{ display: "flex", gap: 2, pl: 3, mb: 0.5 }}>
-            <Typography variant="caption" sx={{ color: "silver.light", opacity: 0.4, minWidth: 160, flexShrink: 0 }}>Hand</Typography>
-            <Typography variant="caption" sx={{ color: "silver.light", opacity: 0.4, minWidth: 80, flexShrink: 0 }}>Standard</Typography>
-            <Typography variant="caption" sx={{ color: "silver.light", opacity: 0.4, minWidth: 80, flexShrink: 0 }}>Arcane</Typography>
+          <Box sx={{ display: "flex", gap: { xs: 1, sm: 2 }, pl: 3, mb: 0.5 }}>
+            <Typography variant="caption" sx={{ color: "silver.light", opacity: 0.4, minWidth: { xs: 110, sm: 160 }, flexShrink: 0 }}>Hand</Typography>
+            <Typography variant="caption" sx={{ color: "silver.light", opacity: 0.4, minWidth: { xs: 0, sm: 80 }, flexShrink: 0, display: { xs: "none", sm: "block" } }}>Standard</Typography>
+            <Typography variant="caption" sx={{ color: "silver.light", opacity: 0.4, minWidth: { xs: 70, sm: 80 }, flexShrink: 0 }}>Arcane</Typography>
             <Typography variant="caption" sx={{ color: "silver.light", opacity: 0.4 }}>Change</Typography>
           </Box>
           <Box
@@ -130,14 +130,14 @@ export function RulesPage() {
               { hand: "High Card",       standard: "50.1177%",arcane: "53.1653%",note: "+6.08%"  },
             ].map(({ hand, standard, arcane, note }) => (
               <Box component="li" key={hand} sx={{ color: "silver.light", fontSize: "0.875rem" }}>
-                <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-                  <Typography variant="body2" sx={{ color: "silver.light", minWidth: 160, flexShrink: 0 }}>
+                <Box sx={{ display: "flex", gap: { xs: 1, sm: 2 }, alignItems: "center" }}>
+                  <Typography variant="body2" sx={{ color: "silver.light", minWidth: { xs: 110, sm: 160 }, flexShrink: 0 }}>
                     {hand}
                   </Typography>
-                  <Typography variant="body2" sx={{ color: "silver.light", opacity: 0.5, minWidth: 80, flexShrink: 0, fontVariantNumeric: "tabular-nums" }}>
+                  <Typography variant="body2" sx={{ color: "silver.light", opacity: 0.5, minWidth: { xs: 0, sm: 80 }, flexShrink: 0, fontVariantNumeric: "tabular-nums", display: { xs: "none", sm: "block" } }}>
                     {standard}
                   </Typography>
-                  <Typography variant="body2" sx={{ color: "silver.light", opacity: 0.7, minWidth: 80, flexShrink: 0, fontVariantNumeric: "tabular-nums" }}>
+                  <Typography variant="body2" sx={{ color: "silver.light", opacity: 0.7, minWidth: { xs: 70, sm: 80 }, flexShrink: 0, fontVariantNumeric: "tabular-nums" }}>
                     {arcane}
                   </Typography>
                   <Typography
@@ -181,11 +181,11 @@ export function RulesPage() {
           >
             {ARCANA.map(({ name, effect }) => (
               <Box component="li" key={name} sx={{ color: "silver.light", fontSize: "0.875rem" }}>
-                <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-                  <Typography variant="body2" sx={{ color: "silver.light", minWidth: 200, flexShrink: 0 }}>
+                <Box sx={{ display: "flex", gap: 2, alignItems: "flex-start" }}>
+                  <Typography variant="body2" sx={{ color: "silver.light", minWidth: { xs: 120, sm: 200 }, flexShrink: 0 }}>
                     {name}
                   </Typography>
-                  <Typography variant="body2" sx={{ color: "silver.light", opacity: 0.8 }}>
+                  <Typography variant="body2" sx={{ color: "silver.light", opacity: 0.8, minWidth: 0 }}>
                     {effect}
                   </Typography>
                 </Box>
