@@ -53,17 +53,11 @@ export function HomePage() {
             variant="h1"
             sx={{
               textAlign: "center",
+
               textBox: "trim-both ex alphabetic",
             }}
           >
             Arcane Poker
-          </Typography>
-          <Typography variant="body2">
-            A{" "}
-            <Typography variant="body2" component="span" fontStyle="italic">
-              major
-            </Typography>{" "}
-            twist to playing Texas Hold'em
           </Typography>
           <Stack
             direction="column"

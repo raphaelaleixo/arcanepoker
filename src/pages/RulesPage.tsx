@@ -106,7 +106,17 @@ export function RulesPage() {
           <Divider sx={{ borderColor: "gold.dark", opacity: 0.4 }} />
           <Typography variant="body1" sx={{ color: "silver.light", opacity: 0.8 }}>
             Arcane Poker uses a modified ranking where a <strong>Straight beats a Flush</strong>.
-            The odds change below reflects the shift in probability from standard poker.
+            The odds change below reflects the shift in probability from standard poker.{" "}
+            <Typography
+              component="a"
+              href="http://datagenetics.com/blog/september22016/index.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              variant="body1"
+              sx={{ color: "gold.light", opacity: 0.7, "&:hover": { opacity: 1 } }}
+            >
+              Reference
+            </Typography>
           </Typography>
           <Box sx={{ display: "flex", gap: { xs: 1, sm: 2 }, pl: 3, mb: 0.5 }}>
             <Typography variant="caption" sx={{ color: "silver.light", opacity: 0.4, minWidth: { xs: 110, sm: 160 }, flexShrink: 0 }}>Hand</Typography>
