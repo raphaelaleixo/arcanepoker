@@ -151,6 +151,7 @@ export type GameAction =
   | { type: "FORCE_ARCANA"; payload: { value: ArcanaValue } }
   | { type: "RESOLVE_PRIESTESS"; payload: { card: StandardCard } }
   | { type: "DEV_FORCE_GAME_OVER" }
+  | { type: "SET_PLAYER_STACK"; payload: { playerId: string; stack: number } }
   | {
       type: "TUTORIAL_OVERRIDE_DEAL";
       payload: {

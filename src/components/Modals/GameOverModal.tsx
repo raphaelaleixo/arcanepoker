@@ -26,10 +26,17 @@ export function GameOverModal() {
   const heroAlive = state.players.some(
     (p) => p.id === HERO_ID_CONST && p.stack > 0,
   );
-  const title = heroAlive ? "The World's Decree" : "Eliminated";
-  const subtitle = heroAlive
-    ? "The World has spoken — the game is complete."
-    : "Your chips have run dry. The arcane table claims another soul.";
+  const heroWon = heroAlive && !state.isFinalHand;
+  const title = heroWon
+    ? "Fortune Favors You!"
+    : heroAlive
+      ? "The World's Decree"
+      : "Eliminated";
+  const subtitle = heroWon
+    ? "You outlasted every challenger. The arcane table is yours."
+    : heroAlive
+      ? "The World has spoken — the game is complete."
+      : "Your chips have run dry. The arcane table claims another soul.";
 
   const standings = [...state.players].sort((a, b) => b.stack - a.stack);
 
@@ -74,7 +81,7 @@ export function GameOverModal() {
       </DialogTitle>
 
       <DialogContent sx={{ py: 3 }}>
-        {heroAlive &&
+        {heroAlive && !heroWon &&
           (() => {
             const worldInfo = tarot.arcana["21"] as {
               fullName: string;
@@ -133,7 +140,7 @@ export function GameOverModal() {
               </>
             );
           })()}
-        {!heroAlive && (
+        {(!heroAlive || heroWon) && (
           <Divider sx={{ borderColor: "rgba(255,255,255,0.1)", mb: 2 }} />
         )}
 

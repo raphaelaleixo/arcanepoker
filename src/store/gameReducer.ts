@@ -514,19 +514,21 @@ function startHand(state: StoreGameState): StoreGameState {
   // Post blinds (don't add to roundActors — blinds aren't voluntary actions)
   const sbPaid = Math.min(state.smallBlind, players[sbIdx].stack);
   const bbPaid = Math.min(state.bigBlind, players[bbIdx].stack);
+  const sbAllIn = players[sbIdx].stack <= state.smallBlind;
   players[sbIdx] = {
     ...players[sbIdx],
     currentBet: sbPaid,
     stack: players[sbIdx].stack - sbPaid,
-    isAllIn: players[sbIdx].stack <= state.smallBlind,
-    currentAction: "smallBlind",
+    isAllIn: sbAllIn,
+    currentAction: sbAllIn ? "all-in" : "smallBlind",
   };
+  const bbAllIn = players[bbIdx].stack <= state.bigBlind;
   players[bbIdx] = {
     ...players[bbIdx],
     currentBet: bbPaid,
     stack: players[bbIdx].stack - bbPaid,
-    isAllIn: players[bbIdx].stack <= state.bigBlind,
-    currentAction: "bigBlind",
+    isAllIn: bbAllIn,
+    currentAction: bbAllIn ? "all-in" : "bigBlind",
   };
 
   return {
@@ -1221,6 +1223,12 @@ function prepareNextHand(state: StoreGameState): StoreGameState {
     p.stack === 0 && !p.isEliminated ? { ...p, isEliminated: true } : p,
   );
 
+  // Hero is the last player standing — game over
+  const activePlayers = updatedPlayers.filter((p) => !p.isEliminated);
+  if (activePlayers.length <= 1) {
+    return { ...state, players: updatedPlayers, stage: "game-over" };
+  }
+
   // Advance dealer to next non-eliminated player
   const newDealer = nextNonElimIdx(updatedPlayers, state.dealerIndex);
 
@@ -1295,6 +1303,16 @@ export function gameReducer(
     case "DEV_FORCE_GAME_OVER":
       return { ...state, stage: "game-over" };
 
+    case "SET_PLAYER_STACK": {
+      const { playerId, stack } = action.payload;
+      return {
+        ...state,
+        players: state.players.map((p) =>
+          p.id === playerId ? { ...p, stack } : p
+        ),
+      };
+    }
+
     case "TUTORIAL_OVERRIDE_DEAL": {
       const { dealerIndex, playerHoleCards, communityCardQueue, arcanaOverride } = action.payload;
       const n = state.players.length;
@@ -1321,7 +1339,9 @@ export function gameReducer(
           stack: cleanStack - paid,
           folded: false,
           isAllIn: (isSB && cleanStack <= state.smallBlind) || (isBB && cleanStack <= state.bigBlind),
-          currentAction: isSB
+          currentAction: (isSB && cleanStack <= state.smallBlind) || (isBB && cleanStack <= state.bigBlind)
+            ? ("all-in" as const)
+            : isSB
             ? ("smallBlind" as const)
             : isBB
             ? ("bigBlind" as const)

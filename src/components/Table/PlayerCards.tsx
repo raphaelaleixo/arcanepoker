@@ -168,125 +168,143 @@ export function PlayerCards({
             transition: "filter 400ms ease",
           }}
         >
-        {displayCards.length > 0 ? (
-          displayCards.map((card, i) => {
-            const isPriestessRevealed =
-              !showFaceUp &&
-              priestessCard != null &&
-              card.value === priestessCard.value &&
-              card.suit === priestessCard.suit;
-            const faceUp = showFaceUp || isPriestessRevealed;
-            const isSelected =
-              selectedCard != null &&
-              card.value === selectedCard.value &&
-              card.suit === selectedCard.suit;
-            const isHighlighted =
-              highlights != null &&
-              highlights.some(
-                (h) =>
-                  h.type === "hole" &&
-                  h.playerId === playerId &&
-                  h.cardIndex === i,
-              );
-            const isPageCard = card.value === "0";
-            const showPageTooltip = isHero && faceUp && isPageCard && !!onOpenPageInfo;
+          {displayCards.length > 0 ? (
+            displayCards.map((card, i) => {
+              const isPriestessRevealed =
+                !showFaceUp &&
+                priestessCard != null &&
+                card.value === priestessCard.value &&
+                card.suit === priestessCard.suit;
+              const faceUp = showFaceUp || isPriestessRevealed;
+              const isSelected =
+                selectedCard != null &&
+                card.value === selectedCard.value &&
+                card.suit === selectedCard.suit;
+              const isHighlighted =
+                highlights != null &&
+                highlights.some(
+                  (h) =>
+                    h.type === "hole" &&
+                    h.playerId === playerId &&
+                    h.cardIndex === i,
+                );
+              const isPageCard = card.value === "0";
+              const showPageTooltip =
+                isHero && faceUp && isPageCard && !!onOpenPageInfo;
 
-            const cardBox = (
+              const cardBox = (
+                <Box
+                  key={`${cardKey}-${card.value}-${card.suit}`}
+                  onClick={onCardClick ? () => onCardClick(card) : undefined}
+                  sx={{
+                    // transform: isSelected
+                    //   ? i === 0
+                    //     ? "rotate(-6deg) translateY(-10px)"
+                    //     : "rotate(6deg) translateY(-10px)"
+                    //   : i === 0
+                    //     ? "rotate(-6deg)"
+                    //     : "rotate(6deg)",
+                    transformOrigin: "bottom center",
+                    ml: i === 0 ? 0 : -0.75,
+                    cursor: onCardClick ? "pointer" : "default",
+                    transition: "transform 0.15s ease",
+                    outline: isSelected ? "2px solid gold" : "none",
+                    borderRadius: 1,
+                    lineHeight: 0,
+                    ...(isHighlighted
+                      ? {
+                          position: "relative",
+                          zIndex: 1295,
+                          boxShadow: "0 0 18px 6px rgba(201,169,110,0.75)",
+                        }
+                      : {}),
+                  }}
+                >
+                  <DealtCard
+                    small
+                    rank={faceUp ? card.value : undefined}
+                    suit={faceUp ? card.suit : undefined}
+                    flipped={faceUp}
+                    dealIndex={playerIndex * 2 + i}
+                    revealDelay={
+                      !isHero ? 200 + playerIndex * 300 + i * 100 : undefined
+                    }
+                  />
+                </Box>
+              );
+
+              if (showPageTooltip) {
+                const tooltipKey = `${cardKey}-${card.value}-${card.suit}`;
+                return (
+                  <Tooltip
+                    key={tooltipKey}
+                    placement="top"
+                    arrow
+                    disableInteractive={false}
+                    open={openPageTooltip === tooltipKey}
+                    onOpen={() => setOpenPageTooltip(tooltipKey)}
+                    onClose={() => setOpenPageTooltip(null)}
+                    title={
+                      <Box sx={{ textAlign: "center" }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: "white",
+                            display: "block",
+                            lineHeight: 1.2,
+                            fontWeight: 500,
+                          }}
+                        >
+                          The Page (Ø) — lowest card
+                        </Typography>
+                        <Typography
+                          variant="caption"
+                          component="span"
+                          onMouseDown={(e) => e.stopPropagation()}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setOpenPageTooltip(null);
+                            onOpenPageInfo!();
+                          }}
+                          sx={{
+                            color: "gold.light",
+                            cursor: "pointer",
+                            textDecoration: "underline",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          Learn more →
+                        </Typography>
+                      </Box>
+                    }
+                  >
+                    {cardBox}
+                  </Tooltip>
+                );
+              }
+              return cardBox;
+            })
+          ) : (
+            <>
               <Box
-                key={`${cardKey}-${card.value}-${card.suit}`}
-                onClick={onCardClick ? () => onCardClick(card) : undefined}
                 sx={{
-                  // transform: isSelected
-                  //   ? i === 0
-                  //     ? "rotate(-6deg) translateY(-10px)"
-                  //     : "rotate(6deg) translateY(-10px)"
-                  //   : i === 0
-                  //     ? "rotate(-6deg)"
-                  //     : "rotate(6deg)",
+                  transform: "rotate(-6deg)",
                   transformOrigin: "bottom center",
-                  ml: i === 0 ? 0 : -0.75,
-                  cursor: onCardClick ? "pointer" : "default",
-                  transition: "transform 0.15s ease",
-                  outline: isSelected ? "2px solid gold" : "none",
-                  borderRadius: 1,
-                  lineHeight: 0,
-                  ...(isHighlighted
-                    ? {
-                        position: "relative",
-                        zIndex: 1295,
-                        boxShadow: "0 0 18px 6px rgba(201,169,110,0.75)",
-                      }
-                    : {}),
                 }}
               >
-                <DealtCard
-                  small
-                  rank={faceUp ? card.value : undefined}
-                  suit={faceUp ? card.suit : undefined}
-                  flipped={faceUp}
-                  dealIndex={playerIndex * 2 + i}
-                  revealDelay={
-                    !isHero ? 200 + playerIndex * 300 + i * 100 : undefined
-                  }
-                />
+                <PlayingCard small />
               </Box>
-            );
-
-            if (showPageTooltip) {
-              const tooltipKey = `${cardKey}-${card.value}-${card.suit}`;
-              return (
-                <Tooltip
-                  key={tooltipKey}
-                  placement="top"
-                  arrow
-                  disableInteractive={false}
-                  open={openPageTooltip === tooltipKey}
-                  onOpen={() => setOpenPageTooltip(tooltipKey)}
-                  onClose={() => setOpenPageTooltip(null)}
-                  title={
-                    <Box sx={{ textAlign: "center" }}>
-                      <Typography variant="caption" sx={{ color: "white", display: "block" }}>
-                        The Page (Ø) — lowest card in the deck
-                      </Typography>
-                      <Typography
-                        variant="caption"
-                        component="span"
-                        onMouseDown={(e) => e.stopPropagation()}
-                        onClick={(e) => { e.stopPropagation(); setOpenPageTooltip(null); onOpenPageInfo!(); }}
-                        sx={{ color: "gold.light", cursor: "pointer", textDecoration: "underline", fontSize: "0.65rem" }}
-                      >
-                        Learn more →
-                      </Typography>
-                    </Box>
-                  }
-                >
-                  {cardBox}
-                </Tooltip>
-              );
-            }
-            return cardBox;
-          })
-        ) : (
-          <>
-            <Box
-              sx={{
-                transform: "rotate(-6deg)",
-                transformOrigin: "bottom center",
-              }}
-            >
-              <PlayingCard small />
-            </Box>
-            <Box
-              sx={{
-                transform: "rotate(6deg)",
-                transformOrigin: "bottom center",
-                ml: -0.5,
-              }}
-            >
-              <PlayingCard small />
-            </Box>
-          </>
-        )}
+              <Box
+                sx={{
+                  transform: "rotate(6deg)",
+                  transformOrigin: "bottom center",
+                  ml: -0.5,
+                }}
+              >
+                <PlayingCard small />
+              </Box>
+            </>
+          )}
         </Stack>
       </Box>
     </Box>

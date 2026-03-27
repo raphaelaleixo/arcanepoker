@@ -5,9 +5,11 @@ import {
   Drawer,
   List,
   ListItem,
+  TextField,
   Typography,
 } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
+import { useState, useEffect } from "react";
 import { useGame } from "../../store/useGame";
 import tarot from "../../data/tarot";
 import type { ArcanaValue } from "../../types/types";
@@ -37,9 +39,26 @@ export function PlaygroundDrawer({ open, onClose, onOpenTarot, onOpenGameOver }:
   const remainingValues = new Set(state.arcanaDeck.map((c) => c.value));
   const dealtValues = new Set(ARCANA_LIST.map((a) => a.value).filter((v) => !remainingValues.has(v)));
 
+  const [stackInputs, setStackInputs] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    if (open) {
+      const inputs: Record<string, string> = {};
+      state.players.forEach((p) => { inputs[p.id] = String(p.stack); });
+      setStackInputs(inputs);
+    }
+  }, [open]);
+
   function handleForce(value: ArcanaValue) {
     dispatch({ type: "FORCE_ARCANA", payload: { value } });
     onClose();
+  }
+
+  function handleApplyStack(playerId: string) {
+    const val = parseInt(stackInputs[playerId] ?? "0", 10);
+    if (!isNaN(val) && val >= 0) {
+      dispatch({ type: "SET_PLAYER_STACK", payload: { playerId, stack: val } });
+    }
   }
 
   return (
@@ -90,6 +109,39 @@ export function PlaygroundDrawer({ open, onClose, onOpenTarot, onOpenGameOver }:
             Game Over
           </Button>
         </Box>
+      </Box>
+
+      <Box sx={{ p: 2, borderBottom: "1px solid", borderColor: "rgba(155,89,182,0.2)" }}>
+        <Typography variant="caption" sx={{ color: "silver.dark", display: "block", mb: 1 }}>
+          Player Stacks
+        </Typography>
+        {state.players.map((player) => (
+          <Box key={player.id} sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
+            <Typography
+              variant="caption"
+              sx={{ color: "silver.light", minWidth: 80, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: "0.7rem" }}
+            >
+              {player.name}
+            </Typography>
+            <TextField
+              size="small"
+              type="number"
+              value={stackInputs[player.id] ?? ""}
+              onChange={(e) => setStackInputs((prev) => ({ ...prev, [player.id]: e.target.value }))}
+              onKeyDown={(e) => { if (e.key === "Enter") handleApplyStack(player.id); }}
+              inputProps={{ min: 0, style: { fontSize: "0.7rem", padding: "4px 6px", color: "#e0e0e0" } }}
+              sx={{ width: 80, "& .MuiOutlinedInput-root": { "& fieldset": { borderColor: "rgba(155,89,182,0.5)" }, "&:hover fieldset": { borderColor: "secondary.main" } } }}
+            />
+            <Button
+              size="small"
+              variant="outlined"
+              onClick={() => handleApplyStack(player.id)}
+              sx={{ fontSize: "0.65rem", py: 0.25, px: 0.75, minWidth: 0, color: "secondary.light", borderColor: "secondary.dark", "&:hover": { borderColor: "secondary.main" } }}
+            >
+              Apply
+            </Button>
+          </Box>
+        ))}
       </Box>
 
       {!isValidStage && (
