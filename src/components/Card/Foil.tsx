@@ -1,11 +1,11 @@
-import { Box, keyframes, SxProps } from "@mui/material";
+import { Box, GlobalStyles, keyframes, SxProps } from "@mui/material";
 
 const animateFoil = keyframes`
     from {
         --posx: 40%;
     }
     to {
-        --posx: 80%;    
+        --posx: 80%;
     }
 `;
 
@@ -14,7 +14,7 @@ const animateFoil2 = keyframes`
         --posy: 70%;
     }
     to {
-        --posy: 30%;    
+        --posy: 30%;
     }
 `;
 
@@ -48,6 +48,18 @@ const variables = {
   "--bar-bg": "rgb(10, 10, 10)",
 };
 
+const isIOS =
+  typeof navigator !== "undefined" &&
+  /iPad|iPhone|iPod/.test(navigator.userAgent);
+
+const mainFilter = isIOS
+  ? "brightness(calc((var(--hyp)*0.3) + 0.45)) contrast(1.65) saturate(1.3)"
+  : "brightness(calc((var(--hyp)*0.3) + 0.5)) contrast(2) saturate(1.5)";
+
+const afterFilter = isIOS
+  ? "brightness(calc((var(--hyp)*0.4) + .72)) contrast(1.4) saturate(1.25)"
+  : "brightness(calc((var(--hyp)*0.5) + .8)) contrast(1.6) saturate(1.4)";
+
 const foilStyles: SxProps = {
   ...variables,
   "--space": "5%",
@@ -63,9 +75,8 @@ const foilStyles: SxProps = {
   backgroundSize: "var(--imgsize), 200% 700%, 300%, 200%",
   backgroundPosition:
     "center, 0% var(--posy), var(--posx) var(--posy), var(--posx) var(--posy)",
-  filter: "brightness(calc((var(--hyp)*0.3) + 0.5)) contrast(2) saturate(1.5)",
-  WebkitFilter:
-    "brightness(calc((var(--hyp)*0.3) + 0.5)) contrast(2) saturate(1.5)",
+  filter: mainFilter,
+  WebkitFilter: mainFilter,
   display: "grid",
   gridArea: "1/1",
   opacity: "var(--o)",
@@ -86,10 +97,8 @@ const foilStyles: SxProps = {
     backgroundSize: "var(--imgsize), 200% 400%, 195%, 200%",
     backgroundPosition:
       "center, 0% var(--posy), calc( var(--posx) * -1) calc( var(--posy) * -1), var(--posx) var(--posy)",
-    filter:
-      "brightness(calc((var(--hyp)*0.5) + .8)) contrast(1.6) saturate(1.4)",
-    WebkitFilter:
-      "brightness(calc((var(--hyp)*0.5) + .8)) contrast(1.6) saturate(1.4)",
+    filter: afterFilter,
+    WebkitFilter: afterFilter,
     display: "grid",
     gridArea: "1/1",
     animation: `${animateFoil2} 2s infinite alternate`,
@@ -103,6 +112,20 @@ interface FoilProps {
 export const Foil = ({ sx }: FoilProps) => {
   return (
     <>
+      <GlobalStyles
+        styles={`
+          @property --posx {
+            syntax: '<percentage>';
+            initial-value: 50%;
+            inherits: false;
+          }
+          @property --posy {
+            syntax: '<percentage>';
+            initial-value: 50%;
+            inherits: false;
+          }
+        `}
+      />
       <Box
         sx={{
           ...foilStyles,
