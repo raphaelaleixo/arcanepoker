@@ -13,6 +13,7 @@ import { HERO_ID_CONST } from "../../store/initialState";
 import { RaiseSlider } from "./RaiseSlider";
 import { ActionButtons } from "./ActionButtons";
 import { useTutorialOptional } from "../../tutorial/TutorialContext";
+import { useDemoOptional } from "../../demo/DemoContext";
 
 interface ActionBarProps {
   isVisible?: boolean;
@@ -27,6 +28,8 @@ export function ActionBar({
   const { state, dispatch } = useGame();
   const tutorial = useTutorialOptional();
   const tutorialAllowedAction = tutorial?.tutorialAllowedAction ?? null;
+  const demo = useDemoOptional();
+  const demoHighlightedAction = demo?.pendingButtonHighlight ?? null;
 
   const hero = state.players.find((p) => p.id === HERO_ID_CONST);
 
@@ -135,6 +138,7 @@ export function ActionBar({
             foldDisabled={judgementFoldBlocked}
             checkDisabled={devilMustBet}
             tutorialAllowedAction={tutorialAllowedAction}
+            demoHighlightedAction={demoHighlightedAction}
           />
         </Box>
 

@@ -22,9 +22,17 @@ interface ActionButtonsProps {
   checkDisabled?: boolean;
   /** When set, only the matching button is enabled; others are dimmed. */
   tutorialAllowedAction?: string | null;
+  /** Demo mode: the button key currently being "pressed" — shows a pulse/scale animation. */
+  demoHighlightedAction?: string | null;
 }
 
 const TUTORIAL_HIGHLIGHT = "2px solid #c9a96e";
+
+const DEMO_PRESSED_SX = {
+  transform: "scale(0.93)",
+  filter: "brightness(1.35)",
+  transition: "transform 0.1s ease, filter 0.1s ease",
+} as const;
 
 export function ActionButtons({
   canCheck,
@@ -39,8 +47,10 @@ export function ActionButtons({
   foldDisabled,
   checkDisabled,
   tutorialAllowedAction,
+  demoHighlightedAction,
 }: ActionButtonsProps) {
   const tut = tutorialAllowedAction ?? null;
+  const demo = demoHighlightedAction ?? null;
 
   const checkCallKey = canCheck
     ? "check"
@@ -70,11 +80,10 @@ export function ActionButtons({
         size="small"
         onClick={onFold}
         disabled={foldDisabled}
-        sx={
-          !foldEnabled && tut
-            ? { opacity: 0.45, pointerEvents: "none" }
-            : undefined
-        }
+        sx={{
+          ...(!foldEnabled && tut ? { opacity: 0.45, pointerEvents: "none" } : {}),
+          ...(demo === "fold" ? DEMO_PRESSED_SX : {}),
+        }}
       >
         Fold
       </Button>
@@ -91,6 +100,7 @@ export function ActionButtons({
               ? { opacity: 0.45, pointerEvents: "none" }
               : {}),
             ...(checkCallEnabled && tut ? { border: TUTORIAL_HIGHLIGHT } : {}),
+            ...(demo === "check" ? DEMO_PRESSED_SX : {}),
           }}
         >
           Check
@@ -105,6 +115,7 @@ export function ActionButtons({
               ? { opacity: 0.45, pointerEvents: "none" }
               : {}),
             ...(checkCallEnabled && tut ? { border: TUTORIAL_HIGHLIGHT } : {}),
+            ...(demo === "all-in" ? DEMO_PRESSED_SX : {}),
           }}
         >
           All-in {heroStack}
@@ -119,6 +130,7 @@ export function ActionButtons({
               ? { opacity: 0.45, pointerEvents: "none" }
               : {}),
             ...(checkCallEnabled && tut ? { border: TUTORIAL_HIGHLIGHT } : {}),
+            ...(demo === "call" ? DEMO_PRESSED_SX : {}),
           }}
         >
           Call {toCall}
@@ -136,6 +148,7 @@ export function ActionButtons({
             ? { opacity: 0.45, pointerEvents: "none" }
             : {}),
           ...(raiseEnabled && tut ? { border: TUTORIAL_HIGHLIGHT } : {}),
+          ...(demo === "raise" || demo === "all-in" ? DEMO_PRESSED_SX : {}),
         }}
       >
         {isAllIn

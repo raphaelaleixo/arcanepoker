@@ -1361,6 +1361,10 @@ export function gameReducer(
         activePlayerIndex: utgIdx,
         currentBet: tutBbPaid,
         potSize: tutSbPaid + tutBbPaid,
+        totalContributions: {
+          [players[sbIdx].id]: tutSbPaid,
+          [players[bbIdx].id]: tutBbPaid,
+        },
         roundActors: [],
         arcanaTriggeredThisGame: false,
         activeArcana: null,

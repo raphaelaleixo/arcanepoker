@@ -287,10 +287,10 @@ export function PlayerCards({
             })
           ) : (
             <>
-              <Box sx={{ transform: "rotate(-3deg)", transformOrigin: "bottom center" }}>
+              <Box sx={{ transform: "rotate(-3deg)", transformOrigin: "bottom center", visibility: "hidden" }}>
                 <PlayingCard small />
               </Box>
-              <Box sx={{ transform: "rotate(3deg)", transformOrigin: "bottom center", ml: -0.75 }}>
+              <Box sx={{ transform: "rotate(3deg)", transformOrigin: "bottom center", ml: -0.75, visibility: "hidden" }}>
                 <PlayingCard small />
               </Box>
             </>
