@@ -53,7 +53,7 @@ export const CardFront: FC<PlayingCard> = ({
         aspectRatio: small ? "5/7" : "5/9",
         borderRadius: small ? 1 : 2,
         backgroundColor:
-          rank === "0" || suit === "arcana" ? "gold.light" : "#DFDFDF",
+          rank === "0" || suit === "arcana" ? "silver.light" : "#DFDFDF",
         boxSizing: "border-box",
         position: "relative",
         overflow: "clip",

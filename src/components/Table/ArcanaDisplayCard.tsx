@@ -10,6 +10,7 @@ import { useState } from "react";
 import { Box, Stack, Tooltip, Typography } from "@mui/material";
 import { keyframes } from "@emotion/react";
 import { PlayingCard } from "../Card/PlayingCard";
+import { CardBack } from "../Card/CardBack";
 import type { ArcanaCard } from "../../types/types";
 
 // Keyframes live here — they are only used by ArcanaDisplay after the split.
@@ -42,7 +43,7 @@ export function ArcanaDisplayCard({
 }: ArcanaDisplayProps) {
   const [tooltipOpen, setTooltipOpen] = useState(false);
 
-  const showTooltip = !!arcanaCardToShow && !!onOpenArcanaInfo;
+  const showTooltip = !!onOpenArcanaInfo;
 
   const tooltipTitle = (
     <Box sx={{ textAlign: "center" }}>
@@ -79,24 +80,29 @@ export function ArcanaDisplayCard({
   );
 
   const card = (
-    <Box
-      sx={{
-        display: "inline-block",
-        lineHeight: 0,
-        borderRadius: 1,
-        animation: pendingArcanaCard
-          ? `${arcanaFloatBob} 2.4s ease-in-out 500ms infinite`
-          : undefined,
-        boxShadow: pendingArcanaCard
-          ? "0 0 12px 4px rgba(179, 57, 219, 0.55)"
-          : undefined,
-      }}
-    >
-      <PlayingCard
-        rank={arcanaCardToShow?.value}
-        suit={arcanaCardToShow?.suit}
-        flipped={!!arcanaCardToShow && !pendingArcanaCard}
-      />
+    <Box sx={{ display: "inline-block", lineHeight: 0, borderRadius: 1, position: "relative" }}>
+      <CardBack sx={{ position: "absolute", top: "4px", left: 0, zIndex: -1, transform: "rotate(-1.5deg)", boxShadow: "inset 0 0 0 4px, 0 0 0 1px rgba(255,255,255,0.1), 0 2px 6px rgba(0,0,0,0.5)" }} />
+      <CardBack sx={{ position: "absolute", top: "8px", left: 0, zIndex: -2, transform: "rotate(1deg)", boxShadow: "inset 0 0 0 4px, 0 0 0 1px rgba(255,255,255,0.08), 0 2px 6px rgba(0,0,0,0.45)" }} />
+      <CardBack sx={{ position: "absolute", top: "12px", left: 0, zIndex: -3, transform: "rotate(-0.5deg)", boxShadow: "inset 0 0 0 4px, 0 0 0 1px rgba(255,255,255,0.06), 0 8px 16px 4px rgba(0,0,0,0.6)" }} />
+      <Box
+        sx={{
+          display: "inline-block",
+          lineHeight: 0,
+          borderRadius: 1,
+          animation: pendingArcanaCard
+            ? `${arcanaFloatBob} 2.4s ease-in-out 500ms infinite`
+            : undefined,
+          boxShadow: pendingArcanaCard
+            ? "0 0 12px 4px rgba(179, 57, 219, 0.55)"
+            : undefined,
+        }}
+      >
+        <PlayingCard
+          rank={arcanaCardToShow?.value}
+          suit={arcanaCardToShow?.suit}
+          flipped={!!arcanaCardToShow && !pendingArcanaCard}
+        />
+      </Box>
     </Box>
   );
 
@@ -108,8 +114,8 @@ export function ArcanaDisplayCard({
       justifyContent="center"
       sx={{
         gridArea: "1 / 1",
-        opacity: arcanaCardToShow ? 1 : 0,
-        pointerEvents: arcanaCardToShow ? "auto" : "none",
+        opacity: 1,
+        pointerEvents: "auto",
         transition: "opacity 400ms ease",
       }}
     >

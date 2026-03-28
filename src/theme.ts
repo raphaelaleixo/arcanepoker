@@ -110,7 +110,7 @@ theme = createTheme(theme, {
     }),
     blackSuit: theme.palette.augmentColor({
       color: {
-        main: "#0f172a",
+        main: "#242424",
       },
       name: "blackSuit",
     }),

@@ -249,13 +249,12 @@ export function PokerTable() {
           >
             <Chip
               label="The Cards Speak"
+              size="small"
+              color="primary"
               onClick={() => setTarotMinimized(false)}
               sx={{
-                bgcolor: "secondary.dark",
-                color: "gold.light",
-                fontWeight: "bold",
+                fontWeight: 500,
                 cursor: "pointer",
-                "&:hover": { bgcolor: "secondary.main" },
               }}
             />
           </Box>

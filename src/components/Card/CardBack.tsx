@@ -17,7 +17,7 @@ export const CardBack: FC<PlayingCard> = ({ small = false, sx }) => {
         borderRadius: small ? 1 : 2,
         backgroundSize: small ? "10px 10px" : "22px 22px",
         backgroundPosition: "center center",
-        bgcolor: "#16161a",
+        bgcolor: "blackSuit.dark",
         boxSizing: "border-box",
         position: "relative",
         overflow: "clip",
