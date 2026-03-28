@@ -24,7 +24,7 @@ export function RaiseSlider({
   onChange,
 }: RaiseSliderProps) {
   return (
-    <Box sx={{ px: 1, mb: 1 }}>
+    <Box sx={{ px: 1 }}>
       <Slider
         size="small"
         value={value}

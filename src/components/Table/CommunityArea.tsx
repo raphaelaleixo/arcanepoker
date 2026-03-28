@@ -10,6 +10,7 @@ import type { ArcanaCard } from "../../types/types";
 import { CommunityCards } from "./CommunityCards";
 import { PotDisplay } from "./PotDisplay";
 import { ArcanaDisplay } from "./ArcanaDisplay";
+import { useDemo3Optional } from "../../demo/Demo3Context";
 
 interface CommunityAreaProps {
   /** Passed from PokerTable as sx={{ flex: 1 }} to fill the middle row. */
@@ -20,11 +21,12 @@ interface CommunityAreaProps {
 
 export function CommunityArea({ sx, onOpenPageInfo }: CommunityAreaProps) {
   const { state } = useGame();
+  const demo3 = useDemo3Optional();
 
   const totalSlots =
     state.activeArcana?.effectKey === "empress-sixth-card" ? 6 : 5;
 
-  const pendingArcanaCard =
+  const gamePendingArcana =
     state.pendingInteraction?.type === "arcana-reveal"
       ? (
           state.pendingInteraction as {
@@ -34,30 +36,22 @@ export function CommunityArea({ sx, onOpenPageInfo }: CommunityAreaProps) {
         ).arcanaCard
       : null;
 
-  const arcanaData =
-    state.activeArcana != null
-      ? (
-          tarot.arcana as Record<
-            string,
-            { fullName: string; gameEffect?: string }
-          >
-        )[state.activeArcana.card.value]
-      : null;
-
-  // Pre-fetch from pending card so the description box has stable dimensions before reveal.
-  const displayArcanaData =
-    arcanaData ??
-    (pendingArcanaCard
-      ? (
-          tarot.arcana as Record<
-            string,
-            { fullName: string; gameEffect?: string }
-          >
-        )[pendingArcanaCard.value]
-      : null);
+  const pendingArcanaCard = demo3?.pendingCycleArcana ?? gamePendingArcana;
 
   const arcanaCardToShow =
-    pendingArcanaCard ?? state.activeArcana?.card ?? null;
+    pendingArcanaCard ?? demo3?.displayArcana ?? state.activeArcana?.card ?? null;
+
+  const tarotLookup = tarot.arcana as Record<
+    string,
+    { fullName: string; gameEffect?: string }
+  >;
+
+  const arcanaData = arcanaCardToShow
+    ? tarotLookup[arcanaCardToShow.value]
+    : null;
+
+  // Pre-fetch from pending card so the description box has stable dimensions before reveal.
+  const displayArcanaData = arcanaData ?? null;
 
   return (
     <Box
