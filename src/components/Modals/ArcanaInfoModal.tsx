@@ -6,6 +6,7 @@
 import {
   Box,
   Button,
+  Chip,
   Dialog,
   DialogActions,
   DialogContent,
@@ -14,6 +15,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
+import CheckIcon from "@mui/icons-material/Check";
 import { PlayingCard } from "../Card/PlayingCard";
 import tarot from "../../data/tarot";
 import { useGame } from "../../store/useGame";
@@ -78,17 +80,30 @@ function ArcanaCardEntry({
         <PlayingCard rank={value} suit="arcana" flipped />
       </Box>
       <Stack spacing={0}>
-        <Typography
-          variant="caption"
-          sx={{
-            color: "gold.main",
-            fontWeight: "bold",
-            fontSize: "0.875rem",
-            fontFamily: 'Young Serif, "Georgia", serif',
-          }}
-        >
-          {info.fullName}
-        </Typography>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
+          <Typography
+            variant="caption"
+            sx={{
+              color: "gold.main",
+              fontWeight: "bold",
+              fontSize: "0.875rem",
+              fontFamily: 'Young Serif, "Georgia", serif',
+            }}
+          >
+            {info.fullName}
+          </Typography>
+          {status === "active" && (
+            <Chip
+              label="Active"
+              size="small"
+              color="secondary"
+              sx={{ height: 16, fontSize: "0.6rem" }}
+            />
+          )}
+          {status === "played" && (
+            <CheckIcon sx={{ fontSize: "0.85rem", color: "success.main", flexShrink: 0 }} />
+          )}
+        </Box>
         <Typography
           component="div"
           variant="caption"
