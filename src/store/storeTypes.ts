@@ -160,6 +160,19 @@ export type GameAction =
         communityCardQueue: StandardCard[];
         arcanaOverride: ArcanaCard | null;
       };
+    }
+  | {
+      /** Demo3 only: wipe all arcana visual side-effects before cycling to next. */
+      type: "RESET_ARCANA_EFFECTS";
+      payload: {
+        communityCards: StandardCard[];
+        holeCards: Record<string, StandardCard[]>;
+        /** Override stage — used to recover from arcanas that jump to showdown. */
+        stage?: GameStage;
+        /** Restore pot to pre-arcana value (Tower splits the pot). */
+        potSize?: number;
+        ruinsPot?: number;
+      };
     };
 
 // ─── Arcana value → effect key mapping ───────────────────────────────────────

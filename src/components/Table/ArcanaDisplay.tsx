@@ -6,6 +6,7 @@
  * and the name/effect fades in. Both states share the same container height
  * via a CSS grid stack so no layout shift occurs.
  */
+import { useEffect, useRef } from "react";
 import { keyframes } from "@emotion/react";
 import { Box, Stack, Typography } from "@mui/material";
 import type { ArcanaCard } from "../../types/types";
@@ -37,6 +38,21 @@ export function ArcanaDisplay({
   pendingArcanaCard,
   displayArcanaData,
 }: ArcanaDisplayProps) {
+  // Keep the last revealed name/effect frozen while the card is pending (facedown).
+  // Without this, the revealed box fades out while already showing the *new* card's
+  // name, causing a brief flash of the next arcana's text.
+  const frozenDataRef = useRef(displayArcanaData);
+  const frozenCardRef = useRef(arcanaCardToShow);
+  useEffect(() => {
+    if (!pendingArcanaCard && arcanaCardToShow) {
+      frozenDataRef.current = displayArcanaData;
+      frozenCardRef.current = arcanaCardToShow;
+    }
+  });
+
+  const revealedData = pendingArcanaCard ? frozenDataRef.current : displayArcanaData;
+  const revealedCard = pendingArcanaCard ? frozenCardRef.current : arcanaCardToShow;
+
   return (
     <Box
       sx={{
@@ -121,9 +137,9 @@ export function ArcanaDisplay({
                   lineHeight: 1.1,
                 }}
               >
-                {arcanaCardToShow?.value} - {displayArcanaData?.fullName}
+                {revealedCard?.value} - {revealedData?.fullName}
               </Typography>
-              {displayArcanaData?.gameEffect && (
+              {revealedData?.gameEffect && (
                 <Typography
                   variant="caption"
                   sx={{
@@ -135,14 +151,14 @@ export function ArcanaDisplay({
                     lineHeight: 1.1,
                   }}
                 >
-                  {displayArcanaData.gameEffect}
+                  {revealedData.gameEffect}
                 </Typography>
               )}
-              {arcanaCardToShow &&
+              {revealedCard &&
                 (() => {
                   const tags = (
                     tarot.arcana as Record<string, { tags?: string[] }>
-                  )[arcanaCardToShow.value]?.tags;
+                  )[revealedCard.value]?.tags;
                   return tags?.length ? (
                     <Typography
                       variant="caption"

@@ -1288,6 +1288,28 @@ export function gameReducer(
       return prepared.stage === "game-over" ? prepared : startHand(prepared);
     }
 
+    case "RESET_ARCANA_EFFECTS": {
+      const { communityCards, holeCards, stage, potSize, ruinsPot } = action.payload;
+      return {
+        ...state,
+        ...(stage ? { stage, winnerIds: [], handResults: [], potWon: 0 } : {}),
+        ...(potSize  !== undefined ? { potSize }  : {}),
+        ...(ruinsPot !== undefined ? { ruinsPot, ruinsPotReady: false } : {}),
+        communityCards,
+        players: state.players.map((p) =>
+          holeCards[p.id] ? { ...p, holeCards: holeCards[p.id] } : p
+        ),
+        foolCardIndex: null,
+        moonAffectedIndex: null,
+        moonHiddenCommunityIndex: null,
+        priestessRevealedCards: {},
+        justiceRevealedPlayerId: null,
+        activeArcana: null,
+        pendingInteraction: null,
+        communityChangeKey: state.communityChangeKey + 1,
+      };
+    }
+
     case "FORCE_ARCANA": {
       const VALID_STAGES = ["pre-flop", "flop", "turn", "river", "empress"] as const;
       if (!(VALID_STAGES as readonly GameStage[]).includes(state.stage)) return state;

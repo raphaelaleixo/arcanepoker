@@ -19,6 +19,7 @@ import { PlaygroundDrawer } from "../Dev/PlaygroundDrawer";
 import { TableOverlayContent } from "./TableOverlayContent";
 import { TutorialOverlay } from "../Tutorial/TutorialOverlay";
 import { useTutorialOptional } from "../../tutorial/TutorialContext";
+import { useDemo3Optional } from "../../demo/Demo3Context";
 import { TutorialNarrationContent } from "../Tutorial/TutorialNarrationContent";
 import { ArcanaDisplayCard } from "./ArcanaDisplayCard";
 import { PageInfoModal } from "../Modals/PageInfoModal";
@@ -31,6 +32,7 @@ export function PokerTable() {
   const tutorial = useTutorialOptional();
   const isTutorial = tutorial?.isTutorial ?? false;
   const narration = tutorial?.narration ?? null;
+  const demo3 = useDemo3Optional();
   const [showTarot, setShowTarot] = useState(false);
   const [tarotMinimized, setTarotMinimized] = useState(false);
   const [playgroundOpen, setPlaygroundOpen] = useState(false);
@@ -132,7 +134,7 @@ export function PokerTable() {
     />
   ) : undefined;
 
-  const pendingArcanaCard =
+  const gamePendingArcana =
     state.pendingInteraction?.type === "arcana-reveal"
       ? (
           state.pendingInteraction as {
@@ -142,8 +144,14 @@ export function PokerTable() {
         ).arcanaCard
       : null;
 
+  // During Demo3 cycling, pendingCycleArcana drives the facedown float phase.
+  const pendingArcanaCard = demo3?.pendingCycleArcana ?? gamePendingArcana;
+
+  // When demo3 is showing a card facedown, use that card as arcanaCardToShow
+  // so PlayingCard renders the correct face before it flips.
+  // For display-only arcanas (Death, Sun), use displayArcana instead of activeArcana.
   const arcanaCardToShow =
-    pendingArcanaCard ?? state.activeArcana?.card ?? null;
+    pendingArcanaCard ?? demo3?.displayArcana ?? state.activeArcana?.card ?? null;
 
   return (
     <Box
@@ -245,7 +253,7 @@ export function PokerTable() {
         <ArcanaDisplayCard
           pendingArcanaCard={pendingArcanaCard}
           arcanaCardToShow={arcanaCardToShow}
-          isDiscarding={arcanaDiscarding}
+          isDiscarding={arcanaDiscarding || (demo3?.arcanaDiscarding ?? false)}
           onOpenArcanaInfo={() => setArcanaInfoOpen(true)}
         />
         {showTarot && tarotMinimized && (
@@ -275,7 +283,7 @@ export function PokerTable() {
         <Box
           sx={{
             borderTop: "1px solid rgba(255,255,255,0.08)",
-            pt: 2,
+            pt: 1,
             display: "flex",
             justifyContent: "center",
             gridRow: 5,

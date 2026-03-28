@@ -142,6 +142,7 @@ export function ArcanaDisplayCard({
         }}
       >
         <PlayingCard
+          key={`${arcanaCardToShow?.value ?? "none"}-${arcanaCardToShow?.suit ?? "none"}`}
           rank={arcanaCardToShow?.value}
           suit={arcanaCardToShow?.suit}
           flipped={!!arcanaCardToShow && !pendingArcanaCard}
