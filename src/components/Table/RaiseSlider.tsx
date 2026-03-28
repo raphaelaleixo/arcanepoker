@@ -26,6 +26,7 @@ export function RaiseSlider({
   return (
     <Box sx={{ px: 1, mb: 1 }}>
       <Slider
+        size="small"
         value={value}
         min={minRaise}
         max={maxRaise}
