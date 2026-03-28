@@ -39,7 +39,7 @@ export function HomePage() {
             display: "block",
             width: "15em",
             aspectRatio: "69/56",
-            backgroundImage: "url(art/background.svg)",
+            backgroundImage: `url(${import.meta.env.BASE_URL}art/background.svg)`,
             backgroundSize: "cover",
             backgroundPosition: "center",
           },

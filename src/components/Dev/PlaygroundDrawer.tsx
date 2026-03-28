@@ -54,7 +54,11 @@ export function PlaygroundDrawer({ open, onClose, onOpenTarot, onOpenGameOver }:
     onClose();
   }
 
-  function handleApplyStack(playerId: string) {
+  function handleStackChange(playerId: string, raw: string) {
+    setStackInputs((prev) => ({ ...prev, [playerId]: raw }));
+  }
+
+  function handleStackBlur(playerId: string) {
     const val = parseInt(stackInputs[playerId] ?? "0", 10);
     if (!isNaN(val) && val >= 0) {
       dispatch({ type: "SET_PLAYER_STACK", payload: { playerId, stack: val } });
@@ -87,6 +91,7 @@ export function PlaygroundDrawer({ open, onClose, onOpenTarot, onOpenGameOver }:
         </Typography>
       </Box>
 
+      <Box sx={{ overflowY: "auto", flex: 1 }}>
       <Box sx={{ p: 2, borderBottom: "1px solid", borderColor: "rgba(155,89,182,0.2)" }}>
         <Typography variant="caption" sx={{ color: "silver.dark", display: "block", mb: 1 }}>
           Modal Previews
@@ -119,7 +124,7 @@ export function PlaygroundDrawer({ open, onClose, onOpenTarot, onOpenGameOver }:
           <Box key={player.id} sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
             <Typography
               variant="caption"
-              sx={{ color: "silver.light", minWidth: 80, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: "0.7rem" }}
+              sx={{ color: "silver.light", width: 100, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: "0.7rem" }}
             >
               {player.name}
             </Typography>
@@ -127,19 +132,11 @@ export function PlaygroundDrawer({ open, onClose, onOpenTarot, onOpenGameOver }:
               size="small"
               type="number"
               value={stackInputs[player.id] ?? ""}
-              onChange={(e) => setStackInputs((prev) => ({ ...prev, [player.id]: e.target.value }))}
-              onKeyDown={(e) => { if (e.key === "Enter") handleApplyStack(player.id); }}
+              onChange={(e) => handleStackChange(player.id, e.target.value)}
+              onBlur={() => handleStackBlur(player.id)}
               inputProps={{ min: 0, style: { fontSize: "0.7rem", padding: "4px 6px", color: "#e0e0e0" } }}
-              sx={{ width: 80, "& .MuiOutlinedInput-root": { "& fieldset": { borderColor: "rgba(155,89,182,0.5)" }, "&:hover fieldset": { borderColor: "secondary.main" } } }}
+              sx={{ width: 100, "& .MuiOutlinedInput-root": { "& fieldset": { borderColor: "rgba(155,89,182,0.5)" }, "&:hover fieldset": { borderColor: "secondary.main" } } }}
             />
-            <Button
-              size="small"
-              variant="outlined"
-              onClick={() => handleApplyStack(player.id)}
-              sx={{ fontSize: "0.65rem", py: 0.25, px: 0.75, minWidth: 0, color: "secondary.light", borderColor: "secondary.dark", "&:hover": { borderColor: "secondary.main" } }}
-            >
-              Apply
-            </Button>
           </Box>
         ))}
       </Box>
@@ -153,7 +150,7 @@ export function PlaygroundDrawer({ open, onClose, onOpenTarot, onOpenGameOver }:
         </Typography>
       )}
 
-      <List dense sx={{ overflowY: "auto", flex: 1 }}>
+      <List dense sx={{ pb: 2 }}>
         {ARCANA_LIST.map(({ value, fullName, gameEffect }) => {
           const isActive = state.activeArcana?.card.value === value;
           const wasDealt = dealtValues.has(value);
@@ -219,6 +216,7 @@ export function PlaygroundDrawer({ open, onClose, onOpenTarot, onOpenGameOver }:
           );
         })}
       </List>
+      </Box>
     </Drawer>
   );
 }

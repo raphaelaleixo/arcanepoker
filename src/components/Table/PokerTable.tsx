@@ -37,6 +37,7 @@ export function PokerTable() {
   const [selectedCard, setSelectedCard] = useState<StandardCard | null>(null);
   const [pageInfoOpen, setPageInfoOpen] = useState(false);
   const [arcanaInfoOpen, setArcanaInfoOpen] = useState(false);
+  const [arcanaDiscarding, setArcanaDiscarding] = useState(false);
 
   const cardPickInteraction =
     state.pendingInteraction?.type === "priestess-reveal" ||
@@ -76,6 +77,19 @@ export function PokerTable() {
     BETTING_STAGES.includes(state.stage) &&
     state.pendingInteraction === null;
 
+  function handleNextHand() {
+    setShowTarot(false);
+    if (state.activeArcana) {
+      setArcanaDiscarding(true);
+      setTimeout(() => {
+        setArcanaDiscarding(false);
+        dispatch({ type: "NEXT_HAND" });
+      }, 370);
+    } else {
+      dispatch({ type: "NEXT_HAND" });
+    }
+  }
+
   const bot1 = state.players.find((p) => p.position === 1);
   const bot2 = state.players.find((p) => p.position === 2);
   const bot3 = state.players.find((p) => p.position === 3);
@@ -112,10 +126,7 @@ export function PokerTable() {
       isFinalHand={state.isFinalHand}
       onConfirmCardPick={confirmCardPick}
       onKeepBothStar={keepBothStar}
-      onNextHand={() => {
-        setShowTarot(false);
-        dispatch({ type: "NEXT_HAND" });
-      }}
+      onNextHand={handleNextHand}
       onShowTarot={() => setShowTarot(true)}
       dispatch={dispatch}
     />
@@ -234,6 +245,7 @@ export function PokerTable() {
         <ArcanaDisplayCard
           pendingArcanaCard={pendingArcanaCard}
           arcanaCardToShow={arcanaCardToShow}
+          isDiscarding={arcanaDiscarding}
           onOpenArcanaInfo={() => setArcanaInfoOpen(true)}
         />
         {showTarot && tarotMinimized && (
@@ -288,9 +300,8 @@ export function PokerTable() {
             setTarotMinimized(false);
           }}
           onNextHand={() => {
-            setShowTarot(false);
             setTarotMinimized(false);
-            dispatch({ type: "NEXT_HAND" });
+            handleNextHand();
           }}
         />
       )}

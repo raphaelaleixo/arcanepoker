@@ -192,18 +192,19 @@ export function PlayerCards({
               const showPageTooltip =
                 isHero && faceUp && isPageCard && !!onOpenPageInfo;
 
+              const total = displayCards.length;
+              const center = (total - 1) / 2;
+              const rotDeg = (i - center) * 6;
+              const transform = isSelected
+                ? `rotate(${rotDeg}deg) translateY(-8px)`
+                : `rotate(${rotDeg}deg)`;
+
               const cardBox = (
                 <Box
                   key={`${cardKey}-${card.value}-${card.suit}`}
                   onClick={onCardClick ? () => onCardClick(card) : undefined}
                   sx={{
-                    // transform: isSelected
-                    //   ? i === 0
-                    //     ? "rotate(-6deg) translateY(-10px)"
-                    //     : "rotate(6deg) translateY(-10px)"
-                    //   : i === 0
-                    //     ? "rotate(-6deg)"
-                    //     : "rotate(6deg)",
+                    transform,
                     transformOrigin: "bottom center",
                     ml: i === 0 ? 0 : -0.75,
                     cursor: onCardClick ? "pointer" : "default",
@@ -286,21 +287,10 @@ export function PlayerCards({
             })
           ) : (
             <>
-              <Box
-                sx={{
-                  transform: "rotate(-6deg)",
-                  transformOrigin: "bottom center",
-                }}
-              >
+              <Box sx={{ transform: "rotate(-3deg)", transformOrigin: "bottom center" }}>
                 <PlayingCard small />
               </Box>
-              <Box
-                sx={{
-                  transform: "rotate(6deg)",
-                  transformOrigin: "bottom center",
-                  ml: -0.5,
-                }}
-              >
+              <Box sx={{ transform: "rotate(3deg)", transformOrigin: "bottom center", ml: -0.75 }}>
                 <PlayingCard small />
               </Box>
             </>

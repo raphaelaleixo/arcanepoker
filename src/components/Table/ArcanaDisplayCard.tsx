@@ -13,15 +13,14 @@ import { PlayingCard } from "../Card/PlayingCard";
 import { CardBack } from "../Card/CardBack";
 import type { ArcanaCard } from "../../types/types";
 
-// Keyframes live here — they are only used by ArcanaDisplay after the split.
-const arcanaRiseIn = keyframes`
-  from { opacity: 0; transform: translateY(30px) scale(0.85); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
-`;
-
 const arcanaFloatBob = keyframes`
   0%, 100% { transform: translateY(0); }
   50%       { transform: translateY(-5px); }
+`;
+
+const arcanaThrowOff = keyframes`
+  0%   { opacity: 1; transform: translateY(0) translateX(0) rotate(0deg); }
+  100% { opacity: 0; transform: translateY(-80px) translateX(100px) rotate(30deg); }
 `;
 
 interface ArcanaDisplayProps {
@@ -32,6 +31,8 @@ interface ArcanaDisplayProps {
    * When non-null, the card shows its back and the description shows the pending placeholder.
    */
   pendingArcanaCard: ArcanaCard | null;
+  /** When true, the top card animates flying off the deck before the round resets. */
+  isDiscarding?: boolean;
   /** Opens the Arcana info modal when "Learn more" is clicked in the tooltip. */
   onOpenArcanaInfo?: () => void;
 }
@@ -39,6 +40,7 @@ interface ArcanaDisplayProps {
 export function ArcanaDisplayCard({
   arcanaCardToShow,
   pendingArcanaCard,
+  isDiscarding = false,
   onOpenArcanaInfo,
 }: ArcanaDisplayProps) {
   const [tooltipOpen, setTooltipOpen] = useState(false);
@@ -81,18 +83,21 @@ export function ArcanaDisplayCard({
 
   const card = (
     <Box sx={{ display: "inline-block", lineHeight: 0, borderRadius: 1, position: "relative" }}>
-      <CardBack sx={{ position: "absolute", top: "4px", left: 0, zIndex: -1, transform: "rotate(-1.5deg)", boxShadow: "inset 0 0 0 4px, 0 0 0 1px rgba(255,255,255,0.1), 0 2px 6px rgba(0,0,0,0.5)" }} />
-      <CardBack sx={{ position: "absolute", top: "8px", left: 0, zIndex: -2, transform: "rotate(1deg)", boxShadow: "inset 0 0 0 4px, 0 0 0 1px rgba(255,255,255,0.08), 0 2px 6px rgba(0,0,0,0.45)" }} />
-      <CardBack sx={{ position: "absolute", top: "12px", left: 0, zIndex: -3, transform: "rotate(-0.5deg)", boxShadow: "inset 0 0 0 4px, 0 0 0 1px rgba(255,255,255,0.06), 0 8px 16px 4px rgba(0,0,0,0.6)" }} />
+      <CardBack sx={{ position: "absolute", top: 0, left: 0, zIndex: -1 }} />
+      <CardBack sx={{ position: "absolute", top: "4px", left: 0, zIndex: -2, transform: "rotate(-1.5deg)", boxShadow: "inset 0 0 0 4px, 0 0 0 1px rgba(255,255,255,0.1), 0 2px 6px rgba(0,0,0,0.5)" }} />
+      <CardBack sx={{ position: "absolute", top: "8px", left: 0, zIndex: -3, transform: "rotate(1deg)", boxShadow: "inset 0 0 0 4px, 0 0 0 1px rgba(255,255,255,0.08), 0 2px 6px rgba(0,0,0,0.45)" }} />
+      <CardBack sx={{ position: "absolute", top: "12px", left: 0, zIndex: -4, transform: "rotate(-0.5deg)", boxShadow: "inset 0 0 0 4px, 0 0 0 1px rgba(255,255,255,0.06), 0 8px 16px 4px rgba(0,0,0,0.6)" }} />
       <Box
         sx={{
           display: "inline-block",
           lineHeight: 0,
           borderRadius: 1,
-          animation: pendingArcanaCard
-            ? `${arcanaFloatBob} 2.4s ease-in-out 500ms infinite`
-            : undefined,
-          boxShadow: pendingArcanaCard
+          animation: isDiscarding
+            ? `${arcanaThrowOff} 320ms ease-in both`
+            : pendingArcanaCard
+              ? `${arcanaFloatBob} 2.4s ease-in-out 500ms infinite`
+              : undefined,
+          boxShadow: pendingArcanaCard && !isDiscarding
             ? "0 0 12px 4px rgba(179, 57, 219, 0.55)"
             : undefined,
         }}
@@ -119,16 +124,7 @@ export function ArcanaDisplayCard({
         transition: "opacity 400ms ease",
       }}
     >
-      {/* Card animates in and bobs while pending */}
-      <Box
-        sx={{
-          display: "inline-block",
-          scale: 0.7,
-          animation: pendingArcanaCard
-            ? `${arcanaRiseIn} 500ms ease-out both`
-            : undefined,
-        }}
-      >
+      <Box sx={{ display: "inline-block", scale: 0.7 }}>
         {showTooltip ? (
           <Tooltip
             placement="top"
@@ -164,7 +160,7 @@ export function ArcanaDisplayCard({
           width: "160%",
           maxWidth: "10em",
           aspectRatio: "69/57",
-          backgroundImage: "url(art/background-table.svg)",
+          backgroundImage: `url(${import.meta.env.BASE_URL}art/background-table.svg)`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           top: 0,
