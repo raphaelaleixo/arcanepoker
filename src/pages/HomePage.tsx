@@ -1,6 +1,7 @@
 import type { ElementType } from "react";
 import { Box, Button, Stack, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
+import backgroundUrl from "../assets/background.svg?url";
 
 export function HomePage() {
   return (
@@ -39,7 +40,7 @@ export function HomePage() {
             display: "block",
             width: "15em",
             aspectRatio: "69/56",
-            backgroundImage: `url(${import.meta.env.BASE_URL}art/background.svg)`,
+            backgroundImage: `url(${backgroundUrl})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
           },

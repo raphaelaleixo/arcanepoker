@@ -12,6 +12,7 @@ import { keyframes } from "@emotion/react";
 import { PlayingCard } from "../Card/PlayingCard";
 import { CardBack } from "../Card/CardBack";
 import type { ArcanaCard } from "../../types/types";
+import backgroundTableUrl from "../../assets/background-table.svg?url";
 
 const arcanaFloatBob = keyframes`
   0%, 100% { transform: translateY(0); }
@@ -82,11 +83,48 @@ export function ArcanaDisplayCard({
   );
 
   const card = (
-    <Box sx={{ display: "inline-block", lineHeight: 0, borderRadius: 1, position: "relative" }}>
+    <Box
+      sx={{
+        display: "inline-block",
+        lineHeight: 0,
+        borderRadius: 1,
+        position: "relative",
+      }}
+    >
       <CardBack sx={{ position: "absolute", top: 0, left: 0, zIndex: -1 }} />
-      <CardBack sx={{ position: "absolute", top: "4px", left: 0, zIndex: -2, transform: "rotate(-1.5deg)", boxShadow: "inset 0 0 0 4px, 0 0 0 1px rgba(255,255,255,0.1), 0 2px 6px rgba(0,0,0,0.5)" }} />
-      <CardBack sx={{ position: "absolute", top: "8px", left: 0, zIndex: -3, transform: "rotate(1deg)", boxShadow: "inset 0 0 0 4px, 0 0 0 1px rgba(255,255,255,0.08), 0 2px 6px rgba(0,0,0,0.45)" }} />
-      <CardBack sx={{ position: "absolute", top: "12px", left: 0, zIndex: -4, transform: "rotate(-0.5deg)", boxShadow: "inset 0 0 0 4px, 0 0 0 1px rgba(255,255,255,0.06), 0 8px 16px 4px rgba(0,0,0,0.6)" }} />
+      <CardBack
+        sx={{
+          position: "absolute",
+          top: "4px",
+          left: 0,
+          zIndex: -2,
+          transform: "rotate(-1.5deg)",
+          boxShadow:
+            "inset 0 0 0 4px, 0 0 0 1px rgba(255,255,255,0.1), 0 2px 6px rgba(0,0,0,0.5)",
+        }}
+      />
+      <CardBack
+        sx={{
+          position: "absolute",
+          top: "8px",
+          left: 0,
+          zIndex: -3,
+          transform: "rotate(1deg)",
+          boxShadow:
+            "inset 0 0 0 4px, 0 0 0 1px rgba(255,255,255,0.08), 0 2px 6px rgba(0,0,0,0.45)",
+        }}
+      />
+      <CardBack
+        sx={{
+          position: "absolute",
+          top: "12px",
+          left: 0,
+          zIndex: -4,
+          transform: "rotate(-0.5deg)",
+          boxShadow:
+            "inset 0 0 0 4px, 0 0 0 1px rgba(255,255,255,0.06), 0 8px 16px 4px rgba(0,0,0,0.6)",
+        }}
+      />
       <Box
         sx={{
           display: "inline-block",
@@ -97,9 +135,10 @@ export function ArcanaDisplayCard({
             : pendingArcanaCard
               ? `${arcanaFloatBob} 2.4s ease-in-out 500ms infinite`
               : undefined,
-          boxShadow: pendingArcanaCard && !isDiscarding
-            ? "0 0 12px 4px rgba(179, 57, 219, 0.55)"
-            : undefined,
+          boxShadow:
+            pendingArcanaCard && !isDiscarding
+              ? "0 0 12px 4px rgba(179, 57, 219, 0.55)"
+              : undefined,
         }}
       >
         <PlayingCard
@@ -160,7 +199,7 @@ export function ArcanaDisplayCard({
           width: "160%",
           maxWidth: "10em",
           aspectRatio: "69/57",
-          backgroundImage: `url(${import.meta.env.BASE_URL}art/background-table.svg)`,
+          backgroundImage: `url(${backgroundTableUrl})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           top: 0,
