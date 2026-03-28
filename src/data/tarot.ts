@@ -453,7 +453,7 @@ export default {
       description:
         "Strength represents courage, inner strength, and compassion. It signifies a need to overcome challenges with grace and resilience. This card suggests a need to be patient and compassionate. It's a reminder to trust your inner strength and find balance.",
       gameEffect:
-        "Card values are inverted — 2 is highest, Ace is lowest, Page becomes highest.",
+        "Card values are inverted — Page is highest, Ace is lowest.",
     },
     "9": {
       fullName: "The Hermit",

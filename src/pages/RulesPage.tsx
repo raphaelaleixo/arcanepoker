@@ -11,7 +11,7 @@ const ARCANA: { name: string; effect: string }[] = [
   { name: "The Hierophant",    effect: "Purges the game of Pages: all Pages are removed from the draw deck, and any Page currently in play is replaced with a new card. For this round, flushes beat straights." },
   { name: "The Lovers",        effect: "The pot is split between the two best hands." },
   { name: "The Chariot",       effect: "Active players pass one hole card to the left." },
-  { name: "Strength",          effect: "Card values are inverted — 2 is highest, Ace is lowest, Page becomes highest." },
+  { name: "Strength",          effect: "Card values are inverted — Page is highest, Ace is lowest." },
   { name: "The Hermit",        effect: "The board is ignored; hands are formed from hole cards only." },
   { name: "Wheel of Fortune",  effect: "All players' hole cards are shuffled together and redealt. Each player receives the same number of cards they had. Community cards remain unchanged." },
   { name: "Justice",           effect: "One random player still in the round reveals all cards in their hand. Those cards remain face up for the rest of the round." },

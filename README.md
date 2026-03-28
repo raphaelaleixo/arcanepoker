@@ -110,13 +110,15 @@ src/
 
 | Arcana | Effect |
 |---|---|
-| The Fool | The Page becomes a wildcard — evaluator tests all 52 substitutions |
-| Strength | Card values are fully inverted — 2 is high, Ace is low |
-| The Emperor | All hands are treated as high card — suits and ranks only |
-| The Hierophant | Flush beats Straight (inverse of standard poker) |
-| Death | The round ends immediately at the current street |
-| The Tower | The pot is destroyed; a side pot begins |
-| The Lovers | Pot is split between the two best hands |
+| The Fool | Pages act as wildcards — the evaluator finds the best possible hand for each player |
+| The High Priestess | All active players reveal one hole card face up |
+| The Chariot | Each active player passes one hole card to the left |
+| Strength | Card values are inverted — Page is highest, Ace is lowest |
+| The Emperor | All hands collapse to high card — players compare cards one by one, highest wins |
+| Death | The round ends immediately; hands are compared with whatever cards are on the table |
+| The Sun | The round ends and the pot is split equally among all active players |
+| The Lovers | The pot is split between the two best hands |
+| The World | This is the final hand of the game |
 
 ---
 
