@@ -38,7 +38,15 @@ export function ArcanaDisplay({
   displayArcanaData,
 }: ArcanaDisplayProps) {
   return (
-    <Box sx={{ display: "grid", width: "100%", height: "7em", borderBottom: "1px solid rgba(255,255,255,0.08)", mb: 2 }}>
+    <Box
+      sx={{
+        display: "grid",
+        width: "100%",
+        height: "7em",
+        borderBottom: "1px solid rgba(255,255,255,0.08)",
+        mb: 1,
+      }}
+    >
       {/* Arcana card + description — same grid cell, fades in when active */}
       <Stack
         direction="row"
@@ -130,26 +138,29 @@ export function ArcanaDisplay({
                   {displayArcanaData.gameEffect}
                 </Typography>
               )}
-              {arcanaCardToShow && (() => {
-                const tags = (tarot.arcana as Record<string, { tags?: string[] }>)[arcanaCardToShow.value]?.tags;
-                return tags?.length ? (
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      display: "block",
-                      color: "silver.light",
-                      fontSize: "0.6rem",
-                      fontWeight: 500,
-                      textTransform: "uppercase",
-                      mt: 0.5,
-                      lineHeight: 1.1,
-                      opacity: 0.8,
-                    }}
-                  >
-                    {tags.join(" · ")}
-                  </Typography>
-                ) : null;
-              })()}
+              {arcanaCardToShow &&
+                (() => {
+                  const tags = (
+                    tarot.arcana as Record<string, { tags?: string[] }>
+                  )[arcanaCardToShow.value]?.tags;
+                  return tags?.length ? (
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        display: "block",
+                        color: "silver.light",
+                        fontSize: "0.6rem",
+                        fontWeight: 500,
+                        textTransform: "uppercase",
+                        mt: 0.5,
+                        lineHeight: 1.1,
+                        opacity: 0.8,
+                      }}
+                    >
+                      {tags.join(" · ")}
+                    </Typography>
+                  ) : null;
+                })()}
             </Box>
           </Box>
         </Box>

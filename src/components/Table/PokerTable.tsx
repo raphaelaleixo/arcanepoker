@@ -152,7 +152,7 @@ export function PokerTable() {
           maxHeight: "800px",
           width: "calc(100% - 3em)",
           maxWidth: "500px",
-          top: "calc(50% - 400px)",
+          top: "max(0px, calc(50% - 400px))",
           left: 0,
           right: 0,
           mx: "auto",
@@ -227,6 +227,7 @@ export function PokerTable() {
               gridRow: 4,
               gridColumnStart: 1,
               gridColumnEnd: 4,
+              mt: "-1em",
             }}
           />
         )}
@@ -283,7 +284,10 @@ export function PokerTable() {
           minimized={tarotMinimized}
           onMinimize={() => setTarotMinimized(true)}
           onRestore={() => setTarotMinimized(false)}
-          onClose={() => { setShowTarot(false); setTarotMinimized(false); }}
+          onClose={() => {
+            setShowTarot(false);
+            setTarotMinimized(false);
+          }}
           onNextHand={() => {
             setShowTarot(false);
             setTarotMinimized(false);
@@ -293,7 +297,10 @@ export function PokerTable() {
       )}
       <InteractionModal />
       <GameOverModal />
-      <PageInfoModal open={pageInfoOpen} onClose={() => setPageInfoOpen(false)} />
+      <PageInfoModal
+        open={pageInfoOpen}
+        onClose={() => setPageInfoOpen(false)}
+      />
       <ArcanaInfoModal
         open={arcanaInfoOpen}
         onClose={() => setArcanaInfoOpen(false)}
@@ -322,8 +329,14 @@ export function PokerTable() {
       <PlaygroundDrawer
         open={playgroundOpen}
         onClose={() => setPlaygroundOpen(false)}
-        onOpenTarot={() => { setPlaygroundOpen(false); setShowTarot(true); }}
-        onOpenGameOver={() => { setPlaygroundOpen(false); dispatch({ type: "DEV_FORCE_GAME_OVER" }); }}
+        onOpenTarot={() => {
+          setPlaygroundOpen(false);
+          setShowTarot(true);
+        }}
+        onOpenGameOver={() => {
+          setPlaygroundOpen(false);
+          dispatch({ type: "DEV_FORCE_GAME_OVER" });
+        }}
       />
       <TutorialOverlay />
     </Box>
