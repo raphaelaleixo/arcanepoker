@@ -7,9 +7,9 @@ import { TutorialGamePage } from "./pages/TutorialGamePage";
 
 const demoEnabled = import.meta.env.VITE_ENABLE_DEMO === "true";
 
-const DemoPage = demoEnabled ? lazy(() => import("./pages/DemoPage")) : null;
-const Demo2Page = demoEnabled ? lazy(() => import("./pages/Demo2Page")) : null;
-const Demo3Page = demoEnabled ? lazy(() => import("./pages/Demo3Page")) : null;
+const DemoPage = demoEnabled ? lazy(() => import("./pages/DemoPage").then(m => ({ default: m.DemoPage }))) : null;
+const Demo2Page = demoEnabled ? lazy(() => import("./pages/Demo2Page").then(m => ({ default: m.Demo2Page }))) : null;
+const Demo3Page = demoEnabled ? lazy(() => import("./pages/Demo3Page").then(m => ({ default: m.Demo3Page }))) : null;
 
 export default function App() {
   return (
