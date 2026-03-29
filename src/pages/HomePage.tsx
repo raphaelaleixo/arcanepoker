@@ -133,25 +133,42 @@ export function HomePage() {
         }}
       >
         <LudoratorySvg />
-        <Typography variant="caption" fontWeight={400}>
-          Arcane Poker by{" "}
-          <HtmlLink
-            href="https://aleixo.me"
-            target="_blank"
-            rel="noopener noreferrer"
+        <Box>
+          <Typography
+            variant="caption"
+            fontWeight={400}
+            component="div"
+            lineHeight={1.2}
+            fontSize="0.65em"
           >
-            Ludoratory
-          </HtmlLink>{" "}
-          is licensed under{" "}
-          <HtmlLink
-            href="https://creativecommons.org/licenses/by-nc-sa/4.0/"
-            target="_blank"
-            rel="noopener noreferrer"
+            Arcane Poker by{" "}
+            <HtmlLink
+              href="https://aleixo.me"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Raphael Aleixo / Ludoratory
+            </HtmlLink>
+            .
+          </Typography>
+          <Typography
+            variant="caption"
+            fontWeight={400}
+            lineHeight={1.2}
+            fontSize="0.65em"
+            component="div"
           >
-            CC BY-NC-SA 4.0
-          </HtmlLink>
-          .
-        </Typography>
+            Licensed under{" "}
+            <HtmlLink
+              href="https://creativecommons.org/licenses/by-nc-sa/4.0/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              CC BY-NC-SA 4.0
+            </HtmlLink>
+            .
+          </Typography>
+        </Box>
       </Box>
     </>
   );
