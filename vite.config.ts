@@ -1,6 +1,7 @@
 import { loadEnv } from "vite";
 import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
+import { VitePWA } from "vite-plugin-pwa";
 import type { Plugin } from "vite";
 
 /**
@@ -49,7 +50,39 @@ function localApiPlugin(): Plugin {
 }
 
 export default defineConfig({
-  plugins: [react(), localApiPlugin()],
+  plugins: [
+    react(),
+    localApiPlugin(),
+    VitePWA({
+      registerType: "autoUpdate",
+      includeAssets: ["favicon.svg", "favicon.ico", "apple-touch-icon-180x180.png", "og-image.png", "art/**/*"],
+      manifest: {
+        name: "Arcane Poker",
+        short_name: "Arcane Poker",
+        description: "Texas Hold'Em meets the Tarot",
+        theme_color: "#242424",
+        background_color: "#242424",
+        display: "standalone",
+        start_url: "/",
+        icons: [
+          { src: "pwa-64x64.png", sizes: "64x64", type: "image/png" },
+          { src: "pwa-192x192.png", sizes: "192x192", type: "image/png" },
+          { src: "pwa-512x512.png", sizes: "512x512", type: "image/png" },
+          { src: "maskable-icon-512x512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
+        ],
+      },
+      workbox: {
+        globPatterns: ["**/*.{js,css,html,ico,png,svg,webp,woff,woff2}"],
+        runtimeCaching: [
+          {
+            // Network-only for tarot API — no stale prophecies cached
+            urlPattern: /\/api\/tarot/,
+            handler: "NetworkOnly",
+          },
+        ],
+      },
+    }),
+  ],
   base: "./",
   test: {
     globals: true,
