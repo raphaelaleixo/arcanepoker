@@ -1,3 +1,4 @@
+import { flushSync } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 
 export function useNavigateWithTransition(): (to: string) => void {
@@ -9,7 +10,9 @@ export function useNavigateWithTransition(): (to: string) => void {
       return;
     }
     document.startViewTransition(() => {
-      navigate(to);
+      flushSync(() => {
+        navigate(to);
+      });
     });
   };
 }
