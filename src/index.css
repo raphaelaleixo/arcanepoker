@@ -47,6 +47,7 @@ body *, body *:after, body *:before {
 /* Background blobs: morph position/size over 800ms with Material easing */
 ::view-transition-group(bg-top),
 ::view-transition-group(bg-bottom) {
+  z-index: 1;
   animation-duration: 800ms;
   animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
