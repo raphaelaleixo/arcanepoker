@@ -193,8 +193,11 @@ export function ArcanaDisplayCard({
         gridColumn: "2",
         position: "relative",
         zIndex: 0,
-        "&:before, &:after": {
-          content: "''",
+      }}
+    >
+      <Box
+        style={{ viewTransitionName: "bg-top" }}
+        sx={{
           display: "block",
           position: "absolute",
           width: "160%",
@@ -207,15 +210,28 @@ export function ArcanaDisplayCard({
           left: "50%",
           transform: "translateX(-50%)",
           opacity: 0.3,
-        },
-        "&:after": {
-          zIndex: -1,
-          transform: "translateX(-50%) rotate(180deg)",
-          top: "auto",
+          pointerEvents: "none",
+        }}
+      />
+      <Box
+        style={{ viewTransitionName: "bg-bottom" }}
+        sx={{
+          display: "block",
+          position: "absolute",
+          width: "160%",
+          maxWidth: "10em",
+          aspectRatio: "69/57",
+          backgroundImage: `url(${backgroundTableUrl})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
           bottom: 0,
-        },
-      }}
-    >
+          left: "50%",
+          transform: "translateX(-50%) rotate(180deg)",
+          opacity: 0.3,
+          zIndex: -1,
+          pointerEvents: "none",
+        }}
+      />
       {cardContent}
     </Box>
   );
