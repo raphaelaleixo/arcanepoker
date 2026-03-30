@@ -71,6 +71,15 @@ body *, body *:after, body *:before {
   animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Game UI: hide instantly, then fade in after the background morph completes */
+::view-transition-old(:root) {
+  animation: none;
+}
+::view-transition-new(:root) {
+  animation-delay: 400ms;
+  animation-duration: 200ms;
+}
+
 @keyframes vt-fade-out {
   to { opacity: 0; }
 }
