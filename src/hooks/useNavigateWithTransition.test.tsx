@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { useNavigateWithTransition } from './useNavigateWithTransition';
@@ -18,5 +18,28 @@ describe('useNavigateWithTransition', () => {
     const { result } = renderHook(() => useNavigateWithTransition(), { wrapper });
     // calling it must not throw
     expect(() => result.current('/game')).not.toThrow();
+  });
+
+  afterEach(() => {
+    // Clean up any stubbed startViewTransition
+    Object.defineProperty(document, 'startViewTransition', {
+      value: undefined,
+      writable: true,
+      configurable: true,
+    });
+  });
+
+  it('calls startViewTransition when available', () => {
+    const mockStartViewTransition = vi.fn((cb: () => void) => cb());
+    Object.defineProperty(document, 'startViewTransition', {
+      value: mockStartViewTransition,
+      writable: true,
+      configurable: true,
+    });
+
+    const { result } = renderHook(() => useNavigateWithTransition(), { wrapper });
+    result.current('/game');
+
+    expect(mockStartViewTransition).toHaveBeenCalledOnce();
   });
 });
