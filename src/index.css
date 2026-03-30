@@ -62,6 +62,15 @@ body *, body *:after, body *:before {
   opacity: 0;
 }
 
+/* Sync image cross-fade duration with the geometry morph */
+::view-transition-old(bg-top),
+::view-transition-new(bg-top),
+::view-transition-old(bg-bottom),
+::view-transition-new(bg-bottom) {
+  animation-duration: 500ms;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 @keyframes vt-fade-out {
   to { opacity: 0; }
 }
