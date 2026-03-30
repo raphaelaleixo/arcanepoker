@@ -26,3 +26,4 @@ dist-ssr
 .vercel
 .worktrees/
 .env.development
+.superpowers/
