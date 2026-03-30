@@ -37,7 +37,31 @@ body *, body *:after, body *:before {
 }
 
 @property --posy {
-  syntax: '<percentage>'; 
+  syntax: '<percentage>';
   initial-value: 0%;
   inherits: false;
+}
+
+/* ─── View Transitions ─────────────────────────────────────────── */
+
+/* Background blobs: morph position/size over 500ms with Material easing */
+::view-transition-group(bg-top),
+::view-transition-group(bg-bottom) {
+  animation-duration: 500ms;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Home UI: fade out fast, do not fade in (it's absent on the game page) */
+::view-transition-old(home-ui),
+::view-transition-old(home-credits) {
+  animation: vt-fade-out 200ms ease forwards;
+}
+::view-transition-new(home-ui),
+::view-transition-new(home-credits) {
+  animation: none;
+  opacity: 0;
+}
+
+@keyframes vt-fade-out {
+  to { opacity: 0; }
 }
