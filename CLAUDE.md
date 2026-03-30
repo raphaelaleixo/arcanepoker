@@ -32,6 +32,10 @@ The core hook involves a 56-card standard deck containing a "Page" (Value 0) in 
 ### 5. API & LLM Integration (`/api`)
 - Keep the Tarot Reading logic isolated in `src/api/tarot.ts`. This must be formatted to work as a Vercel Serverless Function, receiving the final hand/board state and returning a text prophecy.
 
+## Git Workflow
+- **Never commit directly to `main`.** Always create a feature branch and open a Pull Request.
+- When work is complete, create a branch, commit to it, and use `gh pr create` to open a PR targeting `main`.
+
 ## Commands
 - Dev Server: `npm run dev`
 - Run Tests: `npm run test`
