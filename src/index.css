@@ -44,10 +44,10 @@ body *, body *:after, body *:before {
 
 /* ─── View Transitions ─────────────────────────────────────────── */
 
-/* Background blobs: morph position/size over 500ms with Material easing */
+/* Background blobs: morph position/size over 800ms with Material easing */
 ::view-transition-group(bg-top),
 ::view-transition-group(bg-bottom) {
-  animation-duration: 500ms;
+  animation-duration: 800ms;
   animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -67,7 +67,7 @@ body *, body *:after, body *:before {
 ::view-transition-new(bg-top),
 ::view-transition-old(bg-bottom),
 ::view-transition-new(bg-bottom) {
-  animation-duration: 500ms;
+  animation-duration: 800ms;
   animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
