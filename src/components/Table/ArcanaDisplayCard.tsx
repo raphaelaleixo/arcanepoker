@@ -162,6 +162,8 @@ export function ArcanaDisplayCard({
         opacity: 1,
         pointerEvents: "auto",
         transition: "opacity 400ms ease",
+        position: "relative",
+        zIndex: 1,
       }}
     >
       <Box sx={{ display: "inline-block", scale: 0.7 }}>
@@ -210,7 +212,6 @@ export function ArcanaDisplayCard({
           left: "50%",
           transform: "translateX(-50%)",
           opacity: 0.3,
-          zIndex: -1,
           pointerEvents: "none",
         }}
       />
@@ -229,7 +230,6 @@ export function ArcanaDisplayCard({
           left: "50%",
           transform: "translateX(-50%) rotate(180deg)",
           opacity: 0.3,
-          zIndex: -1,
           pointerEvents: "none",
         }}
       />
