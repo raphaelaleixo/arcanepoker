@@ -1,4 +1,3 @@
-import type { ElementType } from "react";
 import {
   Box,
   Button,
@@ -7,7 +6,9 @@ import {
   Typography,
 } from "@mui/material";
 import { Link } from "react-router-dom";
+import type { ElementType } from "react";
 import backgroundUrl from "../assets/background.svg?url";
+import { useNavigateWithTransition } from "../hooks/useNavigateWithTransition";
 
 const LudoratorySvg = () => (
   <svg
@@ -28,10 +29,22 @@ const LudoratorySvg = () => (
   </svg>
 );
 
+const bgBoxStyles = {
+  display: "block",
+  width: "15em",
+  aspectRatio: "69/56",
+  backgroundSize: "cover",
+  backgroundPosition: "center",
+  pointerEvents: "none" as const,
+} as const;
+
 export function HomePage() {
+  const navigateWithTransition = useNavigateWithTransition();
+
   return (
     <>
       <Box
+        style={{ viewTransitionName: "home-ui" }}
         sx={{
           position: "relative",
           "&:before": {
@@ -61,26 +74,20 @@ export function HomePage() {
             alignItems: "center",
             position: "relative",
             zIndex: 1,
-            "&:before, &:after": {
-              content: "''",
-              display: "block",
-              width: "15em",
-              aspectRatio: "69/56",
-              backgroundImage: `url(${backgroundUrl})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-            },
-            "&:after": {
-              transform: "rotate(180deg)",
-            },
           }}
         >
+          <Box
+            style={{ viewTransitionName: "bg-top" }}
+            sx={{
+              ...bgBoxStyles,
+              backgroundImage: `url(${backgroundUrl})`,
+            }}
+          />
           <Stack sx={{ pt: 3, pb: 2 }} spacing={1} useFlexGap>
             <Typography
               variant="h1"
               sx={{
                 textAlign: "center",
-
                 textBox: "trim-both ex alphabetic",
               }}
             >
@@ -93,17 +100,15 @@ export function HomePage() {
             >
               <Button
                 variant="contained"
-                component={Link as ElementType}
-                to="game"
                 size="small"
+                onClick={() => navigateWithTransition("/game")}
               >
                 start new game
               </Button>
               <Button
                 variant="outlined"
-                component={Link as ElementType}
                 size="small"
-                to="/tutorial"
+                onClick={() => navigateWithTransition("/tutorial")}
               >
                 tutorial
               </Button>
@@ -117,9 +122,18 @@ export function HomePage() {
               </Button>
             </Stack>
           </Stack>
+          <Box
+            style={{ viewTransitionName: "bg-bottom" }}
+            sx={{
+              ...bgBoxStyles,
+              backgroundImage: `url(${backgroundUrl})`,
+              transform: "rotate(180deg)",
+            }}
+          />
         </Stack>
       </Box>
       <Box
+        style={{ viewTransitionName: "home-credits" }}
         sx={{
           display: "flex",
           justifyContent: "center",

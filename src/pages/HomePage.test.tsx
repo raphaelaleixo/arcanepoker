@@ -20,10 +20,18 @@ describe("HomePage", () => {
     expect(screen.getByText("Arcane Poker")).toBeInTheDocument();
   });
 
-  it("has a Play link pointing to /game", () => {
+  it("has a start new game button", () => {
     renderWithProviders(<HomePage />);
-    const playLink = screen.getByRole("link", { name: /start new game/i });
-    expect(playLink).toHaveAttribute("href", "/game");
+    expect(
+      screen.getByRole("button", { name: /start new game/i })
+    ).toBeInTheDocument();
+  });
+
+  it("has a tutorial button", () => {
+    renderWithProviders(<HomePage />);
+    expect(
+      screen.getByRole("button", { name: /tutorial/i })
+    ).toBeInTheDocument();
   });
 
   it("has a Rules link pointing to /rules", () => {
