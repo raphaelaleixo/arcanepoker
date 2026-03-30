@@ -30,20 +30,34 @@ export function PotDisplay({
   const animatedPot = useAnimatedValue(potSize, 300);
   const animatedBet = useAnimatedValue(currentBet, 300);
 
-  const ruinsPotEl = ruinsPot > 0 ? (
-    <Typography variant="body2" sx={{ color: "error.light", fontWeight: "bold" }}>
-      &#x1F3F0; {ruinsPot}
-    </Typography>
-  ) : null;
+  const ruinsPotEl =
+    ruinsPot > 0 ? (
+      <Typography
+        variant="body2"
+        sx={{ color: "secondary.light", fontWeight: "bold" }}
+      >
+        Tower: {ruinsPot}
+      </Typography>
+    ) : null;
 
   if (stage === "showdown") {
-    const perWinner = winnerIds.length > 0 ? Math.floor(potWon / winnerIds.length) : 0;
+    const perWinner =
+      winnerIds.length > 0 ? Math.floor(potWon / winnerIds.length) : 0;
     const heroId = players.find((p) => p.type === "human")?.id;
 
     if (winnerIds.length > 1) {
       return (
-        <Stack direction="row" spacing={2} alignItems="center" justifyContent="center" sx={{ minHeight: 24 }}>
-          <Typography variant="body2" sx={{ color: "gold.main", fontWeight: "bold" }}>
+        <Stack
+          direction="row"
+          spacing={2}
+          alignItems="center"
+          justifyContent="center"
+          sx={{ minHeight: 24 }}
+        >
+          <Typography
+            variant="body2"
+            sx={{ color: "gold.main", fontWeight: "bold" }}
+          >
             Split Pot — {perWinner} each
           </Typography>
           {ruinsPotEl}
@@ -52,11 +66,22 @@ export function PotDisplay({
     }
     if (winnerIds.length === 1) {
       const isHero = winnerIds[0] === heroId;
-      const name = isHero ? "You" : players.find((p) => p.id === winnerIds[0])?.name;
+      const name = isHero
+        ? "You"
+        : players.find((p) => p.id === winnerIds[0])?.name;
       const verb = isHero ? "win" : "wins";
       return (
-        <Stack direction="row" spacing={2} alignItems="center" justifyContent="center" sx={{ minHeight: 24 }}>
-          <Typography variant="body2" sx={{ color: "gold.main", fontWeight: "bold" }}>
+        <Stack
+          direction="row"
+          spacing={2}
+          alignItems="center"
+          justifyContent="center"
+          sx={{ minHeight: 24 }}
+        >
+          <Typography
+            variant="body2"
+            sx={{ color: "gold.main", fontWeight: "bold" }}
+          >
             {name} {verb} {perWinner}!
           </Typography>
           {ruinsPotEl}
@@ -67,8 +92,17 @@ export function PotDisplay({
   }
 
   return (
-    <Stack direction="row" spacing={2} alignItems="center" justifyContent="center" sx={{ minHeight: 24 }}>
-      <Typography variant="body2" sx={{ color: "gold.main", fontWeight: "bold" }}>
+    <Stack
+      direction="row"
+      spacing={2}
+      alignItems="center"
+      justifyContent="center"
+      sx={{ minHeight: 24 }}
+    >
+      <Typography
+        variant="body2"
+        sx={{ color: "gold.main", fontWeight: "bold" }}
+      >
         Pot: {animatedPot}
       </Typography>
       {currentBet > 0 && (

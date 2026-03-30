@@ -3,6 +3,7 @@ import {
   Button,
   Chip,
   Drawer,
+  Link,
   List,
   ListItem,
   TextField,
@@ -25,7 +26,9 @@ const VALID_STAGES = ["pre-flop", "flop", "turn", "river"] as const;
 
 const ARCANA_LIST = Array.from({ length: 22 }, (_, i) => {
   const value = String(i) as ArcanaValue;
-  const data = (tarot.arcana as Record<string, { fullName: string; gameEffect?: string }>)[value];
+  const data = (
+    tarot.arcana as Record<string, { fullName: string; gameEffect?: string }>
+  )[value];
   return {
     value,
     fullName: data?.fullName ?? `Arcana ${i}`,
@@ -33,18 +36,29 @@ const ARCANA_LIST = Array.from({ length: 22 }, (_, i) => {
   };
 });
 
-export function PlaygroundDrawer({ open, onClose, onOpenTarot, onOpenGameOver }: PlaygroundDrawerProps) {
+export function PlaygroundDrawer({
+  open,
+  onClose,
+  onOpenTarot,
+  onOpenGameOver,
+}: PlaygroundDrawerProps) {
   const { state, dispatch } = useGame();
-  const isValidStage = VALID_STAGES.includes(state.stage as typeof VALID_STAGES[number]);
+  const isValidStage = VALID_STAGES.includes(
+    state.stage as (typeof VALID_STAGES)[number],
+  );
   const remainingValues = new Set(state.arcanaDeck.map((c) => c.value));
-  const dealtValues = new Set(ARCANA_LIST.map((a) => a.value).filter((v) => !remainingValues.has(v)));
+  const dealtValues = new Set(
+    ARCANA_LIST.map((a) => a.value).filter((v) => !remainingValues.has(v)),
+  );
 
   const [stackInputs, setStackInputs] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (open) {
       const inputs: Record<string, string> = {};
-      state.players.forEach((p) => { inputs[p.id] = String(p.stack); });
+      state.players.forEach((p) => {
+        inputs[p.id] = String(p.stack);
+      });
       setStackInputs(inputs);
     }
   }, [open]);
@@ -73,149 +87,277 @@ export function PlaygroundDrawer({ open, onClose, onOpenTarot, onOpenGameOver }:
       PaperProps={{
         sx: {
           width: 300,
-          background: "#0F1A2E",
+          backgroundColor: "blackSuit.dark",
           borderLeft: "1px solid",
-          borderColor: "secondary.dark",
+          borderColor: "silver.dark",
         },
       }}
     >
-      <Box sx={{ p: 2, borderBottom: "1px solid", borderColor: "rgba(155,89,182,0.2)" }}>
+      <Box
+        sx={{
+          p: 2,
+          borderBottom: "1px solid",
+          borderColor: "rgba(155,89,182,0.2)",
+        }}
+      >
         <Typography
           variant="subtitle1"
-          sx={{ color: "secondary.light", fontWeight: "bold" }}
+          sx={{
+            color: "gold.light",
+            fontWeight: "bold",
+            fontFamily: "Young Serif, serif",
+          }}
         >
-          ⚗ Arcana Playground
+          Playground
         </Typography>
-        <Typography variant="caption" sx={{ color: "silver.dark" }}>
-          Dev tool — force any arcana immediately
+        <Typography
+          variant="caption"
+          sx={{
+            color: "silver.dark",
+            lineHeight: 1.2,
+            display: "block",
+            mt: 1,
+          }}
+        >
+          Dev tool — Use this drawer to preview modals, force arcana, and adjust
+          player stacks for testing purposes. Changes made here will affect the
+          current game state.
         </Typography>
       </Box>
 
       <Box sx={{ overflowY: "auto", flex: 1 }}>
-      <Box sx={{ p: 2, borderBottom: "1px solid", borderColor: "rgba(155,89,182,0.2)" }}>
-        <Typography variant="caption" sx={{ color: "silver.dark", display: "block", mb: 1 }}>
-          Modal Previews
-        </Typography>
-        <Box sx={{ display: "flex", gap: 1 }}>
-          <Button
-            size="small"
-            variant="outlined"
-            onClick={onOpenTarot}
-            sx={{ fontSize: "0.65rem", py: 0.25, px: 0.75, color: "gold.main", borderColor: "gold.dark", "&:hover": { borderColor: "gold.main" } }}
-          >
-            Tarot
-          </Button>
-          <Button
-            size="small"
-            variant="outlined"
-            onClick={onOpenGameOver}
-            sx={{ fontSize: "0.65rem", py: 0.25, px: 0.75, color: "secondary.light", borderColor: "secondary.dark", "&:hover": { borderColor: "secondary.main" } }}
-          >
-            Game Over
-          </Button>
-        </Box>
-      </Box>
-
-      <Box sx={{ p: 2, borderBottom: "1px solid", borderColor: "rgba(155,89,182,0.2)" }}>
-        <Typography variant="caption" sx={{ color: "silver.dark", display: "block", mb: 1 }}>
-          Player Stacks
-        </Typography>
-        {state.players.map((player) => (
-          <Box key={player.id} sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
-            <Typography
-              variant="caption"
-              sx={{ color: "silver.light", width: 100, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: "0.7rem" }}
-            >
-              {player.name}
-            </Typography>
-            <TextField
-              size="small"
-              type="number"
-              value={stackInputs[player.id] ?? ""}
-              onChange={(e) => handleStackChange(player.id, e.target.value)}
-              onBlur={() => handleStackBlur(player.id)}
-              inputProps={{ min: 0, style: { fontSize: "0.7rem", padding: "4px 6px", color: "#e0e0e0" } }}
-              sx={{ width: 100, "& .MuiOutlinedInput-root": { "& fieldset": { borderColor: "rgba(155,89,182,0.5)" }, "&:hover fieldset": { borderColor: "secondary.main" } } }}
-            />
-          </Box>
-        ))}
-      </Box>
-
-      {!isValidStage && (
-        <Typography
-          variant="caption"
-          sx={{ color: "silver.dark", px: 2, py: 1, display: "block" }}
+        <Box
+          sx={{
+            p: 2,
+            borderBottom: "1px solid",
+            borderColor: "rgba(155,89,182,0.2)",
+          }}
         >
-          Start a hand to force arcana
-        </Typography>
-      )}
-
-      <List dense sx={{ pb: 2 }}>
-        {ARCANA_LIST.map(({ value, fullName, gameEffect }) => {
-          const isActive = state.activeArcana?.card.value === value;
-          const wasDealt = dealtValues.has(value);
-          return (
-            <ListItem
-              key={value}
+          <Typography
+            variant="caption"
+            sx={{ color: "silver.dark", display: "block", mb: 1 }}
+          >
+            Modal Previews
+          </Typography>
+          <Box sx={{ display: "flex", gap: 1 }}>
+            <Button
+              size="small"
+              variant="outlined"
+              onClick={onOpenTarot}
               sx={{
-                display: "flex",
-                alignItems: "flex-start",
-                gap: 1,
-                py: 1,
-                borderBottom: "1px solid rgba(255,255,255,0.04)",
+                fontSize: "0.65rem",
+                py: 0.25,
+                px: 0.75,
               }}
             >
-              <Box sx={{ flex: 1, minWidth: 0 }}>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                  <Typography
-                    variant="body2"
-                    sx={{ color: "silver.light", fontWeight: "bold", fontSize: "0.75rem" }}
-                  >
-                    {value}. {fullName}
-                  </Typography>
-                  {isActive && (
-                    <Chip
-                      label="Active"
-                      size="small"
-                      color="secondary"
-                      sx={{ height: 16, fontSize: "0.6rem" }}
-                    />
-                  )}
-                  {wasDealt && !isActive && (
-                    <CheckIcon sx={{ fontSize: "0.85rem", color: "success.main", flexShrink: 0 }} />
-                  )}
-                </Box>
-                {gameEffect && (
-                  <Typography
-                    variant="caption"
-                    sx={{ color: "silver.dark", display: "block", fontSize: "0.65rem" }}
-                  >
-                    {gameEffect}
-                  </Typography>
-                )}
-              </Box>
-              <Button
-                size="small"
-                variant="outlined"
-                disabled={!isValidStage}
-                onClick={() => handleForce(value)}
+              Tarot
+            </Button>
+            <Button
+              size="small"
+              variant="outlined"
+              onClick={onOpenGameOver}
+              sx={{
+                fontSize: "0.65rem",
+                py: 0.25,
+                px: 0.75,
+              }}
+            >
+              Game Over
+            </Button>
+          </Box>
+        </Box>
+
+        <Box
+          sx={{
+            p: 2,
+            borderBottom: "1px solid",
+            borderColor: "rgba(155,89,182,0.2)",
+          }}
+        >
+          <Typography
+            variant="caption"
+            sx={{ color: "silver.dark", display: "block", mb: 1 }}
+          >
+            Player Stacks
+          </Typography>
+          {state.players.map((player) => (
+            <Box
+              key={player.id}
+              sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}
+            >
+              <Typography
+                variant="caption"
                 sx={{
-                  minWidth: 52,
-                  flexShrink: 0,
-                  fontSize: "0.65rem",
-                  py: 0.25,
-                  px: 0.75,
-                  color: "secondary.light",
-                  borderColor: "secondary.dark",
-                  "&:hover": { borderColor: "secondary.main" },
+                  color: "silver.light",
+                  width: 100,
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                  fontSize: "0.7rem",
                 }}
               >
-                Force
-              </Button>
-            </ListItem>
-          );
-        })}
-      </List>
+                {player.name}
+              </Typography>
+              <TextField
+                size="small"
+                type="number"
+                value={stackInputs[player.id] ?? ""}
+                onChange={(e) => handleStackChange(player.id, e.target.value)}
+                onBlur={() => handleStackBlur(player.id)}
+                inputProps={{
+                  min: 0,
+                  style: {
+                    fontSize: "0.7rem",
+                    padding: "4px 6px",
+                    color: "#e0e0e0",
+                  },
+                }}
+                sx={{
+                  width: 100,
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": { borderColor: "silver.dark" },
+                    "&:hover fieldset": { borderColor: "silver.main" },
+                  },
+                }}
+              />
+            </Box>
+          ))}
+        </Box>
+
+        <Box
+          sx={{
+            borderBottom: "1px solid",
+            borderColor: "rgba(155,89,182,0.2)",
+          }}
+        >
+          <Typography
+            variant="caption"
+            sx={{ color: "silver.dark", display: "block", mb: 1, p: 2, pb: 0 }}
+          >
+            Arcana Effects
+          </Typography>
+
+          {!isValidStage && (
+            <Typography
+              variant="caption"
+              sx={{ color: "silver.dark", px: 2, py: 1, display: "block" }}
+            >
+              Start a hand to force arcana
+            </Typography>
+          )}
+
+          <List dense sx={{ pb: 2 }}>
+            {ARCANA_LIST.map(({ value, fullName, gameEffect }) => {
+              const isActive = state.activeArcana?.card.value === value;
+              const wasDealt = dealtValues.has(value);
+              return (
+                <ListItem
+                  key={value}
+                  sx={{
+                    display: "flex",
+                    alignItems: "flex-start",
+                    gap: 1,
+                    py: 1,
+                    borderBottom: "1px solid rgba(255,255,255,0.04)",
+                  }}
+                >
+                  <Box sx={{ flex: 1, minWidth: 0 }}>
+                    <Box
+                      sx={{ display: "flex", alignItems: "center", gap: 0.5 }}
+                    >
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: "silver.light",
+                          fontWeight: "bold",
+                          fontSize: "0.75rem",
+                        }}
+                      >
+                        {value}. {fullName}
+                      </Typography>
+                      {isActive && (
+                        <Chip
+                          label="Active"
+                          size="small"
+                          color="secondary"
+                          sx={{ height: 16, fontSize: "0.6rem" }}
+                        />
+                      )}
+                      {wasDealt && !isActive && (
+                        <CheckIcon
+                          sx={{
+                            fontSize: "0.85rem",
+                            color: "success.main",
+                            flexShrink: 0,
+                          }}
+                        />
+                      )}
+                    </Box>
+                    {gameEffect && (
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          color: "silver.dark",
+                          display: "block",
+                          fontSize: "0.65rem",
+                        }}
+                      >
+                        {gameEffect}
+                      </Typography>
+                    )}
+                  </Box>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    disabled={!isValidStage}
+                    onClick={() => handleForce(value)}
+                    sx={{
+                      minWidth: 52,
+                      flexShrink: 0,
+                      fontSize: "0.65rem",
+                      py: 0.25,
+                      px: 0.75,
+                    }}
+                  >
+                    Force
+                  </Button>
+                </ListItem>
+              );
+            })}
+          </List>
+        </Box>
+
+        <Box
+          sx={{
+            p: 2,
+          }}
+        >
+          <Typography
+            variant="caption"
+            sx={{ color: "silver.dark", display: "block", mb: 1 }}
+          >
+            Any issues?
+          </Typography>
+          <Typography
+            variant="caption"
+            sx={{
+              color: "silver.dark",
+              lineHeight: 1.2,
+              display: "block",
+            }}
+          >
+            If you encounter any bugs or have suggestions for improvements,
+            please report them on our{" "}
+            <Link
+              href="https://github.com/raphaelaleixo/arcanepoker/issues"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              GitHub Issues page
+            </Link>
+            .
+          </Typography>
+        </Box>
       </Box>
     </Drawer>
   );

@@ -151,7 +151,10 @@ export function PokerTable() {
   // so PlayingCard renders the correct face before it flips.
   // For display-only arcanas (Death, Sun), use displayArcana instead of activeArcana.
   const arcanaCardToShow =
-    pendingArcanaCard ?? demo3?.displayArcana ?? state.activeArcana?.card ?? null;
+    pendingArcanaCard ??
+    demo3?.displayArcana ??
+    state.activeArcana?.card ??
+    null;
 
   return (
     <Box
@@ -329,7 +332,7 @@ export function PokerTable() {
         onClick={() => setPlaygroundOpen(true)}
         sx={{
           position: "fixed",
-          bottom: 16,
+          top: 16,
           right: 16,
           zIndex: 1200,
           minWidth: 0,
@@ -342,7 +345,7 @@ export function PokerTable() {
           "&:hover": { opacity: 1 },
         }}
       >
-        ⚗ DEV
+        DEV
       </Button>
       <PlaygroundDrawer
         open={playgroundOpen}
