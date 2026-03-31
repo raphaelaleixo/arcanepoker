@@ -157,11 +157,14 @@ export function ArcanaDisplayCard({
       spacing={1.5}
       alignItems="center"
       justifyContent="center"
+      style={{ viewTransitionName: "arcana-display" }}
       sx={{
         gridArea: "1 / 1",
         opacity: 1,
         pointerEvents: "auto",
         transition: "opacity 400ms ease",
+        position: "relative",
+        zIndex: 1,
       }}
     >
       <Box sx={{ display: "inline-block", scale: 0.7 }}>
@@ -169,6 +172,7 @@ export function ArcanaDisplayCard({
           <Tooltip
             placement="top"
             arrow
+            enterDelay={750}
             disableInteractive={false}
             open={tooltipOpen}
             onOpen={() => setTooltipOpen(true)}
@@ -193,8 +197,11 @@ export function ArcanaDisplayCard({
         gridColumn: "2",
         position: "relative",
         zIndex: 0,
-        "&:before, &:after": {
-          content: "''",
+      }}
+    >
+      <Box
+        style={{ viewTransitionName: "bg-top" }}
+        sx={{
           display: "block",
           position: "absolute",
           width: "160%",
@@ -207,15 +214,27 @@ export function ArcanaDisplayCard({
           left: "50%",
           transform: "translateX(-50%)",
           opacity: 0.3,
-        },
-        "&:after": {
-          zIndex: -1,
-          transform: "translateX(-50%) rotate(180deg)",
-          top: "auto",
+          pointerEvents: "none",
+        }}
+      />
+      <Box
+        style={{ viewTransitionName: "bg-bottom" }}
+        sx={{
+          display: "block",
+          position: "absolute",
+          width: "160%",
+          maxWidth: "10em",
+          aspectRatio: "69/57",
+          backgroundImage: `url(${backgroundTableUrl})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
           bottom: 0,
-        },
-      }}
-    >
+          left: "50%",
+          transform: "translateX(-50%) rotate(180deg)",
+          opacity: 0.3,
+          pointerEvents: "none",
+        }}
+      />
       {cardContent}
     </Box>
   );

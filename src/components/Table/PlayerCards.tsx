@@ -241,6 +241,7 @@ export function PlayerCards({
                     key={tooltipKey}
                     placement="top"
                     arrow
+                    enterDelay={750}
                     disableInteractive={false}
                     open={openPageTooltip === tooltipKey}
                     onOpen={() => setOpenPageTooltip(tooltipKey)}
@@ -287,10 +288,23 @@ export function PlayerCards({
             })
           ) : (
             <>
-              <Box sx={{ transform: "rotate(-3deg)", transformOrigin: "bottom center", visibility: "hidden" }}>
+              <Box
+                sx={{
+                  transform: "rotate(-3deg)",
+                  transformOrigin: "bottom center",
+                  visibility: "hidden",
+                }}
+              >
                 <PlayingCard small />
               </Box>
-              <Box sx={{ transform: "rotate(3deg)", transformOrigin: "bottom center", ml: -0.75, visibility: "hidden" }}>
+              <Box
+                sx={{
+                  transform: "rotate(3deg)",
+                  transformOrigin: "bottom center",
+                  ml: -0.75,
+                  visibility: "hidden",
+                }}
+              >
                 <PlayingCard small />
               </Box>
             </>
