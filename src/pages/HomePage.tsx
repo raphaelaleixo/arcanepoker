@@ -5,8 +5,6 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { Link } from "react-router-dom";
-import type { ElementType } from "react";
 import backgroundUrl from "../assets/background.svg?url";
 import { useNavigateWithTransition } from "../hooks/useNavigateWithTransition";
 
