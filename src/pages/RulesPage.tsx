@@ -1,28 +1,103 @@
 import { Box, Divider, Stack, Typography } from "@mui/material";
 
 const ARCANA: { name: string; effect: string }[] = [
-  { name: "The Fool",          effect: "Acts as a wildcard; evaluator finds the best possible hand for each player." },
-  { name: "The Magician",      effect: "After the final betting round, each player may discard both hole cards and draw two new ones before the reveal." },
-  { name: "The High Priestess",effect: "All active players reveal one hole card face up." },
-  { name: "The Empress",       effect: "A 6th community card is dealt after the River." },
-  { name: "The Emperor",       effect: "All hands are treated as high-card hands. Players compare highest card, then next highest, and so on." },
-  { name: "The Hierophant",    effect: "Purges the game of Pages: all Pages are removed from the draw deck, and any Page currently in play is replaced with a new card. For this round, flushes beat straights." },
-  { name: "The Lovers",        effect: "The pot is split between the two best hands." },
-  { name: "The Chariot",       effect: "Active players pass one hole card to the left." },
-  { name: "Strength",          effect: "Card values are inverted — Page is highest, Ace is lowest." },
-  { name: "The Hermit",        effect: "The board is ignored; hands are formed from hole cards only." },
-  { name: "Wheel of Fortune",  effect: "All players' hole cards are shuffled together and redealt. Each player receives the same number of cards they had. Community cards remain unchanged." },
-  { name: "Justice",           effect: "One random player still in the round reveals all cards in their hand. Those cards remain face up for the rest of the round." },
-  { name: "The Hanged Man",    effect: "An all-in player receives a 3rd hole card." },
-  { name: "Death",             effect: "The round ends immediately; hands are compared at the current stage." },
-  { name: "Temperance",        effect: "River reveals 3 cards; each player chooses 1 to keep on the board." },
-  { name: "The Devil",         effect: "The first player to act each post-flop street must bet — checking is forbidden for the opener." },
-  { name: "The Tower",         effect: "Half the pot (rounded up) is set aside as a ruins pot, awarded to the winner of the next round." },
-  { name: "The Star",          effect: "Players may discard 1 hole card and draw a new one." },
-  { name: "The Moon",          effect: "One random community card is turned face down and hidden until showdown, when it is revealed and used normally." },
-  { name: "The Sun",           effect: "Round ends; pot is split equally among active players." },
-  { name: "Judgement",         effect: "Any player who bets or raises may not fold for the remainder of the hand." },
-  { name: "The World",         effect: "Announces the final hand of the entire game." },
+  {
+    name: "The Fool",
+    effect:
+      "Acts as a wildcard; evaluator finds the best possible hand for each player.",
+  },
+  {
+    name: "The Magician",
+    effect:
+      "After the final betting round, each player may discard both hole cards and draw two new ones before the reveal.",
+  },
+  {
+    name: "The High Priestess",
+    effect: "All active players reveal one hole card face up.",
+  },
+  {
+    name: "The Empress",
+    effect: "A 6th community card is dealt after the River.",
+  },
+  {
+    name: "The Emperor",
+    effect:
+      "All hands are treated as high-card hands. Players compare highest card, then next highest, and so on.",
+  },
+  {
+    name: "The Hierophant",
+    effect:
+      "Purges the game of Pages: all Pages are removed from the draw deck, and any Page currently in play is replaced with a new card. For this round, flushes beat straights.",
+  },
+  {
+    name: "The Lovers",
+    effect: "The pot is split between the two best hands.",
+  },
+  {
+    name: "The Chariot",
+    effect: "Active players pass one hole card to the left.",
+  },
+  {
+    name: "Strength",
+    effect: "Card values are inverted — Page is highest, Ace is lowest.",
+  },
+  {
+    name: "The Hermit",
+    effect: "The board is ignored; hands are formed from hole cards only.",
+  },
+  {
+    name: "Wheel of Fortune",
+    effect:
+      "All players' hole cards are shuffled together and redealt. Each player receives the same number of cards they had. Community cards remain unchanged.",
+  },
+  {
+    name: "Justice",
+    effect:
+      "One random player still in the round reveals all cards in their hand. Those cards remain face up for the rest of the round.",
+  },
+  {
+    name: "The Hanged Man",
+    effect: "An all-in player receives a 3rd hole card.",
+  },
+  {
+    name: "Death",
+    effect:
+      "The round ends immediately; hands are compared at the current stage.",
+  },
+  {
+    name: "Temperance",
+    effect:
+      "River reveals 3 cards; each player chooses 1 to keep on the board.",
+  },
+  {
+    name: "The Devil",
+    effect:
+      "The first player to act each post-flop street must bet — checking is forbidden for the opener.",
+  },
+  {
+    name: "The Tower",
+    effect:
+      "Half the pot (rounded up) is set aside as a ruins pot, awarded to the winner of the next round.",
+  },
+  {
+    name: "The Star",
+    effect: "Players may discard 1 hole card and draw a new one.",
+  },
+  {
+    name: "The Moon",
+    effect:
+      "One random community card is turned face down and hidden until showdown, when it is revealed and used normally.",
+  },
+  {
+    name: "The Sun",
+    effect: "Round ends; pot is split equally among active players.",
+  },
+  {
+    name: "Judgement",
+    effect:
+      "Any player who bets or raises may not fold for the remainder of the hand.",
+  },
+  { name: "The World", effect: "Announces the final hand of the entire game." },
 ];
 
 export function RulesPage() {
@@ -32,6 +107,7 @@ export function RulesPage() {
         minHeight: "100vh",
         p: { xs: 2, sm: 4 },
         boxSizing: "border-box",
+        py: { xs: 10, sm: 12, md: 8 },
       }}
     >
       <Stack spacing={4} maxWidth={720} mx="auto">
@@ -84,56 +160,190 @@ export function RulesPage() {
             Hand Rankings
           </Typography>
           <Divider sx={{ borderColor: "gold.dark", opacity: 0.4 }} />
-          <Typography variant="body1" sx={{ color: "silver.light", opacity: 0.8 }}>
-            Arcane Poker uses a modified ranking where a <strong>Straight beats a Flush</strong>.
-            The odds change below reflects the shift in probability from standard poker.{" "}
+          <Typography
+            variant="body1"
+            sx={{ color: "silver.light", opacity: 0.8 }}
+          >
+            Arcane Poker uses a modified ranking where a{" "}
+            <strong>Straight beats a Flush</strong>. The odds change below
+            reflects the shift in probability from standard poker.{" "}
             <Typography
               component="a"
               href="http://datagenetics.com/blog/september22016/index.html"
               target="_blank"
               rel="noopener noreferrer"
               variant="body1"
-              sx={{ color: "gold.light", opacity: 0.7, "&:hover": { opacity: 1 } }}
+              sx={{
+                color: "gold.light",
+                opacity: 0.7,
+                "&:hover": { opacity: 1 },
+              }}
             >
               Reference
             </Typography>
           </Typography>
           <Box sx={{ display: "flex", gap: { xs: 1, sm: 2 }, pl: 3, mb: 0.5 }}>
-            <Typography variant="caption" sx={{ color: "silver.light", opacity: 0.4, minWidth: { xs: 110, sm: 160 }, flexShrink: 0 }}>Hand</Typography>
-            <Typography variant="caption" sx={{ color: "silver.light", opacity: 0.4, minWidth: { xs: 0, sm: 80 }, flexShrink: 0, display: { xs: "none", sm: "block" } }}>Standard</Typography>
-            <Typography variant="caption" sx={{ color: "silver.light", opacity: 0.4, minWidth: { xs: 70, sm: 80 }, flexShrink: 0 }}>Arcane</Typography>
-            <Typography variant="caption" sx={{ color: "silver.light", opacity: 0.4 }}>Change</Typography>
+            <Typography
+              variant="caption"
+              sx={{
+                color: "silver.light",
+                opacity: 0.4,
+                minWidth: { xs: 110, sm: 160 },
+                flexShrink: 0,
+              }}
+            >
+              Hand
+            </Typography>
+            <Typography
+              variant="caption"
+              sx={{
+                color: "silver.light",
+                opacity: 0.4,
+                minWidth: { xs: 0, sm: 80 },
+                flexShrink: 0,
+                display: { xs: "none", sm: "block" },
+              }}
+            >
+              Standard
+            </Typography>
+            <Typography
+              variant="caption"
+              sx={{
+                color: "silver.light",
+                opacity: 0.4,
+                minWidth: { xs: 70, sm: 80 },
+                flexShrink: 0,
+              }}
+            >
+              Arcane
+            </Typography>
+            <Typography
+              variant="caption"
+              sx={{ color: "silver.light", opacity: 0.4 }}
+            >
+              Change
+            </Typography>
           </Box>
           <Box
             component="ol"
-            sx={{ m: 0, pl: 3, display: "flex", flexDirection: "column", gap: 0.5, "& li::marker": { fontFamily: "Rubik, sans-serif" } }}
+            sx={{
+              m: 0,
+              pl: 3,
+              display: "flex",
+              flexDirection: "column",
+              gap: 0.5,
+              "& li::marker": { fontFamily: "Rubik, sans-serif" },
+            }}
           >
             {[
-              { hand: "Straight Flush",  standard: "0.0015%", arcane: "0.0011%", note: "-25.16%" },
-              { hand: "Four of a Kind",  standard: "0.0240%", arcane: "0.0190%", note: "-20.62%" },
-              { hand: "Full House",      standard: "0.1440%", arcane: "0.1143%", note: "-20.62%" },
-              { hand: "Straight",        standard: "0.3924%", arcane: "0.2937%", note: "-25.16%" },
-              { hand: "Flush",           standard: "0.1965%", arcane: "0.2084%", note: "+6.08%"  },
-              { hand: "Three of a Kind", standard: "2.1128%", arcane: "1.8296%", note: "-13.41%" },
-              { hand: "Two Pair",        standard: "4.7539%", arcane: "4.1166%", note: "-13.41%" },
-              { hand: "One Pair",        standard: "42.2569%",arcane: "40.2515%",note: "-4.75%"  },
-              { hand: "High Card",       standard: "50.1177%",arcane: "53.1653%",note: "+6.08%"  },
+              {
+                hand: "Straight Flush",
+                standard: "0.0015%",
+                arcane: "0.0011%",
+                note: "-25.16%",
+              },
+              {
+                hand: "Four of a Kind",
+                standard: "0.0240%",
+                arcane: "0.0190%",
+                note: "-20.62%",
+              },
+              {
+                hand: "Full House",
+                standard: "0.1440%",
+                arcane: "0.1143%",
+                note: "-20.62%",
+              },
+              {
+                hand: "Straight",
+                standard: "0.3924%",
+                arcane: "0.2937%",
+                note: "-25.16%",
+              },
+              {
+                hand: "Flush",
+                standard: "0.1965%",
+                arcane: "0.2084%",
+                note: "+6.08%",
+              },
+              {
+                hand: "Three of a Kind",
+                standard: "2.1128%",
+                arcane: "1.8296%",
+                note: "-13.41%",
+              },
+              {
+                hand: "Two Pair",
+                standard: "4.7539%",
+                arcane: "4.1166%",
+                note: "-13.41%",
+              },
+              {
+                hand: "One Pair",
+                standard: "42.2569%",
+                arcane: "40.2515%",
+                note: "-4.75%",
+              },
+              {
+                hand: "High Card",
+                standard: "50.1177%",
+                arcane: "53.1653%",
+                note: "+6.08%",
+              },
             ].map(({ hand, standard, arcane, note }) => (
-              <Box component="li" key={hand} sx={{ color: "silver.light", fontSize: "0.875rem" }}>
-                <Box sx={{ display: "flex", gap: { xs: 1, sm: 2 }, alignItems: "center" }}>
-                  <Typography variant="body2" sx={{ color: "silver.light", minWidth: { xs: 110, sm: 160 }, flexShrink: 0 }}>
+              <Box
+                component="li"
+                key={hand}
+                sx={{ color: "silver.light", fontSize: "0.875rem" }}
+              >
+                <Box
+                  sx={{
+                    display: "flex",
+                    gap: { xs: 1, sm: 2 },
+                    alignItems: "center",
+                  }}
+                >
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: "silver.light",
+                      minWidth: { xs: 110, sm: 160 },
+                      flexShrink: 0,
+                    }}
+                  >
                     {hand}
                   </Typography>
-                  <Typography variant="body2" sx={{ color: "silver.light", opacity: 0.5, minWidth: { xs: 0, sm: 80 }, flexShrink: 0, fontVariantNumeric: "tabular-nums", display: { xs: "none", sm: "block" } }}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: "silver.light",
+                      opacity: 0.5,
+                      minWidth: { xs: 0, sm: 80 },
+                      flexShrink: 0,
+                      fontVariantNumeric: "tabular-nums",
+                      display: { xs: "none", sm: "block" },
+                    }}
+                  >
                     {standard}
                   </Typography>
-                  <Typography variant="body2" sx={{ color: "silver.light", opacity: 0.7, minWidth: { xs: 70, sm: 80 }, flexShrink: 0, fontVariantNumeric: "tabular-nums" }}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: "silver.light",
+                      opacity: 0.7,
+                      minWidth: { xs: 70, sm: 80 },
+                      flexShrink: 0,
+                      fontVariantNumeric: "tabular-nums",
+                    }}
+                  >
                     {arcane}
                   </Typography>
                   <Typography
                     variant="body2"
                     sx={{
-                      color: note.startsWith("+") ? "success.main" : "error.main",
+                      color: note.startsWith("+")
+                        ? "success.main"
+                        : "error.main",
                       fontVariantNumeric: "tabular-nums",
                       opacity: 0.8,
                     }}
@@ -167,15 +377,36 @@ export function RulesPage() {
           <Box
             component="ol"
             start={0}
-            sx={{ m: 0, pl: 3, display: "flex", flexDirection: "column", gap: 0.5, "& li::marker": { fontFamily: "Rubik, sans-serif" } }}
+            sx={{
+              m: 0,
+              pl: 3,
+              display: "flex",
+              flexDirection: "column",
+              gap: 0.5,
+              "& li::marker": { fontFamily: "Rubik, sans-serif" },
+            }}
           >
             {ARCANA.map(({ name, effect }) => (
-              <Box component="li" key={name} sx={{ color: "silver.light", fontSize: "0.875rem" }}>
+              <Box
+                component="li"
+                key={name}
+                sx={{ color: "silver.light", fontSize: "0.875rem" }}
+              >
                 <Box sx={{ display: "flex", gap: 2, alignItems: "flex-start" }}>
-                  <Typography variant="body2" sx={{ color: "silver.light", minWidth: { xs: 120, sm: 200 }, flexShrink: 0 }}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: "silver.light",
+                      minWidth: { xs: 120, sm: 200 },
+                      flexShrink: 0,
+                    }}
+                  >
                     {name}
                   </Typography>
-                  <Typography variant="body2" sx={{ color: "silver.light", opacity: 0.8, minWidth: 0 }}>
+                  <Typography
+                    variant="body2"
+                    sx={{ color: "silver.light", opacity: 0.8, minWidth: 0 }}
+                  >
                     {effect}
                   </Typography>
                 </Box>
