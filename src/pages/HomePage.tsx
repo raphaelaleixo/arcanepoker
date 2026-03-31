@@ -56,16 +56,7 @@ export function HomePage() {
             borderRadius: 3,
             opacity: 1,
             transition: "all 0.3s ease-in-out",
-          },
-          "&:after": {
-            content: "''",
-            position: "absolute",
-            top: 0,
-            left: "50%",
-            transform: "translateX(-50%)",
-            height: "100%",
-            width: "40%",
-            background: "#242424",
+            maskImage: "linear-gradient(to right, black calc(30% + 1.2em), transparent calc(30% + 1.2em), transparent calc(70% - 1.2em), black calc(70% - 1.2em))",
           },
         }}
       >

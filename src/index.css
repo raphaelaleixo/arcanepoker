@@ -4,7 +4,9 @@
   font-weight: 400;
 
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  background-color: #1a1a1a;
+  background-image: radial-gradient(ellipse at center, #242424 0%, #202020 100%);
+  background-attachment: fixed;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -26,6 +28,7 @@ body, html, #root {
   box-sizing: border-box;
 }
 
+
 body *, body *:after, body *:before {
   box-sizing: border-box;
 }
@@ -43,6 +46,11 @@ body *, body *:after, body *:before {
 }
 
 /* ─── View Transitions ─────────────────────────────────────────── */
+
+::view-transition {
+  background-color: #1a1a1a;
+  background-image: radial-gradient(ellipse at center, #242424 0%, #202020 100%);
+}
 
 /* Background blobs: morph over 500ms, sit above page content */
 ::view-transition-group(bg-top),
