@@ -171,6 +171,7 @@ export function ArcanaDisplayCard({
           <Tooltip
             placement="top"
             arrow
+            enterDelay={750}
             disableInteractive={false}
             open={tooltipOpen}
             onOpen={() => setTooltipOpen(true)}
