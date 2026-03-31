@@ -1,6 +1,5 @@
-import type { ElementType } from "react";
 import { Box, Button, Divider, Stack, Typography } from "@mui/material";
-import { Link } from "react-router-dom";
+import { useNavigateWithTransition } from "../hooks/useNavigateWithTransition";
 
 const ARCANA: { name: string; effect: string }[] = [
   { name: "The Fool",          effect: "Acts as a wildcard; evaluator finds the best possible hand for each player." },
@@ -28,6 +27,7 @@ const ARCANA: { name: string; effect: string }[] = [
 ];
 
 export function RulesPage() {
+  const navigateWithTransition = useNavigateWithTransition();
   return (
     <Box
       sx={{
@@ -38,8 +38,7 @@ export function RulesPage() {
     >
       <Stack spacing={4} maxWidth={720} mx="auto">
         <Button
-          component={Link as ElementType}
-          to="/"
+          onClick={() => navigateWithTransition("/", "fade")}
           variant="outlined"
           size="small"
           sx={{

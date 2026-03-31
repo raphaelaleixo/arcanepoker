@@ -105,9 +105,8 @@ export function HomePage() {
               </Button>
               <Button
                 variant="outlined"
-                component={Link as ElementType}
                 size="small"
-                to="/rules"
+                onClick={() => navigateWithTransition("/rules", "fade")}
               >
                 learn to play
               </Button>

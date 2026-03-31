@@ -102,6 +102,14 @@ body *, body *:after, body *:before {
   animation: vt-fade-in 300ms cubic-bezier(0.4, 0, 0.2, 1) 500ms both;
 }
 
+/* Simple fade transition (e.g. home ↔ rules) */
+html[data-vt-type="fade"] ::view-transition-old(root) {
+  animation: vt-fade-out 250ms ease forwards;
+}
+html[data-vt-type="fade"] ::view-transition-new(root) {
+  animation: vt-fade-in 250ms ease forwards;
+}
+
 @keyframes vt-fade-out {
   to { opacity: 0; }
 }
