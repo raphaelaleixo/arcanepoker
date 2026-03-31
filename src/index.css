@@ -44,45 +44,59 @@ body *, body *:after, body *:before {
 
 /* ─── View Transitions ─────────────────────────────────────────── */
 
-/* Background blobs: morph position/size over 800ms with Material easing */
+/* Background blobs: morph over 500ms, sit above page content */
 ::view-transition-group(bg-top),
 ::view-transition-group(bg-bottom) {
-  z-index: 1;
-  animation-duration: 800ms;
+  z-index: 2;
+  animation-duration: 500ms;
   animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Home UI: fade out fast, do not fade in (it's absent on the game page) */
-::view-transition-old(home-ui),
-::view-transition-old(home-credits) {
-  animation: vt-fade-out 200ms ease forwards;
-}
-::view-transition-new(home-ui),
-::view-transition-new(home-credits) {
-  animation: none;
-  opacity: 0;
-}
-
-/* Sync image cross-fade duration with the geometry morph */
+/* Sync image cross-fade with the geometry morph */
 ::view-transition-old(bg-top),
 ::view-transition-new(bg-top),
 ::view-transition-old(bg-bottom),
 ::view-transition-new(bg-bottom) {
-  animation-duration: 800ms;
+  animation-duration: 500ms;
   animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Game UI sits above the morphing backgrounds */
-::view-transition-group(:root) {
-  z-index: 2;
+/* Home UI: sits above morphing backgrounds during fade-out */
+::view-transition-group(home-ui),
+::view-transition-group(home-credits) {
+  z-index: 3;
 }
-::view-transition-old(:root) {
+::view-transition-old(home-ui),
+::view-transition-old(home-credits) {
+  animation: vt-fade-out 200ms ease forwards;
+}
+
+/* Root (all unlabelled content): disappears instantly, game UI fades in after morph */
+::view-transition-group(root) {
+  z-index: 1;
+}
+::view-transition-old(root) {
   animation: none;
+  opacity: 0;
 }
-::view-transition-new(:root) {
-  animation-duration: 300ms;
+::view-transition-new(root) {
+  animation: vt-fade-in 300ms cubic-bezier(0.4, 0, 0.2, 1) 500ms both;
+}
+
+/* Arcana display: above morphing backgrounds, fades in as morph completes */
+::view-transition-group(arcana-display) {
+  z-index: 3;
+}
+::view-transition-old(arcana-display) {
+  animation: vt-fade-out 200ms ease forwards;
+}
+::view-transition-new(arcana-display) {
+  animation: vt-fade-in 300ms cubic-bezier(0.4, 0, 0.2, 1) 500ms both;
 }
 
 @keyframes vt-fade-out {
   to { opacity: 0; }
+}
+@keyframes vt-fade-in {
+  from { opacity: 0; }
 }

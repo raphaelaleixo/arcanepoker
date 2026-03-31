@@ -157,6 +157,7 @@ export function ArcanaDisplayCard({
       spacing={1.5}
       alignItems="center"
       justifyContent="center"
+      style={{ viewTransitionName: "arcana-display" }}
       sx={{
         gridArea: "1 / 1",
         opacity: 1,
