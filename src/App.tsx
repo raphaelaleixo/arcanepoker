@@ -1,9 +1,10 @@
 import { lazy, Suspense } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { GamePage } from "./pages/GamePage";
 import { HomePage } from "./pages/HomePage";
 import { RulesPage } from "./pages/RulesPage";
 import { TutorialGamePage } from "./pages/TutorialGamePage";
+import { NavFab } from "./components/NavFab";
 
 const demoEnabled = import.meta.env.VITE_ENABLE_DEMO === "true";
 
@@ -12,8 +13,11 @@ const Demo2Page = demoEnabled ? lazy(() => import("./pages/Demo2Page").then(m =>
 const Demo3Page = demoEnabled ? lazy(() => import("./pages/Demo3Page").then(m => ({ default: m.Demo3Page }))) : null;
 
 export default function App() {
+  const location = useLocation();
+
   return (
     <Suspense>
+      {location.pathname !== "/" && <NavFab />}
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/game" element={<GamePage />} />
