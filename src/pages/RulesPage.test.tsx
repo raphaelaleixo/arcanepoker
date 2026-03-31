@@ -15,10 +15,11 @@ function renderWithProviders(ui: ReactElement) {
 }
 
 describe("RulesPage", () => {
-  it("has a Back to Home link pointing to /", () => {
+  it("does not render a Back to Home button", () => {
     renderWithProviders(<RulesPage />);
-    const backLink = screen.getByRole("link", { name: /back to home/i });
-    expect(backLink).toHaveAttribute("href", "/");
+    expect(
+      screen.queryByRole("button", { name: /back to home/i })
+    ).not.toBeInTheDocument();
   });
 
   it("renders the Page Card section", () => {

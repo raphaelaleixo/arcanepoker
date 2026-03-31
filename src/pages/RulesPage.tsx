@@ -1,5 +1,4 @@
-import { Box, Button, Divider, Stack, Typography } from "@mui/material";
-import { useNavigateWithTransition } from "../hooks/useNavigateWithTransition";
+import { Box, Divider, Stack, Typography } from "@mui/material";
 
 const ARCANA: { name: string; effect: string }[] = [
   { name: "The Fool",          effect: "Acts as a wildcard; evaluator finds the best possible hand for each player." },
@@ -27,7 +26,6 @@ const ARCANA: { name: string; effect: string }[] = [
 ];
 
 export function RulesPage() {
-  const navigateWithTransition = useNavigateWithTransition();
   return (
     <Box
       sx={{
@@ -37,23 +35,6 @@ export function RulesPage() {
       }}
     >
       <Stack spacing={4} maxWidth={720} mx="auto">
-        <Button
-          onClick={() => navigateWithTransition("/", "fade")}
-          variant="outlined"
-          size="small"
-          sx={{
-            alignSelf: "flex-start",
-            borderColor: "gold.dark",
-            color: "gold.light",
-            "&:hover": {
-              borderColor: "gold.main",
-              background: "rgba(255,215,0,0.05)",
-            },
-          }}
-        >
-          ← Back to Home
-        </Button>
-
         <Typography
           variant="h3"
           sx={{
