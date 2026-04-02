@@ -45,6 +45,16 @@ body *, body *:after, body *:before {
   inherits: false;
 }
 
+@property --rotation {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes spin {
+  to { --rotation: 360deg; }
+}
+
 /* ─── View Transitions ─────────────────────────────────────────── */
 
 ::view-transition {
