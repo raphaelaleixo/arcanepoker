@@ -96,6 +96,34 @@ theme = createTheme(theme, {
                 ? { color: pc.main }
                 : {}),
             },
+            ...(ownerState.variant === "contained" &&
+              ownerState.color === "primary" && {
+                position: "relative",
+                "&:hover": {
+                  "&::before": {
+                    content: '""',
+                    position: "absolute",
+                    inset: 0,
+                    borderRadius: "inherit",
+                    background:
+                      "linear-gradient(var(--rotation), #7ad884 0%, transparent 50%)",
+                    animation: "spin 2s linear infinite",
+                    zIndex: 0,
+                  },
+                  "&::after": {
+                    content: '""',
+                    position: "absolute",
+                    inset: "2px",
+                    borderRadius: "inherit",
+                    background: t.palette.primary.main,
+                    zIndex: 1,
+                  },
+                  "& > span, & .MuiButton-icon, & .MuiTouchRipple-root": {
+                    zIndex: 2,
+                    position: "relative",
+                  },
+                },
+              }),
           };
         },
       },
