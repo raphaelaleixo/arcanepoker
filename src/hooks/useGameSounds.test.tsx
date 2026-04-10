@@ -86,13 +86,15 @@ describe("useGameSounds", () => {
     expect(window.HTMLMediaElement.prototype.play).toHaveBeenCalledTimes(2); // one per player
   });
 
-  it("plays card-deal sound when communityCards.length increases", () => {
+  it("plays one card-deal sound per community card added", () => {
     mockState.current = makeState({ stage: "flop", communityCards: [] });
     const { rerender } = renderHook(() => useGameSounds(), { wrapper });
 
+    // Flop: 3 cards added at once → 3 staggered sounds
     mockState.current = makeState({ stage: "flop", communityCards: [{} as any, {} as any, {} as any] });
     rerender();
-    expect(window.HTMLMediaElement.prototype.play).toHaveBeenCalledTimes(1);
+    vi.runAllTimers();
+    expect(window.HTMLMediaElement.prototype.play).toHaveBeenCalledTimes(3);
   });
 
   it("does not play when there is no state change", () => {

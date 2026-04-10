@@ -38,7 +38,10 @@ export function useGameSounds(): void {
     }
 
     if (state.communityCards.length > prevCommunityLengthRef.current) {
-      playOnce("/audio/card-deal.mp3", 0.2);
+      const newCards = state.communityCards.length - prevCommunityLengthRef.current;
+      for (let i = 0; i < newCards; i++) {
+        setTimeout(() => playOnce("/audio/card-deal.mp3", 0.2), i * 150);
+      }
     }
 
     prevStageRef.current = state.stage;
