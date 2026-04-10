@@ -97,6 +97,16 @@ describe("useGameSounds", () => {
     expect(window.HTMLMediaElement.prototype.play).toHaveBeenCalledTimes(3);
   });
 
+  it("plays arcana sound when arcana starts glowing (pendingInteraction arcana-reveal)", () => {
+    mockState.current = makeState({ pendingInteraction: null });
+    const { rerender } = renderHook(() => useGameSounds(), { wrapper });
+    expect(window.HTMLMediaElement.prototype.play).not.toHaveBeenCalled();
+
+    mockState.current = makeState({ pendingInteraction: { type: "arcana-reveal", arcanaCard: {} as any } });
+    rerender();
+    expect(window.HTMLMediaElement.prototype.play).toHaveBeenCalledTimes(1);
+  });
+
   it("plays card-deal sound when arcana becomes active", () => {
     mockState.current = makeState({ activeArcana: null });
     const { rerender } = renderHook(() => useGameSounds(), { wrapper });

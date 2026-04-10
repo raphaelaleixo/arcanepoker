@@ -21,8 +21,10 @@ export function useGameSounds(): void {
   const prevStageRef = useRef(state.stage);
   const prevCommunityLengthRef = useRef(state.communityCards.length);
   const prevArcanaActiveRef = useRef(state.activeArcana !== null);
+  const prevArcanaGlowingRef = useRef(state.pendingInteraction?.type === "arcana-reveal");
 
   const isArcanaActive = state.activeArcana !== null;
+  const isArcanaGlowing = state.pendingInteraction?.type === "arcana-reveal";
 
   useEffect(() => {
     if (!sfxEnabled) {
@@ -31,6 +33,7 @@ export function useGameSounds(): void {
       prevStageRef.current = state.stage;
       prevCommunityLengthRef.current = state.communityCards.length;
       prevArcanaActiveRef.current = isArcanaActive;
+      prevArcanaGlowingRef.current = isArcanaGlowing;
       return;
     }
 
@@ -48,6 +51,10 @@ export function useGameSounds(): void {
       }
     }
 
+    if (isArcanaGlowing && !prevArcanaGlowingRef.current) {
+      playOnce("/audio/arcana.mp3", 0.5);
+    }
+
     if (isArcanaActive && !prevArcanaActiveRef.current) {
       playOnce("/audio/card-deal.mp3", 0.2);
     }
@@ -55,5 +62,6 @@ export function useGameSounds(): void {
     prevStageRef.current = state.stage;
     prevCommunityLengthRef.current = state.communityCards.length;
     prevArcanaActiveRef.current = isArcanaActive;
-  }, [state.stage, state.communityCards.length, isArcanaActive, sfxEnabled]);
+    prevArcanaGlowingRef.current = isArcanaGlowing;
+  }, [state.stage, state.communityCards.length, isArcanaActive, isArcanaGlowing, sfxEnabled]);
 }
