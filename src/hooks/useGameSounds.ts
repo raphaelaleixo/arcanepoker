@@ -15,11 +15,15 @@ function playOnce(src: string): void {
 export function useGameSounds(): void {
   const { state } = useGame();
   const { sfxEnabled } = useAudioPreferences();
+  // Initialize refs to current state. Hook mounts before startGame() can set stage to "deal",
+  // so this guarantees no spurious sound plays on first mount.
   const prevStageRef = useRef(state.stage);
   const prevCommunityLengthRef = useRef(state.communityCards.length);
 
   useEffect(() => {
     if (!sfxEnabled) {
+      // Update refs to prevent sound from firing when SFX is re-enabled for a transition
+      // that already happened while it was off.
       prevStageRef.current = state.stage;
       prevCommunityLengthRef.current = state.communityCards.length;
       return;

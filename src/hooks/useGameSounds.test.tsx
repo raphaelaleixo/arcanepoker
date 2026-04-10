@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { renderHook } from "@testing-library/react";
+import { renderHook, act } from "@testing-library/react";
 import type { ReactNode } from "react";
-import { AudioPreferencesProvider } from "../store/AudioPreferencesContext";
+import { AudioPreferencesProvider, useAudioPreferences } from "../store/AudioPreferencesContext";
 import { useGameSounds } from "./useGameSounds";
 import type { StoreGameState } from "../store/storeTypes";
 import type { GameContextValue } from "../store/context";
@@ -93,5 +93,36 @@ describe("useGameSounds", () => {
     mockState.current = makeState({ stage: "pre-game" });
     renderHook(() => useGameSounds(), { wrapper });
     expect(window.HTMLMediaElement.prototype.play).not.toHaveBeenCalled();
+  });
+
+  it("does not play when sfxEnabled is false", () => {
+    mockState.current = makeState({ stage: "pre-game" });
+
+    // Render both hooks together so they share the same context instance
+    const { rerender, result } = renderHook(
+      () => {
+        useGameSounds();
+        return useAudioPreferences();
+      },
+      { wrapper }
+    );
+
+    // Transition to deal — should fire once
+    mockState.current = makeState({ stage: "deal" });
+    rerender();
+    expect(window.HTMLMediaElement.prototype.play).toHaveBeenCalledTimes(1);
+
+    // Disable SFX
+    act(() => {
+      result.current.toggleSfx();
+    });
+
+    // Transition with community cards — should NOT fire
+    mockState.current = makeState({
+      stage: "flop",
+      communityCards: [{} as any, {} as any, {} as any],
+    });
+    rerender();
+    expect(window.HTMLMediaElement.prototype.play).toHaveBeenCalledTimes(1); // still 1
   });
 });
