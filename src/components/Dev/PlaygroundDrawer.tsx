@@ -139,6 +139,39 @@ export function PlaygroundDrawer({
             variant="caption"
             sx={{ color: "silver.dark", display: "block", mb: 1 }}
           >
+            Audio
+          </Typography>
+          <Box sx={{ display: "flex", gap: 1 }}>
+            <Button
+              size="small"
+              variant={musicEnabled ? "contained" : "outlined"}
+              onClick={toggleMusic}
+              sx={{ fontSize: "0.65rem", py: 0.25, px: 0.75 }}
+            >
+              Music {musicEnabled ? "On" : "Off"}
+            </Button>
+            <Button
+              size="small"
+              variant={sfxEnabled ? "contained" : "outlined"}
+              onClick={toggleSfx}
+              sx={{ fontSize: "0.65rem", py: 0.25, px: 0.75 }}
+            >
+              SFX {sfxEnabled ? "On" : "Off"}
+            </Button>
+          </Box>
+        </Box>
+
+        <Box
+          sx={{
+            p: 2,
+            borderBottom: "1px solid",
+            borderColor: "rgba(155,89,182,0.2)",
+          }}
+        >
+          <Typography
+            variant="caption"
+            sx={{ color: "silver.dark", display: "block", mb: 1 }}
+          >
             Modal Previews
           </Typography>
           <Box sx={{ display: "flex", gap: 1 }}>
@@ -327,39 +360,6 @@ export function PlaygroundDrawer({
               );
             })}
           </List>
-        </Box>
-
-        <Box
-          sx={{
-            p: 2,
-            borderBottom: "1px solid",
-            borderColor: "rgba(155,89,182,0.2)",
-          }}
-        >
-          <Typography
-            variant="caption"
-            sx={{ color: "silver.dark", display: "block", mb: 1 }}
-          >
-            Audio
-          </Typography>
-          <Box sx={{ display: "flex", gap: 1 }}>
-            <Button
-              size="small"
-              variant={musicEnabled ? "contained" : "outlined"}
-              onClick={toggleMusic}
-              sx={{ fontSize: "0.65rem", py: 0.25, px: 0.75 }}
-            >
-              Music {musicEnabled ? "On" : "Off"}
-            </Button>
-            <Button
-              size="small"
-              variant={sfxEnabled ? "contained" : "outlined"}
-              onClick={toggleSfx}
-              sx={{ fontSize: "0.65rem", py: 0.25, px: 0.75 }}
-            >
-              SFX {sfxEnabled ? "On" : "Off"}
-            </Button>
-          </Box>
         </Box>
 
         <Box
