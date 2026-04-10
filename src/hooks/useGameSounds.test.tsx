@@ -56,6 +56,7 @@ function makeState(overrides: Partial<StoreGameState>): StoreGameState {
     holeCardChangeSeeds: {},
     communityChangeKey: 0,
     potWon: 0,
+    checkCount: 0,
     ...overrides,
   } as StoreGameState;
 }

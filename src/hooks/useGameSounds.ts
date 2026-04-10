@@ -28,6 +28,9 @@ export function useGameSounds(): void {
   const prevPotSizeRef = useRef(state.potSize);
   const prevPotWonRef = useRef(state.potWon);
   const prevPageChallengeRef = useRef(state.pendingInteraction?.type === "page-challenge");
+  const foldCount = state.players.filter((p) => p.folded).length;
+  const prevFoldCountRef = useRef(foldCount);
+  const prevCheckCountRef = useRef(state.checkCount);
 
   const isPageChallenge = state.pendingInteraction?.type === "page-challenge";
 
@@ -47,20 +50,22 @@ export function useGameSounds(): void {
       prevPotSizeRef.current = state.potSize;
       prevPotWonRef.current = state.potWon;
       prevPageChallengeRef.current = isPageChallenge;
+      prevFoldCountRef.current = foldCount;
+      prevCheckCountRef.current = state.checkCount;
       return;
     }
 
     if (state.stage === "pre-flop" && prevStageRef.current !== "pre-flop") {
       // Fire one sound per player, staggered 150ms apart
       state.players.forEach((_, i) => {
-        setTimeout(() => playOnce("/audio/card-deal.mp3", 0.2), i * 150);
+        setTimeout(() => playOnce("/audio/card-deal.mp3", 0.1), i * 150);
       });
     }
 
     if (state.communityCards.length > prevCommunityLengthRef.current) {
       const newCards = state.communityCards.length - prevCommunityLengthRef.current;
       for (let i = 0; i < newCards; i++) {
-        setTimeout(() => playOnce("/audio/card-deal.mp3", 0.2), i * 150);
+        setTimeout(() => playOnce("/audio/card-deal.mp3", 0.1), i * 150);
       }
     }
 
@@ -69,13 +74,13 @@ export function useGameSounds(): void {
     }
 
     if (isArcanaActive && !prevArcanaActiveRef.current) {
-      playOnce("/audio/card-deal.mp3", 0.2);
+      playOnce("/audio/card-deal.mp3", 0.1);
     }
 
     // Wheel of Fortune: full redeal → one sound per player
     if (state.wheelRound > prevWheelRoundRef.current) {
       state.players.forEach((_, i) => {
-        setTimeout(() => playOnce("/audio/card-deal.mp3", 0.2), i * 150);
+        setTimeout(() => playOnce("/audio/card-deal.mp3", 0.1), i * 150);
       });
     }
 
@@ -83,7 +88,7 @@ export function useGameSounds(): void {
     if (holeCardSeedSum > prevHoleCardSeedSumRef.current) {
       const changed = holeCardSeedSum - prevHoleCardSeedSumRef.current;
       for (let i = 0; i < changed; i++) {
-        setTimeout(() => playOnce("/audio/card-deal.mp3", 0.2), i * 150);
+        setTimeout(() => playOnce("/audio/card-deal.mp3", 0.1), i * 150);
       }
     }
 
@@ -92,7 +97,7 @@ export function useGameSounds(): void {
     prevArcanaActiveRef.current = isArcanaActive;
     prevArcanaGlowingRef.current = isArcanaGlowing;
     if (state.potSize > prevPotSizeRef.current) {
-      playOnce("/audio/bet.mp3", 0.3);
+      playOnce("/audio/bet.mp3", 0.1);
     }
 
     if (state.potWon > 0 && prevPotWonRef.current === 0) {
@@ -103,10 +108,20 @@ export function useGameSounds(): void {
       playOnce("/audio/round-end.mp3", 0.5);
     }
 
+    if (foldCount > prevFoldCountRef.current) {
+      playOnce("/audio/fold.mp3", 0.1);
+    }
+
+    if (state.checkCount > prevCheckCountRef.current) {
+      playOnce("/audio/check.mp3", 0.1);
+    }
+
     prevWheelRoundRef.current = state.wheelRound;
     prevHoleCardSeedSumRef.current = holeCardSeedSum;
     prevPotSizeRef.current = state.potSize;
     prevPotWonRef.current = state.potWon;
     prevPageChallengeRef.current = isPageChallenge;
-  }, [state.stage, state.communityCards.length, isArcanaActive, isArcanaGlowing, state.wheelRound, holeCardSeedSum, state.potSize, state.potWon, isPageChallenge, sfxEnabled]);
+    prevFoldCountRef.current = foldCount;
+    prevCheckCountRef.current = state.checkCount;
+  }, [state.stage, state.communityCards.length, isArcanaActive, isArcanaGlowing, state.wheelRound, holeCardSeedSum, state.potSize, state.potWon, isPageChallenge, foldCount, state.checkCount, sfxEnabled]);
 }

@@ -113,5 +113,6 @@ export function createInitialState(): StoreGameState {
     wheelRound: 0,
     holeCardChangeSeeds: {},
     communityChangeKey: 0,
+    checkCount: 0,
   };
 }
