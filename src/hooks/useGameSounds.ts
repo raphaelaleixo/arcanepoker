@@ -22,6 +22,9 @@ export function useGameSounds(): void {
   const prevCommunityLengthRef = useRef(state.communityCards.length);
   const prevArcanaActiveRef = useRef(state.activeArcana !== null);
   const prevArcanaGlowingRef = useRef(state.pendingInteraction?.type === "arcana-reveal");
+  const prevWheelRoundRef = useRef(state.wheelRound);
+  const holeCardSeedSum = Object.values(state.holeCardChangeSeeds).reduce((a, b) => a + b, 0);
+  const prevHoleCardSeedSumRef = useRef(holeCardSeedSum);
 
   const isArcanaActive = state.activeArcana !== null;
   const isArcanaGlowing = state.pendingInteraction?.type === "arcana-reveal";
@@ -34,6 +37,8 @@ export function useGameSounds(): void {
       prevCommunityLengthRef.current = state.communityCards.length;
       prevArcanaActiveRef.current = isArcanaActive;
       prevArcanaGlowingRef.current = isArcanaGlowing;
+      prevWheelRoundRef.current = state.wheelRound;
+      prevHoleCardSeedSumRef.current = holeCardSeedSum;
       return;
     }
 
@@ -59,9 +64,26 @@ export function useGameSounds(): void {
       playOnce("/audio/card-deal.mp3", 0.2);
     }
 
+    // Wheel of Fortune: full redeal → one sound per player
+    if (state.wheelRound > prevWheelRoundRef.current) {
+      state.players.forEach((_, i) => {
+        setTimeout(() => playOnce("/audio/card-deal.mp3", 0.2), i * 150);
+      });
+    }
+
+    // Magician / Star / Chariot / Hanged Man: per-player hole card replacement
+    if (holeCardSeedSum > prevHoleCardSeedSumRef.current) {
+      const changed = holeCardSeedSum - prevHoleCardSeedSumRef.current;
+      for (let i = 0; i < changed; i++) {
+        setTimeout(() => playOnce("/audio/card-deal.mp3", 0.2), i * 150);
+      }
+    }
+
     prevStageRef.current = state.stage;
     prevCommunityLengthRef.current = state.communityCards.length;
     prevArcanaActiveRef.current = isArcanaActive;
     prevArcanaGlowingRef.current = isArcanaGlowing;
-  }, [state.stage, state.communityCards.length, isArcanaActive, isArcanaGlowing, sfxEnabled]);
+    prevWheelRoundRef.current = state.wheelRound;
+    prevHoleCardSeedSumRef.current = holeCardSeedSum;
+  }, [state.stage, state.communityCards.length, isArcanaActive, isArcanaGlowing, state.wheelRound, holeCardSeedSum, sfxEnabled]);
 }

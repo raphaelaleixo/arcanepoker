@@ -117,6 +117,26 @@ describe("useGameSounds", () => {
     expect(window.HTMLMediaElement.prototype.play).toHaveBeenCalledTimes(1);
   });
 
+  it("plays one sound per player on Wheel of Fortune redeal", () => {
+    mockState.current = makeState({ wheelRound: 0, players: [{} as any, {} as any, {} as any] });
+    const { rerender } = renderHook(() => useGameSounds(), { wrapper });
+
+    mockState.current = makeState({ wheelRound: 1, players: [{} as any, {} as any, {} as any] });
+    rerender();
+    vi.runAllTimers();
+    expect(window.HTMLMediaElement.prototype.play).toHaveBeenCalledTimes(3);
+  });
+
+  it("plays one sound per changed player on hole card replacement (Magician/Star/etc)", () => {
+    mockState.current = makeState({ holeCardChangeSeeds: { p1: 0, p2: 0 } });
+    const { rerender } = renderHook(() => useGameSounds(), { wrapper });
+
+    mockState.current = makeState({ holeCardChangeSeeds: { p1: 1, p2: 0 } });
+    rerender();
+    vi.runAllTimers();
+    expect(window.HTMLMediaElement.prototype.play).toHaveBeenCalledTimes(1);
+  });
+
   it("does not play when there is no state change", () => {
     mockState.current = makeState({ stage: "pre-game" });
     renderHook(() => useGameSounds(), { wrapper });
