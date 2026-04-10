@@ -72,7 +72,7 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ["**/*.{js,css,html,ico,png,svg,webp,woff,woff2}"],
+        globPatterns: ["**/*.{js,css,html,ico,png,svg,webp,woff,woff2,mp3,ogg,wav}"],
         runtimeCaching: [
           {
             // Network-only for tarot API — no stale prophecies cached
