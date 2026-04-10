@@ -137,6 +137,24 @@ describe("useGameSounds", () => {
     expect(window.HTMLMediaElement.prototype.play).toHaveBeenCalledTimes(1);
   });
 
+  it("plays bet sound when potSize increases", () => {
+    mockState.current = makeState({ potSize: 0 });
+    const { rerender } = renderHook(() => useGameSounds(), { wrapper });
+
+    mockState.current = makeState({ potSize: 20 });
+    rerender();
+    expect(window.HTMLMediaElement.prototype.play).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not play bet sound when potSize decreases (showdown payout)", () => {
+    mockState.current = makeState({ potSize: 100 });
+    const { rerender } = renderHook(() => useGameSounds(), { wrapper });
+
+    mockState.current = makeState({ potSize: 0 });
+    rerender();
+    expect(window.HTMLMediaElement.prototype.play).not.toHaveBeenCalled();
+  });
+
   it("does not play when there is no state change", () => {
     mockState.current = makeState({ stage: "pre-game" });
     renderHook(() => useGameSounds(), { wrapper });
