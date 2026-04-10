@@ -26,6 +26,10 @@ export function useGameSounds(): void {
   const holeCardSeedSum = Object.values(state.holeCardChangeSeeds).reduce((a, b) => a + b, 0);
   const prevHoleCardSeedSumRef = useRef(holeCardSeedSum);
   const prevPotSizeRef = useRef(state.potSize);
+  const prevPotWonRef = useRef(state.potWon);
+  const prevPageChallengeRef = useRef(state.pendingInteraction?.type === "page-challenge");
+
+  const isPageChallenge = state.pendingInteraction?.type === "page-challenge";
 
   const isArcanaActive = state.activeArcana !== null;
   const isArcanaGlowing = state.pendingInteraction?.type === "arcana-reveal";
@@ -41,6 +45,8 @@ export function useGameSounds(): void {
       prevWheelRoundRef.current = state.wheelRound;
       prevHoleCardSeedSumRef.current = holeCardSeedSum;
       prevPotSizeRef.current = state.potSize;
+      prevPotWonRef.current = state.potWon;
+      prevPageChallengeRef.current = isPageChallenge;
       return;
     }
 
@@ -89,8 +95,18 @@ export function useGameSounds(): void {
       playOnce("/audio/bet.mp3", 0.3);
     }
 
+    if (state.potWon > 0 && prevPotWonRef.current === 0) {
+      playOnce("/audio/round-end.mp3", 0.5);
+    }
+
+    if (isPageChallenge && !prevPageChallengeRef.current) {
+      playOnce("/audio/round-end.mp3", 0.5);
+    }
+
     prevWheelRoundRef.current = state.wheelRound;
     prevHoleCardSeedSumRef.current = holeCardSeedSum;
     prevPotSizeRef.current = state.potSize;
-  }, [state.stage, state.communityCards.length, isArcanaActive, isArcanaGlowing, state.wheelRound, holeCardSeedSum, state.potSize, sfxEnabled]);
+    prevPotWonRef.current = state.potWon;
+    prevPageChallengeRef.current = isPageChallenge;
+  }, [state.stage, state.communityCards.length, isArcanaActive, isArcanaGlowing, state.wheelRound, holeCardSeedSum, state.potSize, state.potWon, isPageChallenge, sfxEnabled]);
 }

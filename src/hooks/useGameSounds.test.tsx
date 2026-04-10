@@ -155,6 +155,24 @@ describe("useGameSounds", () => {
     expect(window.HTMLMediaElement.prototype.play).not.toHaveBeenCalled();
   });
 
+  it("plays round-end sound when potWon goes from 0 to >0", () => {
+    mockState.current = makeState({ potWon: 0 });
+    const { rerender } = renderHook(() => useGameSounds(), { wrapper });
+
+    mockState.current = makeState({ potWon: 200 });
+    rerender();
+    expect(window.HTMLMediaElement.prototype.play).toHaveBeenCalledTimes(1);
+  });
+
+  it("plays round-end sound on page challenge", () => {
+    mockState.current = makeState({ pendingInteraction: null });
+    const { rerender } = renderHook(() => useGameSounds(), { wrapper });
+
+    mockState.current = makeState({ pendingInteraction: { type: "page-challenge" } });
+    rerender();
+    expect(window.HTMLMediaElement.prototype.play).toHaveBeenCalledTimes(1);
+  });
+
   it("does not play when there is no state change", () => {
     mockState.current = makeState({ stage: "pre-game" });
     renderHook(() => useGameSounds(), { wrapper });
