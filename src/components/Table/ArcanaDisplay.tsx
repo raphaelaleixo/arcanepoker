@@ -12,10 +12,31 @@ import { Box, Stack, Typography } from "@mui/material";
 import type { ArcanaCard } from "../../types/types";
 import tarot from "../../data/tarot";
 
+const ROMAN = [
+  "0", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X",
+  "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX", "XXI",
+];
+
+const toRoman = (value: string) => ROMAN[Number(value)] ?? value;
+
 const stirsPulse = keyframes`
   0%, 100% { opacity: 0.4; }
   50%       { opacity: 1; }
 `;
+
+const revealLine = keyframes`
+  0%   { opacity: 0; transform: scale(0.88); }
+  100% { opacity: 1; transform: scale(1); }
+`;
+
+const nameShine = keyframes`
+  0%   { background-position: -30% center; }
+  80%  { background-position: 130% center; }
+  100% { background-position: 130% center; }
+`;
+
+const REVEAL_EASING = "cubic-bezier(0.34, 1.56, 0.64, 1)";
+const REVEAL_STAGGER_MS = 80;
 
 interface ArcanaDisplayProps {
   /** The arcana card to show (pending or active). Null hides the whole display. */
@@ -116,8 +137,9 @@ export function ArcanaDisplay({
                 An arcana stirs...
               </Typography>
             </Box>
-            {/* Revealed name + effect — visible after reveal */}
+            {/* Revealed name + effect — visible after reveal, staggered per line */}
             <Box
+              key={arcanaCardToShow?.value}
               sx={{
                 gridArea: "1 / 1",
                 opacity: arcanaCardToShow && !pendingArcanaCard ? 1 : 0,
@@ -130,14 +152,43 @@ export function ArcanaDisplay({
                 variant="caption"
                 sx={{
                   display: "block",
-                  color: "primary.main",
                   fontWeight: "bold",
                   fontSize: "0.9rem",
                   fontFamily: "Young Serif, serif",
                   lineHeight: 1.1,
+                  position: "relative",
+                  color: "primary.main",
+                  backgroundClip: "text",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundImage: "linear-gradient(90deg, #7ad884, #7ad884)",
+                  ...(arcanaCardToShow && !pendingArcanaCard && {
+                    animation: `${revealLine} 350ms ${REVEAL_EASING} both`,
+                  }),
+                  "&::before": arcanaCardToShow && !pendingArcanaCard
+                    ? {
+                        content: "attr(data-text)",
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: "100%",
+                        backgroundClip: "text",
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+                        backgroundImage:
+                          "linear-gradient(110deg, transparent, #c8f08a, transparent)",
+                        backgroundSize: "30% 100%",
+                        backgroundRepeat: "no-repeat",
+                        backgroundPosition: "-30% center",
+                        animation: `${nameShine} 5s ease-in-out 1s infinite`,
+                        pointerEvents: "none",
+                      }
+                    : {},
                 }}
+                data-text={`${revealedCard ? toRoman(revealedCard.value) : ""} - ${revealedData?.fullName}`}
               >
-                {revealedCard?.value} - {revealedData?.fullName}
+                {revealedCard ? toRoman(revealedCard.value) : ""} - {revealedData?.fullName}
               </Typography>
               {revealedData?.gameEffect && (
                 <Typography
@@ -149,6 +200,9 @@ export function ArcanaDisplay({
                     fontWeight: 500,
                     mt: 0.25,
                     lineHeight: 1.1,
+                    ...(arcanaCardToShow && !pendingArcanaCard && {
+                      animation: `${revealLine} 350ms ${REVEAL_EASING} ${REVEAL_STAGGER_MS}ms both`,
+                    }),
                   }}
                 >
                   {revealedData.gameEffect}
@@ -171,6 +225,9 @@ export function ArcanaDisplay({
                         mt: 0.5,
                         lineHeight: 1.1,
                         opacity: 0.8,
+                        ...(arcanaCardToShow && !pendingArcanaCard && {
+                          animation: `${revealLine} 350ms ${REVEAL_EASING} ${REVEAL_STAGGER_MS * 2}ms both`,
+                        }),
                       }}
                     >
                       {tags.join(" · ")}
