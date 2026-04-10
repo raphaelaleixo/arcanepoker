@@ -12,6 +12,7 @@ import {
 import CheckIcon from "@mui/icons-material/Check";
 import { useState, useEffect } from "react";
 import { useGame } from "../../store/useGame";
+import { useAudioPreferences } from "../../store/AudioPreferencesContext";
 import tarot from "../../data/tarot";
 import type { ArcanaValue } from "../../types/types";
 
@@ -43,6 +44,7 @@ export function PlaygroundDrawer({
   onOpenGameOver,
 }: PlaygroundDrawerProps) {
   const { state, dispatch } = useGame();
+  const { musicEnabled, sfxEnabled, toggleMusic, toggleSfx } = useAudioPreferences();
   const isValidStage = VALID_STAGES.includes(
     state.stage as (typeof VALID_STAGES)[number],
   );
@@ -126,6 +128,39 @@ export function PlaygroundDrawer({
       </Box>
 
       <Box sx={{ overflowY: "auto", flex: 1 }}>
+        <Box
+          sx={{
+            p: 2,
+            borderBottom: "1px solid",
+            borderColor: "rgba(155,89,182,0.2)",
+          }}
+        >
+          <Typography
+            variant="caption"
+            sx={{ color: "silver.dark", display: "block", mb: 1 }}
+          >
+            Audio
+          </Typography>
+          <Box sx={{ display: "flex", gap: 1 }}>
+            <Button
+              size="small"
+              variant={musicEnabled ? "contained" : "outlined"}
+              onClick={toggleMusic}
+              sx={{ fontSize: "0.65rem", py: 0.25, px: 0.75 }}
+            >
+              Music {musicEnabled ? "On" : "Off"}
+            </Button>
+            <Button
+              size="small"
+              variant={sfxEnabled ? "contained" : "outlined"}
+              onClick={toggleSfx}
+              sx={{ fontSize: "0.65rem", py: 0.25, px: 0.75 }}
+            >
+              SFX {sfxEnabled ? "On" : "Off"}
+            </Button>
+          </Box>
+        </Box>
+
         <Box
           sx={{
             p: 2,

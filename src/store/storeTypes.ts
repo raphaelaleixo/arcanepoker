@@ -124,6 +124,8 @@ export interface StoreGameState {
   communityChangeKey: number;
   /** Total pot distributed at the last showdown (0 during play). Used for "wins XXX" display. */
   potWon: number;
+  /** Incremented on every "check" action; used to trigger check sound effects. */
+  checkCount: number;
 
   // ── Tutorial ─────────────────────────────────────────────────────────────────
   /** Pre-seeded community cards consumed by advanceStage instead of drawing from deck. */

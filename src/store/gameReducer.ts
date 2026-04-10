@@ -739,6 +739,7 @@ function processPlayerAction(
           [players[playerIdx].id]: (state.holeCardChangeSeeds[players[playerIdx].id] ?? 0) + 1,
         }
       : state.holeCardChangeSeeds,
+    checkCount: state.checkCount + (action === "check" ? 1 : 0),
   };
 
   if (isBettingRoundComplete(next)) {
