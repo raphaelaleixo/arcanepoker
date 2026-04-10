@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import type { ReactNode } from "react";
 import { render, screen } from "@testing-library/react";
+import { AudioPreferencesProvider } from "../store/AudioPreferencesContext";
 
 // Mock heavy dependencies so routing can be tested in isolation
 vi.mock("../store/GameContext", () => ({
@@ -14,7 +15,11 @@ import { GamePage } from "./GamePage";
 
 describe("GamePage", () => {
   it("renders the poker table", () => {
-    render(<GamePage />);
+    render(
+      <AudioPreferencesProvider>
+        <GamePage />
+      </AudioPreferencesProvider>
+    );
     expect(screen.getByTestId("poker-table")).toBeInTheDocument();
   });
 });
