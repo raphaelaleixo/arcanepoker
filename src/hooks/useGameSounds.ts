@@ -29,7 +29,7 @@ export function useGameSounds(): void {
       return;
     }
 
-    if (state.stage === "deal" && prevStageRef.current !== "deal") {
+    if (state.stage === "pre-flop" && prevStageRef.current !== "pre-flop") {
       playOnce("/audio/card-deal.mp3");
     }
 

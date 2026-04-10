@@ -70,12 +70,12 @@ const wrapper = ({ children }: { children: ReactNode }) => (
 );
 
 describe("useGameSounds", () => {
-  it("plays card-deal sound when stage changes to 'deal'", () => {
+  it("plays card-deal sound when stage changes to 'pre-flop'", () => {
     mockState.current = makeState({ stage: "pre-game" });
     const { rerender } = renderHook(() => useGameSounds(), { wrapper });
     expect(window.HTMLMediaElement.prototype.play).not.toHaveBeenCalled();
 
-    mockState.current = makeState({ stage: "deal" });
+    mockState.current = makeState({ stage: "pre-flop" });
     rerender();
     expect(window.HTMLMediaElement.prototype.play).toHaveBeenCalledTimes(1);
   });
@@ -107,8 +107,8 @@ describe("useGameSounds", () => {
       { wrapper }
     );
 
-    // Transition to deal — should fire once
-    mockState.current = makeState({ stage: "deal" });
+    // Transition to pre-flop — should fire once
+    mockState.current = makeState({ stage: "pre-flop" });
     rerender();
     expect(window.HTMLMediaElement.prototype.play).toHaveBeenCalledTimes(1);
 
