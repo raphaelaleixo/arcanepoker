@@ -2,8 +2,9 @@ import { useEffect, useRef } from 'react';
 import { useGame } from '../store/useGame';
 import { useAudioPreferences } from '../store/AudioPreferencesContext';
 
-function playOnce(src: string): void {
+function playOnce(src: string, volume = 0.7): void {
   const audio = new Audio(src);
+  audio.volume = volume;
   const playPromise = audio.play();
   if (playPromise !== undefined) {
     playPromise.catch(() => {
@@ -30,11 +31,14 @@ export function useGameSounds(): void {
     }
 
     if (state.stage === "pre-flop" && prevStageRef.current !== "pre-flop") {
-      playOnce("/audio/card-deal.mp3");
+      // Fire one sound per player, staggered 150ms apart
+      state.players.forEach((_, i) => {
+        setTimeout(() => playOnce("/audio/card-deal.mp3", 0.2), i * 150);
+      });
     }
 
     if (state.communityCards.length > prevCommunityLengthRef.current) {
-      playOnce("/audio/card-deal.mp3");
+      playOnce("/audio/card-deal.mp3", 0.2);
     }
 
     prevStageRef.current = state.stage;

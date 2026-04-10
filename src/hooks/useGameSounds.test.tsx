@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { AudioPreferencesProvider, useAudioPreferences } from "../store/AudioPreferencesContext";
@@ -6,10 +6,15 @@ import { useGameSounds } from "./useGameSounds";
 import type { StoreGameState } from "../store/storeTypes";
 import type { GameContextValue } from "../store/context";
 
-// Stub HTMLMediaElement
+// Stub HTMLMediaElement and use fake timers (staggered deal sounds use setTimeout)
 beforeEach(() => {
+  vi.useFakeTimers();
   window.HTMLMediaElement.prototype.play = vi.fn().mockResolvedValue(undefined) as unknown as () => Promise<void>;
   window.HTMLMediaElement.prototype.pause = vi.fn() as unknown as () => void;
+});
+
+afterEach(() => {
+  vi.useRealTimers();
 });
 
 // Minimal game state factory
@@ -70,14 +75,15 @@ const wrapper = ({ children }: { children: ReactNode }) => (
 );
 
 describe("useGameSounds", () => {
-  it("plays card-deal sound when stage changes to 'pre-flop'", () => {
-    mockState.current = makeState({ stage: "pre-game" });
+  it("plays card-deal sound per player when stage changes to 'pre-flop'", () => {
+    mockState.current = makeState({ stage: "pre-game", players: [{} as any, {} as any] });
     const { rerender } = renderHook(() => useGameSounds(), { wrapper });
     expect(window.HTMLMediaElement.prototype.play).not.toHaveBeenCalled();
 
-    mockState.current = makeState({ stage: "pre-flop" });
+    mockState.current = makeState({ stage: "pre-flop", players: [{} as any, {} as any] });
     rerender();
-    expect(window.HTMLMediaElement.prototype.play).toHaveBeenCalledTimes(1);
+    vi.runAllTimers();
+    expect(window.HTMLMediaElement.prototype.play).toHaveBeenCalledTimes(2); // one per player
   });
 
   it("plays card-deal sound when communityCards.length increases", () => {
@@ -107,9 +113,10 @@ describe("useGameSounds", () => {
       { wrapper }
     );
 
-    // Transition to pre-flop — should fire once
-    mockState.current = makeState({ stage: "pre-flop" });
+    // Transition to pre-flop with 1 player — should fire once
+    mockState.current = makeState({ stage: "pre-flop", players: [{} as any] });
     rerender();
+    vi.runAllTimers();
     expect(window.HTMLMediaElement.prototype.play).toHaveBeenCalledTimes(1);
 
     // Disable SFX
