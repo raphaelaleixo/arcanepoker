@@ -97,6 +97,16 @@ describe("useGameSounds", () => {
     expect(window.HTMLMediaElement.prototype.play).toHaveBeenCalledTimes(3);
   });
 
+  it("plays card-deal sound when arcana becomes active", () => {
+    mockState.current = makeState({ activeArcana: null });
+    const { rerender } = renderHook(() => useGameSounds(), { wrapper });
+    expect(window.HTMLMediaElement.prototype.play).not.toHaveBeenCalled();
+
+    mockState.current = makeState({ activeArcana: { card: {} as any, effectKey: "fool-wildcard" } });
+    rerender();
+    expect(window.HTMLMediaElement.prototype.play).toHaveBeenCalledTimes(1);
+  });
+
   it("does not play when there is no state change", () => {
     mockState.current = makeState({ stage: "pre-game" });
     renderHook(() => useGameSounds(), { wrapper });

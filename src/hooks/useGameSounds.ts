@@ -20,6 +20,9 @@ export function useGameSounds(): void {
   // so this guarantees no spurious sound plays on first mount.
   const prevStageRef = useRef(state.stage);
   const prevCommunityLengthRef = useRef(state.communityCards.length);
+  const prevArcanaActiveRef = useRef(state.activeArcana !== null);
+
+  const isArcanaActive = state.activeArcana !== null;
 
   useEffect(() => {
     if (!sfxEnabled) {
@@ -27,6 +30,7 @@ export function useGameSounds(): void {
       // that already happened while it was off.
       prevStageRef.current = state.stage;
       prevCommunityLengthRef.current = state.communityCards.length;
+      prevArcanaActiveRef.current = isArcanaActive;
       return;
     }
 
@@ -44,7 +48,12 @@ export function useGameSounds(): void {
       }
     }
 
+    if (isArcanaActive && !prevArcanaActiveRef.current) {
+      playOnce("/audio/card-deal.mp3", 0.2);
+    }
+
     prevStageRef.current = state.stage;
     prevCommunityLengthRef.current = state.communityCards.length;
-  }, [state.stage, state.communityCards.length, sfxEnabled]);
+    prevArcanaActiveRef.current = isArcanaActive;
+  }, [state.stage, state.communityCards.length, isArcanaActive, sfxEnabled]);
 }
