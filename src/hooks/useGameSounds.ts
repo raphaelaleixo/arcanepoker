@@ -122,7 +122,7 @@ export function useGameSounds(): void {
     }
 
     if (state.checkCount > prevCheckCountRef.current) {
-      playOnce("/audio/check.mp3", 0.1, 2);
+      playOnce("/audio/check.mp3", 0.1, 1.5);
     }
 
     prevWheelRoundRef.current = state.wheelRound;

@@ -19,6 +19,13 @@ type TarotEntry = {
   gameEffect?: string;
 };
 
+const ROMAN = [
+  "0", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X",
+  "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX", "XXI",
+];
+
+const toRoman = (value: string) => ROMAN[Number(value)] ?? value;
+
 interface ArcanaRevealModalProps {
   open: boolean;
   arcanaCard: ArcanaCard | null;
@@ -32,9 +39,8 @@ export function ArcanaRevealModal({
 }: ArcanaRevealModalProps) {
   if (!arcanaCard) return null;
 
-  const info = (tarot.arcana as Record<string, TarotEntry>)[
-    arcanaCard.value
-  ] ?? null;
+  const info =
+    (tarot.arcana as Record<string, TarotEntry>)[arcanaCard.value] ?? null;
 
   return (
     <Dialog
@@ -66,8 +72,8 @@ export function ArcanaRevealModal({
       </DialogTitle>
 
       <DialogContent sx={{ py: 3 }}>
-        <Stack direction="column" alignItems="center" spacing={2}>
-          <Box sx={{ display: "inline-block", scale: 0.85 }}>
+        <Stack direction="row" alignItems="flex-start" spacing={2} useFlexGap sx={{ pt: 3 }}>
+          <Box sx={{ display: "inline-block", scale: 0.7, flexShrink: 0 }}>
             <PlayingCard
               rank={arcanaCard.value as ArcanaValue}
               suit={arcanaCard.suit as ArcanaSuit}
@@ -76,47 +82,50 @@ export function ArcanaRevealModal({
           </Box>
 
           {info && (
-            <Stack spacing={0.5} alignItems="center" sx={{ textAlign: "center" }}>
-              <Typography
-                variant="h6"
-                sx={{
-                  color: "gold.main",
-                  fontFamily: 'Young Serif, "Georgia", serif',
-                  fontWeight: "bold",
-                }}
-              >
-                {info.fullName}
-              </Typography>
+            <Stack spacing={0}>
               <Typography
                 variant="caption"
                 sx={{
+                  color: "primary.main",
+                  fontWeight: "bold",
+                  fontSize: "1.05rem",
+                  fontFamily: 'Young Serif, "Georgia", serif',
+                }}
+              >
+                {toRoman(arcanaCard.value)} - {info.fullName}
+              </Typography>
+              <Typography
+                component="div"
+                variant="caption"
+                sx={{
+                  my: 0.5,
                   color: "silver.main",
-                  fontSize: "0.65rem",
+                  fontSize: "0.7rem",
                   fontWeight: 600,
                   textTransform: "uppercase",
                 }}
               >
                 {info.tags.join(" · ")}
               </Typography>
-              <Typography
-                variant="body2"
-                sx={{ color: "white", fontSize: "0.8rem", lineHeight: 1.5, mt: 1 }}
-              >
-                {info.description}
-              </Typography>
               {info.gameEffect && (
                 <Typography
                   variant="caption"
-                  sx={{
-                    color: "gold.light",
-                    fontSize: "0.7rem",
-                    fontStyle: "italic",
-                    mt: 1,
-                  }}
+                  sx={{ color: "white", fontSize: "0.85rem", lineHeight: 1.5 }}
                 >
                   {info.gameEffect}
                 </Typography>
               )}
+              <Typography
+                variant="caption"
+                sx={{
+                  color: "gold.light",
+                  fontSize: "0.75rem",
+                  fontStyle: "italic",
+                  mt: 0.5,
+                }}
+              >
+                {info.description}
+              </Typography>
             </Stack>
           )}
         </Stack>

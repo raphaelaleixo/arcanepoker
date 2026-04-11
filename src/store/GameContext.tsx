@@ -14,7 +14,8 @@ import { GameContext } from "./context";
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const BETTING_STAGES = new Set(["pre-flop", "flop", "turn", "river", "empress"]);
-const BOT_THINK_MS = 700;
+const BOT_THINK_MIN_MS = 500;
+const BOT_THINK_MAX_MS = 2000;
 
 // ─── Provider ─────────────────────────────────────────────────────────────────
 
@@ -79,7 +80,7 @@ export function GameProvider({ children, isTutorial = false }: { children: React
           amount: "amount" in finalDecision ? finalDecision.amount : undefined,
         },
       });
-    }, BOT_THINK_MS);
+    }, BOT_THINK_MIN_MS + Math.random() * (BOT_THINK_MAX_MS - BOT_THINK_MIN_MS));
 
     return () => clearTimeout(timer);
   }, [state, isTutorial]);

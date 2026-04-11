@@ -34,7 +34,8 @@ export function useDemoOptional(): DemoContextValue | null {
 // ─── Timing constants ──────────────────────────────────────────────────────
 
 const START_DELAY_MS     = 3000; // cooldown before any action fires after the demo loads
-const BOT_THINK_MS       = 2200; // delay before a bot acts
+const BOT_THINK_MIN_MS   =  500; // min delay before a bot acts
+const BOT_THINK_MAX_MS   = 2000; // max delay before a bot acts
 const HERO_PRETHINK_MS   = 1500; // delay before the button highlight appears
 const PULSE_MS           =  500; // how long the button stays "pressed" before dispatch
 const ARCANA_REVEAL_MS   = 2000; // delay between arcana-pending and REVEAL_ARCANA
@@ -122,7 +123,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
           amount: nextAction.amount,
         },
       });
-    }, BOT_THINK_MS);
+    }, BOT_THINK_MIN_MS + Math.random() * (BOT_THINK_MAX_MS - BOT_THINK_MIN_MS));
 
     return () => clearTimeout(timer);
   }, [gameState.activePlayerIndex, gameState.stage]); // eslint-disable-line react-hooks/exhaustive-deps
