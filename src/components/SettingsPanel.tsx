@@ -1,4 +1,4 @@
-import { Link, Stack, Typography } from "@mui/material";
+import { Link, Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import { useSettings } from "../store/SettingsContext";
 import { useTranslation } from "../i18n";
 import { SettingSection } from "./SettingSection";
@@ -29,13 +29,24 @@ export function SettingsPanel() {
       </SettingSection>
 
       <SettingSection title={t("settings.language")}>
-        <Stack useFlexGap spacing={0}>
-          <SettingToggle
-            label={t("settings.portugueseBr")}
-            checked={language === "pt-br"}
-            onChange={() => setLanguage(language === "en" ? "pt-br" : "en")}
-          />
-        </Stack>
+        <ToggleButtonGroup
+          value={language}
+          exclusive
+          onChange={(_, value) => {
+            if (value) setLanguage(value);
+          }}
+          color="primary"
+          size="small"
+          fullWidth
+          sx={{
+            "& .MuiToggleButton-root:not(.Mui-selected)": {
+              color: "silver.light",
+            },
+          }}
+        >
+          <ToggleButton value="en">English</ToggleButton>
+          <ToggleButton value="pt-br">Português</ToggleButton>
+        </ToggleButtonGroup>
       </SettingSection>
 
       <SettingSection title={t("settings.gameplay")}>

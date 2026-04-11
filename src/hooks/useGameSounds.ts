@@ -129,7 +129,7 @@ export function useGameSounds(modalOpenStates?: boolean[]): void {
     }
 
     if (isPageChallenge && !prevPageChallengeRef.current) {
-      playPooled("/audio/page.mp3", 0.5);
+      playPooled("/audio/page.mp3", 0.3);
     }
 
     if (foldCount > prevFoldCountRef.current) {

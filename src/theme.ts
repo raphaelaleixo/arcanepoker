@@ -138,11 +138,13 @@ let theme = createTheme({
       fontSize: "0.875rem",
     },
     cardTags: {
+      fontFamily: "Rubik",
       fontSize: "0.6rem",
       fontWeight: 600,
       textTransform: "uppercase",
     },
     cardDesc: {
+      fontFamily: "Rubik",
       fontSize: "0.75rem",
       lineHeight: 1.5,
     },
@@ -195,8 +197,33 @@ theme = createTheme(theme, {
       defaultProps: {
         arrow: true,
         placement: "top" as const,
-        enterDelay: 750,
+        enterDelay: 1000,
         disableInteractive: false,
+      },
+      styleOverrides: {
+        tooltip: {
+          backgroundColor: theme.palette.augmentColor({
+            color: { main: "#242424" },
+            name: "blackSuit",
+          }).dark,
+          border: `1px solid ${theme.palette.augmentColor({
+            color: { main: "#242424" },
+            name: "blackSuit",
+          }).light}`,
+          padding: 12,
+        },
+        arrow: {
+          color: theme.palette.augmentColor({
+            color: { main: "#242424" },
+            name: "blackSuit",
+          }).dark,
+          "&::before": {
+            border: `1px solid ${theme.palette.augmentColor({
+              color: { main: "#242424" },
+              name: "blackSuit",
+            }).light}`,
+          },
+        },
       },
     },
   },
