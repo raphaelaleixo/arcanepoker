@@ -20,6 +20,7 @@ import { TableOverlayContent } from "./TableOverlayContent";
 import { TutorialOverlay } from "../Tutorial/TutorialOverlay";
 import { useTutorialOptional } from "../../tutorial/TutorialContext";
 import { useDemo3Optional } from "../../demo/Demo3Context";
+import { useSettings } from "../../store/SettingsContext";
 import { TutorialNarrationContent } from "../Tutorial/TutorialNarrationContent";
 import { ArcanaDisplayCard } from "./ArcanaDisplayCard";
 import { PageInfoModal } from "../Modals/PageInfoModal";
@@ -34,6 +35,7 @@ export function PokerTable() {
   const isTutorial = tutorial?.isTutorial ?? false;
   const narration = tutorial?.narration ?? null;
   const demo3 = useDemo3Optional();
+  const { devMode } = useSettings();
   const [showTarot, setShowTarot] = useState(false);
   const [tarotMinimized, setTarotMinimized] = useState(false);
   const [playgroundOpen, setPlaygroundOpen] = useState(false);
@@ -343,39 +345,43 @@ export function PokerTable() {
           dispatch({ type: "REVEAL_ARCANA" });
         }}
       />
-      <Button
-        size="small"
-        variant="outlined"
-        onClick={() => setPlaygroundOpen(true)}
-        sx={{
-          position: "fixed",
-          top: 16,
-          right: 16,
-          zIndex: 1200,
-          minWidth: 0,
-          px: 1.5,
-          py: 0.5,
-          fontSize: "0.7rem",
-          opacity: 0.5,
-          color: "secondary.light",
-          borderColor: "secondary.dark",
-          "&:hover": { opacity: 1 },
-        }}
-      >
-        DEV
-      </Button>
-      <PlaygroundDrawer
-        open={playgroundOpen}
-        onClose={() => setPlaygroundOpen(false)}
-        onOpenTarot={() => {
-          setPlaygroundOpen(false);
-          setShowTarot(true);
-        }}
-        onOpenGameOver={() => {
-          setPlaygroundOpen(false);
-          dispatch({ type: "DEV_FORCE_GAME_OVER" });
-        }}
-      />
+      {devMode && (
+        <>
+          <Button
+            size="small"
+            variant="outlined"
+            onClick={() => setPlaygroundOpen(true)}
+            sx={{
+              position: "fixed",
+              top: 16,
+              right: 16,
+              zIndex: 1200,
+              minWidth: 0,
+              px: 1.5,
+              py: 0.5,
+              fontSize: "0.7rem",
+              opacity: 0.5,
+              color: "secondary.light",
+              borderColor: "secondary.dark",
+              "&:hover": { opacity: 1 },
+            }}
+          >
+            DEV
+          </Button>
+          <PlaygroundDrawer
+            open={playgroundOpen}
+            onClose={() => setPlaygroundOpen(false)}
+            onOpenTarot={() => {
+              setPlaygroundOpen(false);
+              setShowTarot(true);
+            }}
+            onOpenGameOver={() => {
+              setPlaygroundOpen(false);
+              dispatch({ type: "DEV_FORCE_GAME_OVER" });
+            }}
+          />
+        </>
+      )}
       <TutorialOverlay />
     </Box>
   );
