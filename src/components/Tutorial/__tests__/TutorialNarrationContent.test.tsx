@@ -39,13 +39,13 @@ beforeEach(() => {
 describe('TutorialNarrationContent', () => {
   it('renders the narration title and body', () => {
     const { getByText } = renderWithProviders(<TutorialNarrationContent />);
-    expect(getByText(/The Page Card/)).not.toBeNull();
+    expect(getByText(/The Page card/)).not.toBeNull();
     expect(getByText(/You've been dealt the Page of Hearts/)).not.toBeNull();
   });
 
   it('renders the label with title', () => {
     const { getByText } = renderWithProviders(<TutorialNarrationContent />);
-    expect(getByText(/Tutorial · The Page Card/)).not.toBeNull();
+    expect(getByText(/Tutorial · The Page card/)).not.toBeNull();
   });
 
   it('calls dismissNarration when Next button is clicked', () => {

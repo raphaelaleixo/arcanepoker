@@ -1,7 +1,7 @@
 {
   "common": {
     "appTitle": "Arcane Poker",
-    "playAgain": "Jogar Novamente",
+    "playAgain": "Jogar novamente",
     "confirm": "Confirmar",
     "next": "Próximo →",
     "gotIt": "Entendi",
@@ -18,9 +18,9 @@
   },
   "nav": {
     "home": "Início",
-    "newGame": "Novo Jogo",
+    "newGame": "Novo jogo",
     "tutorial": "Tutorial",
-    "learnToPlay": "Aprenda a Jogar",
+    "learnToPlay": "Aprenda a jogar",
     "settings": "Configurações",
     "startNewGame": "iniciar novo jogo"
   },
@@ -30,9 +30,9 @@
     "call": "Pagar",
     "raise": "Aumentar",
     "bet": "Apostar",
-    "allIn": "All-In",
-    "smallBlind": "Small Blind",
-    "bigBlind": "Big Blind"
+    "allIn": "All-in",
+    "smallBlind": "Small blind",
+    "bigBlind": "Big blind"
   },
   "actionChips": {
     "fold": "Desistiu",
@@ -40,33 +40,33 @@
     "call": "Pagou",
     "raise": "Aumentou",
     "bet": "Apostou",
-    "all-in": "All-In",
-    "smallBlind": "Small Blind",
-    "bigBlind": "Big Blind"
+    "all-in": "All-in",
+    "smallBlind": "Small blind",
+    "bigBlind": "Big blind"
   },
   "settings": {
     "title": "Configurações",
     "sound": "Som",
     "music": "Música",
-    "soundEffects": "Efeitos Sonoros",
+    "soundEffects": "Efeitos sonoros",
     "language": "Idioma",
     "portugueseBr": "Português (BR)",
     "gameplay": "Jogabilidade",
-    "playedTutorial": "Tutorial Concluído",
+    "playedTutorial": "Tutorial concluído",
     "replayTutorialHint": "Desative para repetir o tutorial no próximo início de jogo",
     "developer": "Desenvolvedor",
-    "devMode": "Modo Dev",
+    "devMode": "Modo dev",
     "devModeHint": "Habilita o painel Playground durante o jogo",
     "credits": "Créditos",
-    "soundCredits": "Créditos de Som",
+    "soundCredits": "Créditos de som",
     "foundBug": "Encontrou um bug?",
     "reportOnGithub": "Reporte no GitHub"
   },
   "gameOver": {
-    "wonTitle": "A Fortuna Te Favorece!",
+    "wonTitle": "A sorte te favoreceu!",
     "wonSubtitle": "Você superou todos os desafiantes. A mesa arcana é sua.",
-    "finalHandTitle": "O Decreto do Mundo",
-    "finalHandSubtitle": "O Mundo falou — o jogo está completo.",
+    "finalHandTitle": "O decreto do Mundo",
+    "finalHandSubtitle": "As cartas falaram — o jogo está completo.",
     "eliminatedTitle": "Eliminado",
     "eliminatedSubtitle": "Suas fichas acabaram. A mesa arcana reclama mais uma alma."
   },
@@ -79,37 +79,37 @@
     "playerWins": "{{name}} ganha {{amount}}!"
   },
   "tooltips": {
-    "arcanaStirs": "Um arcano se agita...",
+    "arcanaStirs": "Uma Arcana surge...",
     "pageTooltip": "O Pajem (Ø) — carta mais baixa",
     "learnMore": "Saiba mais →",
-    "arcanaTooltip": "Uma carta de Arcano Maior.",
-    "theCardsSpeak": "As Cartas Falam"
+    "arcanaTooltip": "Uma carta de Arcana Maior.",
+    "theCardsSpeak": "As cartas falam"
   },
   "table": {
     "revealArcana": "Revelar Arcana",
-    "acceptFate": "Aceitar o Destino",
-    "arcanaRevealsItself": "Um Arcano Maior Se Revela",
+    "acceptFate": "Aceitar o destino",
+    "arcanaRevealsItself": "A Arcana se revela",
     "pageChallengeHint": "O vencedor possui um Pajem — todos os outros pagam {{amount}} fichas.",
     "challengeOfThePage": "Desafio do Pajem",
     "priestessInstruction": "Clique em uma carta para revelá-la a todos os jogadores.",
     "starInstruction": "Clique em uma carta para descartá-la e comprar outra.",
     "chariotInstruction": "Clique em uma carta para passá-la ao jogador à sua esquerda.",
-    "keepBoth": "Manter Ambas",
+    "keepBoth": "Manter ambas",
     "magicianInstruction": "Descarte ambas as cartas de mão e compre duas novas — ou mantenha sua mão atual.",
-    "redraw": "Comprar Novas",
-    "keepHand": "Manter Mão",
-    "tarotReading": "Leitura de Tarot",
-    "finalResults": "Resultados Finais",
-    "nextHand": "Próxima Mão"
+    "redraw": "Comprar novas",
+    "keepHand": "Manter mão",
+    "tarotReading": "Leitura de tarot",
+    "finalResults": "Resultados finais",
+    "nextHand": "Próxima mão"
   },
   "tarotModal": {
-    "yourCardsSpeak": "Suas Cartas Falam",
+    "yourCardsSpeak": "Suas cartas falam",
     "minimize": "Minimizar",
-    "activeArcana": "Arcana Ativa"
+    "activeArcana": "Arcana ativa"
   },
   "pageInfo": {
     "title": "O Pajem",
-    "cardValue": "Valor da Carta",
+    "cardValue": "Valor da carta",
     "cardValueDesc": "O Pajem (0) é uma carta exclusiva do Arcane Poker — uma adicionada a cada naipe, totalizando <strong>56 cartas</strong>. Tem o valor mais baixo quando jogada sozinha, mas se conecta <em>antes</em> do Ás em sequências: 0 · A · 2 · 3 · 4.",
     "arcanaTrigger": "Gatilho de Arcana",
     "arcanaTriggerDesc": "O <strong>primeiro</strong> Pajem distribuído nas cartas comunitárias compra uma carta de Arcano Maior, que muda as regras daquela mão. Isso só pode acontecer <em>uma vez por rodada</em>.",
@@ -127,31 +127,31 @@
     "active": "Ativa"
   },
   "handRanks": {
-    "straight-flush": "Straight Flush",
+    "straight-flush": "Straight flush",
     "four-of-a-kind": "Quadra",
-    "full-house": "Full House",
+    "full-house": "Full house",
     "straight": "Sequência",
     "flush": "Flush",
     "three-of-a-kind": "Trinca",
-    "two-pair": "Dois Pares",
+    "two-pair": "Dois pares",
     "pair": "Par",
     "high-card": "Melhor carta"
   },
   "rules": {
-    "howToPlay": "Como Jogar",
+    "howToPlay": "Como jogar",
     "intro": "Arcane Poker segue as regras padrão do Texas Hold'Em com duas adições: a carta Pajem e o baralho de Arcanos Maiores.",
-    "pageCardTitle": "A Carta Pajem (0)",
+    "pageCardTitle": "A carta Pajem (0)",
     "pageCardDesc1": "Cada naipe contém uma carta <strong>Pajem</strong> com valor 0 — a carta mais baixa em uma comparação padrão. No entanto, em sequências, o Pajem se conecta <em>antes</em> do Ás: <strong>Pajem, A, 2, 3, 4</strong> é uma sequência válida.",
     "pageCardBoardTrigger": "<strong>Gatilho da mesa:</strong> Quando um Pajem é revelado nas cartas comunitárias, a carta do topo do baralho modificador de Arcana é comprada e seu efeito é ativado imediatamente. Apenas uma carta de Arcana pode estar ativa por rodada — Pajens subsequentes na mesa não ativam novas compras.",
     "pageCardShowdownBonus": "<strong>Bônus de showdown:</strong> Se o jogador vencedor possuir um Pajem em suas cartas de mão, todos os outros jogadores (incluindo os que desistiram) pagam 1 Big Blind a ele.",
-    "handRankingsTitle": "Rankings de Mãos",
+    "handRankingsTitle": "Rankings de mãos",
     "handRankingsDesc": "Arcane Poker usa um ranking modificado onde uma <strong>Sequência vence um Flush</strong>. A mudança de probabilidade abaixo reflete a alteração em relação ao poker padrão.",
     "reference": "Referência",
     "tableHand": "Mão",
     "tableStandard": "Padrão",
     "tableArcane": "Arcane",
     "tableChange": "Mudança",
-    "majorArcanaTitle": "O Baralho de Arcanos Maiores",
+    "majorArcanaTitle": "O baralho de Arcanos Maiores",
     "majorArcanaSetup": "Um baralho separado de 22 cartas funciona junto ao baralho de jogo. <strong>Preparação:</strong> O Mundo (21) é separado, as 21 cartas restantes são divididas ao meio, O Mundo é embaralhado na segunda metade, e a primeira metade é colocada por cima — garantindo que O Mundo só apareça no final do jogo.",
     "majorArcanaDraw": "Uma carta é comprada apenas quando um Pajem aparece na mesa. Seu efeito modifica as regras pelo resto daquela rodada."
   },
@@ -254,25 +254,25 @@
         "body": "Este é um tutorial guiado. Você jogará duas mãos roteirizadas para aprender as mecânicas principais: como a carta Pajem funciona em sequências, e como as cartas de Arcana podem virar as regras no meio do jogo. Os bots não agirão até você fechar cada painel."
       },
       "holeCardsPage": {
-        "title": "A Carta Pajem (0)",
+        "title": "A carta Pajem (0)",
         "body": "Você recebeu o Pajem de Copas — valor 0. Arcane Poker adiciona um Pajem a cada naipe, totalizando 56 cartas. Como agora são 14 cartas por naipe em vez de 13, sequências são mais difíceis de conseguir — então neste jogo, uma sequência vence um flush."
       },
       "showdown": {
-        "title": "O Pajem em uma Sequência",
+        "title": "O Pajem em uma sequência",
         "body": "Seu Pajem de Copas se conecta antes do Ás: Pajem → A → 2 → 3 → 4. Isso é uma sequência — e como sequências vencem flushes no Arcane Poker, ela vence o flush de espadas do Espadachim."
       },
       "pageBonus": {
-        "title": "Bônus do Vencedor com Pajem",
+        "title": "Bônus do vencedor com Pajem",
         "body": "Como você venceu com um Pajem na mão, todos os outros jogadores pagam a você um big blind. Este é o `Desafio do Pajem."
       },
       "roundEnd": {
-        "title": "Rodada 1 Completa",
+        "title": "Rodada 1 completa",
         "body": "Você viu como o Pajem se encaixa em uma sequência e como funciona uma rodada normal sem Arcana. A Rodada 2 mostrará o que acontece quando um Pajem aparece na mesa."
       }
     },
     "round2": {
       "arcanaPending": {
-        "title": "Um Pajem Aparece",
+        "title": "Um Pajem aparece",
         "body": "O Pajem de Paus apareceu na mesa. Sempre que um Pajem aparece nas cartas comunitárias, o dealer compra uma carta do baralho de Arcana — um baralho separado de 22 cartas de Arcanos Maiores que pode remodelar as regras do jogo."
       },
       "arcanaRevealed": {
@@ -284,7 +284,7 @@
         "body": "O Louco é um curinga — ele se torna qualquer carta que melhor complete a mão de cada jogador. Para você, ele se torna um Rei, dando a você 10 → J → Q → K → A — um royal flush. Para Místico, ele se torna um Ás, completando uma quadra. Um royal flush vence uma quadra."
       },
       "roundEnd": {
-        "title": "Tutorial Completo",
+        "title": "Tutorial completo",
         "body": "Essas são as duas mecânicas que tornam o Arcane Poker diferente: a carta Pajem, que expande o baralho e altera os rankings de mãos, e o baralho de Arcana, que pode reescrever as regras no meio do jogo."
       }
     }

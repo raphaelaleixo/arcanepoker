@@ -33,9 +33,9 @@ describe("NavFab", () => {
     await userEvent.click(trigger);
     // MUI SpeedDial renders action labels as aria-label on the menuitem buttons
     // rather than as visible text nodes, so we query by accessible name.
-    expect(screen.getByRole("menuitem", { name: "New Game" })).toBeInTheDocument();
+    expect(screen.getByRole("menuitem", { name: "New game" })).toBeInTheDocument();
     expect(screen.getByRole("menuitem", { name: "Tutorial" })).toBeInTheDocument();
-    expect(screen.getByRole("menuitem", { name: "Learn to Play" })).toBeInTheDocument();
+    expect(screen.getByRole("menuitem", { name: "Learn to play" })).toBeInTheDocument();
     expect(screen.getByRole("menuitem", { name: "Home" })).toBeInTheDocument();
   });
 });

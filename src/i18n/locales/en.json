@@ -1,7 +1,7 @@
 {
   "common": {
     "appTitle": "Arcane Poker",
-    "playAgain": "Play Again",
+    "playAgain": "Play again",
     "confirm": "Confirm",
     "next": "Next →",
     "gotIt": "Got it",
@@ -18,9 +18,9 @@
   },
   "nav": {
     "home": "Home",
-    "newGame": "New Game",
+    "newGame": "New game",
     "tutorial": "Tutorial",
-    "learnToPlay": "Learn to Play",
+    "learnToPlay": "Learn to play",
     "settings": "Settings",
     "startNewGame": "start new game"
   },
@@ -30,9 +30,9 @@
     "call": "Call",
     "raise": "Raise",
     "bet": "Bet",
-    "allIn": "All-In",
-    "smallBlind": "Small Blind",
-    "bigBlind": "Big Blind"
+    "allIn": "All-in",
+    "smallBlind": "Small blind",
+    "bigBlind": "Big blind"
   },
   "actionChips": {
     "fold": "Fold",
@@ -40,32 +40,32 @@
     "call": "Call",
     "raise": "Raise",
     "bet": "Bet",
-    "all-in": "All-In",
-    "smallBlind": "Small Blind",
-    "bigBlind": "Big Blind"
+    "all-in": "All-in",
+    "smallBlind": "Small blind",
+    "bigBlind": "Big blind"
   },
   "settings": {
     "title": "Settings",
     "sound": "Sound",
     "music": "Music",
-    "soundEffects": "Sound Effects",
+    "soundEffects": "Sound effects",
     "language": "Language",
     "portugueseBr": "Português (BR)",
     "gameplay": "Gameplay",
-    "playedTutorial": "Played Tutorial",
+    "playedTutorial": "Played tutorial",
     "replayTutorialHint": "Turn off to replay the tutorial on next game start",
     "developer": "Developer",
-    "devMode": "Dev Mode",
+    "devMode": "Dev mode",
     "devModeHint": "Enables the Playground panel during gameplay",
     "credits": "Credits",
-    "soundCredits": "Sound Credits",
+    "soundCredits": "Sound credits",
     "foundBug": "Found a bug?",
     "reportOnGithub": "Report it on GitHub"
   },
   "gameOver": {
-    "wonTitle": "Fortune Favors You!",
+    "wonTitle": "Fortune favors you!",
     "wonSubtitle": "You outlasted every challenger. The arcane table is yours.",
-    "finalHandTitle": "The World's Decree",
+    "finalHandTitle": "The World's decree",
     "finalHandSubtitle": "The World has spoken — the game is complete.",
     "eliminatedTitle": "Eliminated",
     "eliminatedSubtitle": "Your chips have run dry. The arcane table claims another soul."
@@ -74,7 +74,7 @@
     "pot": "Pot",
     "bet": "Bet",
     "tower": "Tower",
-    "splitPot": "Split Pot — {{amount}} each",
+    "splitPot": "Split pot — {{amount}} each",
     "youWin": "You win {{amount}}!",
     "playerWins": "{{name}} wins {{amount}}!"
   },
@@ -83,35 +83,35 @@
     "pageTooltip": "The Page (Ø) — lowest card",
     "learnMore": "Learn more →",
     "arcanaTooltip": "A Major Arcana card.",
-    "theCardsSpeak": "The Cards Speak"
+    "theCardsSpeak": "The cards speak"
   },
   "table": {
     "revealArcana": "Reveal Arcana",
-    "acceptFate": "Accept Fate",
-    "arcanaRevealsItself": "A Major Arcana Reveals Itself",
+    "acceptFate": "Accept fate",
+    "arcanaRevealsItself": "A Major Arcana reveals itself",
     "pageChallengeHint": "The winner holds a Page — all others pay {{amount}} chips.",
     "challengeOfThePage": "Challenge of the Page",
     "priestessInstruction": "Click a card to reveal it to all players.",
     "starInstruction": "Click a card to discard and redraw it.",
     "chariotInstruction": "Click a card to pass it to the player on your left.",
-    "keepBoth": "Keep Both",
+    "keepBoth": "Keep both",
     "magicianInstruction": "Discard both hole cards and draw two new ones — or keep your current hand.",
     "redraw": "Redraw",
-    "keepHand": "Keep Hand",
+    "keepHand": "Keep hand",
     "tarotReading": "Tarot reading",
-    "finalResults": "Final Results",
-    "nextHand": "Next Hand"
+    "finalResults": "Final results",
+    "nextHand": "Next hand"
   },
   "tarotModal": {
-    "yourCardsSpeak": "Your Cards Speak",
+    "yourCardsSpeak": "Your cards speak",
     "minimize": "Minimize",
     "activeArcana": "Active Arcana"
   },
   "pageInfo": {
     "title": "The Page",
-    "cardValue": "Card Value",
+    "cardValue": "Card value",
     "cardValueDesc": "The Page (0) is a card unique to Arcane Poker — one added to each suit, bringing the deck to <strong>56 cards</strong> total. It has the lowest value when played alone, but connects <em>before</em> the Ace in straights: 0 · A · 2 · 3 · 4.",
-    "arcanaTrigger": "Arcana Trigger",
+    "arcanaTrigger": "Arcana trigger",
     "arcanaTriggerDesc": "The <strong>first</strong> Page dealt to the community cards draws a Major Arcana card, which changes the rules of that hand. This can only happen <em>once per round</em>.",
     "challengeOfThePage": "Challenge of the Page",
     "challengeDesc": "Win a hand while holding a Page in your hole cards and every other player must pay you <strong>1 big blind</strong>. The bounty is collected before the next hand begins.",
@@ -127,31 +127,31 @@
     "active": "Active"
   },
   "handRanks": {
-    "straight-flush": "Straight Flush",
-    "four-of-a-kind": "Four of a Kind",
-    "full-house": "Full House",
+    "straight-flush": "Straight flush",
+    "four-of-a-kind": "Four of a kind",
+    "full-house": "Full house",
     "straight": "Straight",
     "flush": "Flush",
-    "three-of-a-kind": "Three of a Kind",
-    "two-pair": "Two Pairs",
+    "three-of-a-kind": "Three of a kind",
+    "two-pair": "Two pairs",
     "pair": "Pair",
-    "high-card": "High Card"
+    "high-card": "High card"
   },
   "rules": {
-    "howToPlay": "How to Play",
+    "howToPlay": "How to play",
     "intro": "Arcane Poker follows standard Texas Hold'Em rules with two additions: the Page card and the Major Arcana deck.",
-    "pageCardTitle": "The Page Card (0)",
+    "pageCardTitle": "The Page card (0)",
     "pageCardDesc1": "Each suit contains a <strong>Page</strong> card with a value of 0 — the lowest card in a standard comparison. However, in straights, the Page connects <em>before</em> the Ace: <strong>Page, A, 2, 3, 4</strong> is a valid straight.",
     "pageCardBoardTrigger": "<strong>Board trigger:</strong> When a Page is revealed in the community cards, the top card of the Arcana modifier deck is drawn and its effect activates immediately. Only one Arcana card can be active per round — subsequent Pages on the board do not trigger new draws.",
     "pageCardShowdownBonus": "<strong>Showdown bonus:</strong> If the winning player holds a Page in their hole cards, all other players (including folded ones) pay them 1 Big Blind.",
-    "handRankingsTitle": "Hand Rankings",
+    "handRankingsTitle": "Hand rankings",
     "handRankingsDesc": "Arcane Poker uses a modified ranking where a <strong>Straight beats a Flush</strong>. The odds change below reflects the shift in probability from standard poker.",
     "reference": "Reference",
     "tableHand": "Hand",
     "tableStandard": "Standard",
     "tableArcane": "Arcane",
     "tableChange": "Change",
-    "majorArcanaTitle": "The Major Arcana Deck",
+    "majorArcanaTitle": "The Major Arcana deck",
     "majorArcanaSetup": "A separate 22-card deck runs alongside the playing deck. <strong>Setup:</strong> The World (21) is set aside, the remaining 21 cards are split in half, The World is shuffled into the second half, and the first half is placed on top — ensuring The World only appears late in the game.",
     "majorArcanaDraw": "A card is drawn only when a Page appears on the board. Its effect modifies the rules for the rest of that round."
   },
@@ -254,25 +254,25 @@
         "body": "This is a guided tutorial. You'll play two scripted hands to learn the core mechanics: how the Page card works in straights, and how Arcana cards can flip the rules mid-game. Bots won't act until you dismiss each panel."
       },
       "holeCardsPage": {
-        "title": "The Page Card (0)",
+        "title": "The Page card (0)",
         "body": "You've been dealt the Page of Hearts — value 0. Arcane Poker adds a Page to each suit, making 56 cards in total. Because there are now 14 cards per suit instead of 13, straights are harder to hit — so in this game, a straight beats a flush."
       },
       "showdown": {
-        "title": "The Page in a Straight",
+        "title": "The Page in a straight",
         "body": "Your Page of Hearts connects before the Ace: Page → A → 2 → 3 → 4. That's a straight — and because straights beat flushes in Arcane Poker, it beats Swordsman's flush in spades."
       },
       "pageBonus": {
-        "title": "Page Winner Bonus",
+        "title": "Page winner bonus",
         "body": "Because you won with a Page in your hand, every other player pays you one big blind. This is the `Challenge of the Page."
       },
       "roundEnd": {
-        "title": "Round 1 Complete",
+        "title": "Round 1 complete",
         "body": "You've seen how the Page fits into a straight and how a normal round without Arcana works. Round 2 will show what happens when a Page appears on the board."
       }
     },
     "round2": {
       "arcanaPending": {
-        "title": "A Page Appears",
+        "title": "A Page appears",
         "body": "The Page of Clubs has appeared on the board. Whenever a Page lands on the community, the dealer draws a card from the Arcana deck — a separate 22-card deck of Major Arcana that can reshape the rules of the game."
       },
       "arcanaRevealed": {
@@ -284,7 +284,7 @@
         "body": "The Fool is a wildcard — it becomes whatever card best completes each player's hand. For you, it becomes a King, giving you 10 → J → Q → K → A — a royal flush. For Mystic, it becomes an Ace, completing four of a kind. A royal flush beats four of a kind."
       },
       "roundEnd": {
-        "title": "Tutorial Complete",
+        "title": "Tutorial complete",
         "body": "Those are the two mechanics that make Arcane Poker different: the Page card, which expands the deck and shifts hand rankings, and the Arcana deck, which can rewrite the rules mid-game."
       }
     }

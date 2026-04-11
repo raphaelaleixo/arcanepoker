@@ -56,6 +56,6 @@ describe('ActionButtons', () => {
         onRaiseOrAllIn={() => {}}
       />
     );
-    expect(getByText('All-In 30')).not.toBeNull();
+    expect(getByText('All-in 30')).not.toBeNull();
   });
 });
