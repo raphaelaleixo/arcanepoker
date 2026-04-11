@@ -240,8 +240,37 @@ function checkPageTrigger(
 }
 
 /**
+ * Silently swap a Page out of an AI player's hand, replacing it with the top
+ * deck card and putting the freed Page back into the deck.
+ */
+function freePageFromAI(state: StoreGameState): StoreGameState {
+  for (const player of state.players) {
+    if (player.type !== "ai") continue;
+    const pageIdx = player.holeCards.findIndex((c) => c.value === "0");
+    if (pageIdx === -1) continue;
+
+    const page = player.holeCards[pageIdx];
+    const [replacement, ...restDeck] = state.deck;
+    if (!replacement) continue;
+
+    const newHoleCards = [...player.holeCards];
+    newHoleCards[pageIdx] = replacement;
+
+    return {
+      ...state,
+      deck: [...restDeck, page],
+      players: state.players.map((p) =>
+        p.id === player.id ? { ...p, holeCards: newHoleCards } : p
+      ),
+    };
+  }
+  return state;
+}
+
+/**
  * Draw `count` cards for community dealing.
  * Prefers communityCardQueue when available, falls back to the shuffled deck.
+ * When forceNextPage is set, ensures the first card dealt is a Page.
  */
 function drawCommunityCards(
   state: StoreGameState,
@@ -251,11 +280,36 @@ function drawCommunityCards(
   if (queue && queue.length >= count) {
     return {
       dealt: queue.slice(0, count),
-      nextState: { ...state, communityCardQueue: queue.slice(count) },
+      nextState: { ...state, communityCardQueue: queue.slice(count), forceNextPage: false },
     };
   }
+
+  if (state.forceNextPage) {
+    let workingState = state;
+    let pageIndex = workingState.deck.findIndex((c) => c.value === "0");
+
+    if (pageIndex === -1) {
+      workingState = freePageFromAI(workingState);
+      pageIndex = workingState.deck.findIndex((c) => c.value === "0");
+    }
+
+    if (pageIndex !== -1) {
+      const page = workingState.deck[pageIndex];
+      const deckWithoutPage = [
+        ...workingState.deck.slice(0, pageIndex),
+        ...workingState.deck.slice(pageIndex + 1),
+      ];
+      const rest = deckWithoutPage.slice(0, count - 1);
+      const remaining = deckWithoutPage.slice(count - 1);
+      return {
+        dealt: [page, ...rest],
+        nextState: { ...workingState, deck: remaining, forceNextPage: false },
+      };
+    }
+  }
+
   const { dealt, remaining } = dealCards(state.deck, count);
-  return { dealt, nextState: { ...state, deck: remaining } };
+  return { dealt, nextState: { ...state, deck: remaining, forceNextPage: false } };
 }
 
 /**
@@ -1348,6 +1402,9 @@ export function gameReducer(
         ),
       };
     }
+
+    case "TOGGLE_FORCE_NEXT_PAGE":
+      return { ...state, forceNextPage: !state.forceNextPage };
 
     case "TUTORIAL_OVERRIDE_DEAL": {
       const { dealerIndex, playerHoleCards, communityCardQueue, arcanaOverride } = action.payload;

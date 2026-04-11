@@ -5,6 +5,7 @@ import {
   Drawer,
   Link,
   List,
+  Switch,
   ListItem,
   TextField,
   Typography,
@@ -271,6 +272,21 @@ export function PlaygroundDrawer({
           >
             Arcana Effects
           </Typography>
+
+          <Box sx={{ display: "flex", alignItems: "center", px: 2, py: 0.5 }}>
+            <Typography
+              variant="caption"
+              sx={{ color: "silver.light", flex: 1, fontSize: "0.7rem" }}
+            >
+              Force Next Page
+            </Typography>
+            <Switch
+              size="small"
+              checked={!!state.forceNextPage}
+              disabled={!isValidStage}
+              onChange={() => dispatch({ type: "TOGGLE_FORCE_NEXT_PAGE" })}
+            />
+          </Box>
 
           {!isValidStage && (
             <Typography

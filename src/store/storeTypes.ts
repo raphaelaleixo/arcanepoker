@@ -114,6 +114,8 @@ export interface StoreGameState {
   ruinsPotReady: boolean;
   /** IDs of players who have bet/raised while Judgement is active; they may not fold. */
   judgementCommittedIds: string[];
+  /** Dev: force next community card to be a Page. Auto-resets after dealing. */
+  forceNextPage?: boolean;
 
   // ── Results ──────────────────────────────────────────────────────────────────
   winnerIds: string[];
@@ -156,6 +158,7 @@ export type GameAction =
   | { type: "RESOLVE_PRIESTESS"; payload: { card: StandardCard } }
   | { type: "DEV_FORCE_GAME_OVER" }
   | { type: "SET_PLAYER_STACK"; payload: { playerId: string; stack: number } }
+  | { type: "TOGGLE_FORCE_NEXT_PAGE" }
   | {
       type: "TUTORIAL_OVERRIDE_DEAL";
       payload: {

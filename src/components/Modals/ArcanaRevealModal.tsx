@@ -20,8 +20,28 @@ type TarotEntry = {
 };
 
 const ROMAN = [
-  "0", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X",
-  "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX", "XXI",
+  "0",
+  "I",
+  "II",
+  "III",
+  "IV",
+  "V",
+  "VI",
+  "VII",
+  "VIII",
+  "IX",
+  "X",
+  "XI",
+  "XII",
+  "XIII",
+  "XIV",
+  "XV",
+  "XVI",
+  "XVII",
+  "XVIII",
+  "XIX",
+  "XX",
+  "XXI",
 ];
 
 const toRoman = (value: string) => ROMAN[Number(value)] ?? value;
@@ -72,8 +92,21 @@ export function ArcanaRevealModal({
       </DialogTitle>
 
       <DialogContent sx={{ py: 3 }}>
-        <Stack direction="row" alignItems="flex-start" spacing={2} useFlexGap sx={{ pt: 3 }}>
-          <Box sx={{ display: "inline-block", scale: 0.7, flexShrink: 0 }}>
+        <Stack
+          direction="row"
+          alignItems="flex-start"
+          spacing={2}
+          useFlexGap
+          sx={{ pt: 3 }}
+        >
+          <Box
+            sx={{
+              display: "inline-block",
+              scale: 0.9,
+              flexShrink: 0,
+              transformOrigin: "top center",
+            }}
+          >
             <PlayingCard
               rank={arcanaCard.value as ArcanaValue}
               suit={arcanaCard.suit as ArcanaSuit}
@@ -88,7 +121,7 @@ export function ArcanaRevealModal({
                 sx={{
                   color: "primary.main",
                   fontWeight: "bold",
-                  fontSize: "1.05rem",
+                  fontSize: "1.125rem",
                   fontFamily: 'Young Serif, "Georgia", serif',
                 }}
               >
@@ -110,7 +143,7 @@ export function ArcanaRevealModal({
               {info.gameEffect && (
                 <Typography
                   variant="caption"
-                  sx={{ color: "white", fontSize: "0.85rem", lineHeight: 1.5 }}
+                  sx={{ color: "white", fontSize: "1rem", lineHeight: 1.5 }}
                 >
                   {info.gameEffect}
                 </Typography>
@@ -119,7 +152,8 @@ export function ArcanaRevealModal({
                 variant="caption"
                 sx={{
                   color: "gold.light",
-                  fontSize: "0.75rem",
+                  fontSize: "0.875rem",
+                  lineHeight: 1.3,
                   fontStyle: "italic",
                   mt: 0.5,
                 }}
