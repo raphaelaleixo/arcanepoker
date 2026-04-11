@@ -1,5 +1,6 @@
 // src/tutorial/tutorialScript.ts
 import type { StandardCard, ArcanaCard, GameStage } from "../types/types";
+import type { TranslationKey } from "../i18n";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -16,8 +17,8 @@ export type CardHighlight =
 
 export interface TutorialNarration {
   trigger: TutorialTrigger;
-  title: string;
-  body: string;
+  titleKey: TranslationKey;
+  bodyKey: TranslationKey;
   highlightCards?: CardHighlight[];
 }
 
@@ -120,19 +121,19 @@ const ROUND_1: TutorialRound = {
   narrations: [
     {
       trigger: "intro",
-      title: "Welcome to Arcane Poker",
-      body: "This is a guided tutorial. You'll play two scripted hands to learn the core mechanics: how the Page card works in straights, and how Arcana cards can flip the rules mid-game. Bots won't act until you dismiss each panel.",
+      titleKey: "tutorial.round1.intro.title",
+      bodyKey: "tutorial.round1.intro.body",
     },
     {
       trigger: "hole-cards-page",
-      title: "The Page Card (0)",
-      body: "You've been dealt the Page of Hearts — value 0. Arcane Poker adds a Page to each suit, making 56 cards in total. Because there are now 14 cards per suit instead of 13, straights are harder to hit — so in this game, a straight beats a flush.",
+      titleKey: "tutorial.round1.holeCardsPage.title",
+      bodyKey: "tutorial.round1.holeCardsPage.body",
       highlightCards: [{ type: "hole", playerId: "hero", cardIndex: 0 }],
     },
     {
       trigger: "showdown",
-      title: "The Page in a Straight",
-      body: "Your Page of Hearts connects before the Ace: Page → A → 2 → 3 → 4. That's a straight — and because straights beat flushes in Arcane Poker, it beats Swordsman's flush in spades.",
+      titleKey: "tutorial.round1.showdown.title",
+      bodyKey: "tutorial.round1.showdown.body",
       highlightCards: [
         { type: "hole", playerId: "hero", cardIndex: 0 },
         { type: "hole", playerId: "hero", cardIndex: 1 },
@@ -143,13 +144,13 @@ const ROUND_1: TutorialRound = {
     },
     {
       trigger: "page-bonus",
-      title: "Page Winner Bonus",
-      body: "Because you won with a Page in your hand, every other player pays you one big blind. This is the `Challenge of the Page.",
+      titleKey: "tutorial.round1.pageBonus.title",
+      bodyKey: "tutorial.round1.pageBonus.body",
     },
     {
       trigger: "round-end",
-      title: "Round 1 Complete",
-      body: "You've seen how the Page fits into a straight and how a normal round without Arcana works. Round 2 will show what happens when a Page appears on the board.",
+      titleKey: "tutorial.round1.roundEnd.title",
+      bodyKey: "tutorial.round1.roundEnd.body",
     },
   ],
 };
@@ -228,20 +229,20 @@ const ROUND_2: TutorialRound = {
   narrations: [
     {
       trigger: "arcana-pending",
-      title: "A Page Appears",
-      body: "The Page of Clubs has appeared on the board. Whenever a Page lands on the community, the dealer draws a card from the Arcana deck — a separate 22-card deck of Major Arcana that can reshape the rules of the game.",
+      titleKey: "tutorial.round2.arcanaPending.title",
+      bodyKey: "tutorial.round2.arcanaPending.body",
       highlightCards: [{ type: "community", communityIndex: 2 }],
     },
     {
       trigger: "arcana-revealed",
-      title: "The Fool",
-      body: "Each Arcana card carries a different effect — some change hand rankings, some flip the rules entirely. This time, The Fool has landed: it replaces the Page and acts as a wildcard, becoming whatever card value best completes each player's hand.",
+      titleKey: "tutorial.round2.arcanaRevealed.title",
+      bodyKey: "tutorial.round2.arcanaRevealed.body",
       highlightCards: [{ type: "community", communityIndex: 2 }],
     },
     {
       trigger: "showdown",
-      title: "The Fool as a King",
-      body: "The Fool is a wildcard — it becomes whatever card best completes each player's hand. For you, it becomes a King, giving you 10 → J → Q → K → A — a royal flush. For Mystic, it becomes an Ace, completing four of a kind. A royal flush beats four of a kind.",
+      titleKey: "tutorial.round2.showdown.title",
+      bodyKey: "tutorial.round2.showdown.body",
       highlightCards: [
         { type: "hole", playerId: "hero", cardIndex: 0 },
         { type: "hole", playerId: "hero", cardIndex: 1 },
@@ -252,8 +253,8 @@ const ROUND_2: TutorialRound = {
     },
     {
       trigger: "round-end",
-      title: "Tutorial Complete",
-      body: "Those are the two mechanics that make Arcane Poker different: the Page card, which expands the deck and shifts hand rankings, and the Arcana deck, which can rewrite the rules mid-game.",
+      titleKey: "tutorial.round2.roundEnd.title",
+      bodyKey: "tutorial.round2.roundEnd.body",
     },
   ],
 };

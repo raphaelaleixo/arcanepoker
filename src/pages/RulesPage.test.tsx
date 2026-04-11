@@ -4,12 +4,15 @@ import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { ThemeProvider } from "@mui/material";
 import { theme } from "../theme";
+import { SettingsProvider } from "../store/SettingsContext";
 import { RulesPage } from "./RulesPage";
 
 function renderWithProviders(ui: ReactElement) {
   return render(
     <MemoryRouter>
-      <ThemeProvider theme={theme}>{ui}</ThemeProvider>
+      <SettingsProvider>
+        <ThemeProvider theme={theme}>{ui}</ThemeProvider>
+      </SettingsProvider>
     </MemoryRouter>
   );
 }

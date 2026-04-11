@@ -10,6 +10,7 @@ import { makeAIDecision } from "../engine/ai";
 import { buildEvalOptions } from "./gameReducer";
 import type { GameBot } from "./storeTypes";
 import { GameContext } from "./context";
+import { useSettings } from "./SettingsContext";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -20,15 +21,16 @@ const BOT_THINK_MAX_MS = 2000;
 // ─── Provider ─────────────────────────────────────────────────────────────────
 
 export function GameProvider({ children, isTutorial = false }: { children: ReactNode; isTutorial?: boolean }) {
-  const [state, dispatch] = useReducer(gameReducer, createInitialState());
+  const { language } = useSettings();
+  const [state, dispatch] = useReducer(gameReducer, language, createInitialState);
 
-  const startGame = useCallback(() => dispatch({ type: "START_GAME" }), []);
+  const startGame = useCallback(() => dispatch({ type: "START_GAME", language }), [language]);
 
   // Auto-start on mount (suppressed in tutorial — TutorialContext controls hand start)
   useEffect(() => {
     if (isTutorial) return;
-    dispatch({ type: "START_GAME" });
-  }, [isTutorial]);
+    dispatch({ type: "START_GAME", language });
+  }, [isTutorial, language]);
 
   // Auto-run bot turns (suppressed in tutorial — TutorialContext drives bot actions)
   useEffect(() => {

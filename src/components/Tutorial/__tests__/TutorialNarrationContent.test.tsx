@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, fireEvent } from '@testing-library/react';
+import type { TranslationKey } from '../../../i18n';
 
 const mockDismiss = vi.fn();
 const mockUseTutorial = vi.fn();
@@ -9,17 +10,25 @@ vi.mock('../../../tutorial/TutorialContext', () => ({
 }));
 
 import { TutorialNarrationContent } from '../TutorialNarrationContent';
+import { SettingsProvider } from '../../../store/SettingsContext';
 
 function makeNarrationMock() {
   return {
     isTutorial: true as const,
-    narration: { title: 'The Page Card', body: 'Lowest card in isolation.' },
+    narration: {
+      titleKey: 'tutorial.round1.holeCardsPage.title' as TranslationKey,
+      bodyKey: 'tutorial.round1.holeCardsPage.body' as TranslationKey,
+    },
     dismissNarration: mockDismiss,
     tutorialAllowedAction: null,
     isComplete: false,
     highlightCards: null,
     currentRound: 1 as const,
   };
+}
+
+function renderWithProviders(ui: React.ReactElement) {
+  return render(<SettingsProvider>{ui}</SettingsProvider>);
 }
 
 beforeEach(() => {
@@ -29,25 +38,25 @@ beforeEach(() => {
 
 describe('TutorialNarrationContent', () => {
   it('renders the narration title and body', () => {
-    const { getByText } = render(<TutorialNarrationContent />);
+    const { getByText } = renderWithProviders(<TutorialNarrationContent />);
     expect(getByText(/The Page Card/)).not.toBeNull();
-    expect(getByText(/Lowest card in isolation/)).not.toBeNull();
+    expect(getByText(/You've been dealt the Page of Hearts/)).not.toBeNull();
   });
 
   it('renders the label with title', () => {
-    const { getByText } = render(<TutorialNarrationContent />);
+    const { getByText } = renderWithProviders(<TutorialNarrationContent />);
     expect(getByText(/Tutorial · The Page Card/)).not.toBeNull();
   });
 
   it('calls dismissNarration when Next button is clicked', () => {
-    const { getByText } = render(<TutorialNarrationContent />);
+    const { getByText } = renderWithProviders(<TutorialNarrationContent />);
     fireEvent.click(getByText('Next →'));
     expect(mockDismiss).toHaveBeenCalledOnce();
   });
 
   it('renders nothing when narration is null', () => {
     mockUseTutorial.mockReturnValue({ ...makeNarrationMock(), narration: null });
-    const { container } = render(<TutorialNarrationContent />);
+    const { container } = renderWithProviders(<TutorialNarrationContent />);
     expect(container.firstChild).toBeNull();
   });
 });

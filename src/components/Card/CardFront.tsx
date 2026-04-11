@@ -12,7 +12,8 @@ import { CupsSuitArt } from "./CupsSuitArt";
 import { PentaclesSuitArt } from "./PentaclesSuitArt";
 import { CardRankSuit } from "./CardRankSuit";
 import { ArcanaArt } from "./ArcanaArt";
-import tarot from "../../data/tarot";
+import getTarotData from "../../data/tarot";
+import { useTranslation } from "../../i18n";
 import { Foil } from "./Foil";
 
 interface PlayingCard {
@@ -28,6 +29,8 @@ export const CardFront: FC<PlayingCard> = ({
   small = false,
   sx,
 }) => {
+  const { language } = useTranslation();
+  const tarot = getTarotData(language);
   const suitColor =
     rank === "21"
       ? "rose.main"

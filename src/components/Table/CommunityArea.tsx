@@ -5,7 +5,8 @@
 import { Box } from "@mui/material";
 import type { SxProps } from "@mui/material";
 import { useGame } from "../../store/useGame";
-import tarot from "../../data/tarot";
+import getTarotData from "../../data/tarot";
+import { useTranslation } from "../../i18n";
 import type { ArcanaCard } from "../../types/types";
 import { CommunityCards } from "./CommunityCards";
 import { PotDisplay } from "./PotDisplay";
@@ -21,6 +22,7 @@ interface CommunityAreaProps {
 
 export function CommunityArea({ sx, onOpenPageInfo }: CommunityAreaProps) {
   const { state } = useGame();
+  const { language } = useTranslation();
   const demo3 = useDemo3Optional();
 
   const totalSlots =
@@ -41,7 +43,7 @@ export function CommunityArea({ sx, onOpenPageInfo }: CommunityAreaProps) {
   const arcanaCardToShow =
     pendingArcanaCard ?? demo3?.displayArcana ?? state.activeArcana?.card ?? null;
 
-  const tarotLookup = tarot.arcana as Record<
+  const tarotLookup = getTarotData(language).arcana as Record<
     string,
     { fullName: string; gameEffect?: string }
   >;

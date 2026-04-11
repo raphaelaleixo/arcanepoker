@@ -13,6 +13,7 @@ import { buildEvalOptions } from "../../store/gameReducer";
 import type { StandardCard } from "../../types/types";
 import { Minimize } from "@mui/icons-material";
 import { GOLD_DIVIDER_SX } from "../../theme";
+import { useTranslation } from "../../i18n";
 import { ArcaneDialog } from "./ArcaneDialog";
 import { CardEntry } from "./CardEntry";
 import { getTarotInfo } from "../../data/getTarotInfo";
@@ -32,6 +33,7 @@ export function TarotModal({
   onMinimize,
 }: TarotModalProps) {
   const { state } = useGame();
+  const { t, language } = useTranslation();
 
   const hero = state.players.find((p) => p.id === HERO_ID_CONST);
   const heroCards = hero?.holeCards ?? [];
@@ -59,13 +61,13 @@ export function TarotModal({
   return (
     <ArcaneDialog
       open
-      title="Your Cards Speak"
+      title={t("tarotModal.yourCardsSpeak")}
       titleAction={
         <IconButton
           size="small"
           onClick={onMinimize}
           sx={{ position: "absolute", right: 16, top: 16, color: "gold.dark" }}
-          title="Minimize"
+          title={t("tarotModal.minimize")}
         >
           <SvgIcon>
             <Minimize />
@@ -75,20 +77,20 @@ export function TarotModal({
       titleSx={{ display: "flex", alignItems: "center", justifyContent: "center", pr: 6 }}
       actions={
         <Button variant="contained" size="small" onClick={handleContinue}>
-          Next Hand
+          {t("table.nextHand")}
         </Button>
       }
     >
       <Stack direction="column" gap={1.5}>
         {bestCards.map((card, i) => {
-          const info = getTarotInfo(card);
+          const info = getTarotInfo(card, language);
           if (!info) return null;
           return <CardEntry key={i} card={card} info={info} />;
         })}
       </Stack>
 
       {arcanaCard && (() => {
-        const info = getTarotInfo(arcanaCard);
+        const info = getTarotInfo(arcanaCard, language);
         if (!info) return null;
         return (
           <>
@@ -102,7 +104,7 @@ export function TarotModal({
                 mb: 1,
               }}
             >
-              Active Arcana
+              {t("tarotModal.activeArcana")}
             </Typography>
             <CardEntry card={arcanaCard} info={info} showGameEffect />
           </>

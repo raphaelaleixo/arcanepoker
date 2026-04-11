@@ -1,13 +1,18 @@
 import { describe, it, expect } from 'vitest';
 import { render } from '@testing-library/react';
+import { SettingsProvider } from '../../../store/SettingsContext';
 import { PlayerCards } from '../PlayerCards';
+
+function renderWithProviders(ui: React.ReactElement) {
+  return render(<SettingsProvider>{ui}</SettingsProvider>);
+}
 
 const ACE_HEARTS = { value: 'A' as const, suit: 'hearts' as const };
 const KING_SPADES = { value: 'K' as const, suit: 'spades' as const };
 
 describe('PlayerCards', () => {
   it('renders placeholder cards when holeCards is empty', () => {
-    const { container } = render(
+    const { container } = renderWithProviders(
       <PlayerCards
         holeCards={[]}
         showFaceUp={false}
@@ -21,7 +26,7 @@ describe('PlayerCards', () => {
   });
 
   it('renders hole cards when provided', () => {
-    const { container } = render(
+    const { container } = renderWithProviders(
       <PlayerCards
         holeCards={[ACE_HEARTS, KING_SPADES]}
         showFaceUp={true}
@@ -36,7 +41,7 @@ describe('PlayerCards', () => {
   });
 
   it('renders with a selected card without crashing', () => {
-    const { container } = render(
+    const { container } = renderWithProviders(
       <PlayerCards
         holeCards={[ACE_HEARTS, KING_SPADES]}
         showFaceUp={true}

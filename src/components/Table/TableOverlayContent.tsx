@@ -19,6 +19,7 @@ import type React from "react";
 import type { StandardCard } from "../../types/types";
 import type { StoreGameState, GameAction } from "../../store/storeTypes";
 import { HERO_ID_CONST } from "../../store/initialState";
+import { useTranslation } from "../../i18n";
 
 interface TableOverlayContentProps {
   cardPickInteraction:
@@ -62,14 +63,16 @@ export function TableOverlayContent({
   onRevealArcana,
   dispatch,
 }: TableOverlayContentProps): React.ReactNode {
+  const { t } = useTranslation();
+
   // ── Card-pick interactions (Priestess reveal / Chariot pass / Star discard) ─
   if (cardPickInteraction) {
     const instructionText =
       cardPickInteraction === "priestess-reveal"
-        ? "Click a card to reveal it to all players."
+        ? t("table.priestessInstruction")
         : cardPickInteraction === "star-discard"
-          ? "Click a card to discard and redraw it."
-          : "Click a card to pass it to the player on your left.";
+          ? t("table.starInstruction")
+          : t("table.chariotInstruction");
 
     return (
       <Stack direction="column" alignItems="center" spacing={1}>
@@ -90,11 +93,11 @@ export function TableOverlayContent({
             disabled={!selectedCard}
             onClick={onConfirmCardPick}
           >
-            Confirm
+            {t("common.confirm")}
           </Button>
           {cardPickInteraction === "star-discard" && (
             <Button variant="outlined" size="small" onClick={onKeepBothStar}>
-              Keep Both
+              {t("table.keepBoth")}
             </Button>
           )}
         </Stack>
@@ -114,14 +117,14 @@ export function TableOverlayContent({
             fontSize: "0.75rem",
           }}
         >
-          The winner holds a Page — all others pay {bigBlind} chips.
+          {t("table.pageChallengeHint", { amount: bigBlind })}
         </Typography>
         <Button
           size="small"
           variant="contained"
           onClick={() => dispatch({ type: "RESOLVE_PAGE_CHALLENGE" })}
         >
-          Challenge of the Page
+          {t("table.challengeOfThePage")}
         </Button>
       </Stack>
     );
@@ -135,7 +138,7 @@ export function TableOverlayContent({
         size="small"
         onClick={onRevealArcana}
       >
-        Reveal Arcana
+        {t("table.revealArcana")}
       </Button>
     );
   }
@@ -152,8 +155,7 @@ export function TableOverlayContent({
             fontWeight: 500,
           }}
         >
-          Discard both hole cards and draw two new ones — or keep your current
-          hand.
+          {t("table.magicianInstruction")}
         </Typography>
         <Stack direction="row" spacing={1}>
           <Button
@@ -163,7 +165,7 @@ export function TableOverlayContent({
               dispatch({ type: "RESOLVE_MAGICIAN", payload: { redraw: true } })
             }
           >
-            Redraw
+            {t("table.redraw")}
           </Button>
           <Button
             variant="outlined"
@@ -172,7 +174,7 @@ export function TableOverlayContent({
               dispatch({ type: "RESOLVE_MAGICIAN", payload: { redraw: false } })
             }
           >
-            Keep Hand
+            {t("table.keepHand")}
           </Button>
         </Stack>
       </Stack>
@@ -196,11 +198,11 @@ export function TableOverlayContent({
       >
         {(communityCards.length > 0 || winnerIds.includes(HERO_ID_CONST)) && (
           <Button variant="outlined" size="small" onClick={onShowTarot}>
-            Tarot reading
+            {t("table.tarotReading")}
           </Button>
         )}
         <Button variant="contained" size="small" onClick={onNextHand}>
-          {isFinalHand ? "Final Results" : "Next Hand"}
+          {isFinalHand ? t("table.finalResults") : t("table.nextHand")}
         </Button>
       </Stack>
     );

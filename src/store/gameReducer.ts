@@ -1321,7 +1321,7 @@ export function gameReducer(
 ): StoreGameState {
   switch (action.type) {
     case "START_GAME":
-      return startHand(createInitialState());
+      return startHand(createInitialState(action.language));
 
     case "PLAYER_ACTION":
       return processPlayerAction(state, action.payload);

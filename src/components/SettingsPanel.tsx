@@ -1,5 +1,6 @@
 import { Link, Stack, Typography } from "@mui/material";
 import { useSettings } from "../store/SettingsContext";
+import { useTranslation } from "../i18n";
 import { SettingSection } from "./SettingSection";
 import { SettingToggle } from "./SettingToggle";
 
@@ -16,52 +17,53 @@ export function SettingsPanel() {
     toggleDevMode,
     togglePlayedTutorial,
   } = useSettings();
+  const { t } = useTranslation();
 
   return (
     <>
-      <SettingSection title="Sound" hideDivider>
+      <SettingSection title={t("settings.sound")} hideDivider>
         <Stack useFlexGap spacing={0}>
-          <SettingToggle label="Music" checked={musicEnabled} onChange={toggleMusic} />
-          <SettingToggle label="Sound Effects" checked={sfxEnabled} onChange={toggleSfx} />
+          <SettingToggle label={t("settings.music")} checked={musicEnabled} onChange={toggleMusic} />
+          <SettingToggle label={t("settings.soundEffects")} checked={sfxEnabled} onChange={toggleSfx} />
         </Stack>
       </SettingSection>
 
-      <SettingSection title="Language">
+      <SettingSection title={t("settings.language")}>
         <Stack useFlexGap spacing={0}>
           <SettingToggle
-            label="Português (BR)"
+            label={t("settings.portugueseBr")}
             checked={language === "pt-br"}
             onChange={() => setLanguage(language === "en" ? "pt-br" : "en")}
           />
         </Stack>
       </SettingSection>
 
-      <SettingSection title="Gameplay">
+      <SettingSection title={t("settings.gameplay")}>
         <Stack useFlexGap spacing={0}>
           <SettingToggle
-            label="Played Tutorial"
+            label={t("settings.playedTutorial")}
             checked={playedTutorial}
             onChange={togglePlayedTutorial}
           />
           <Typography variant="caption" sx={{ color: "silver.dark" }}>
-            Turn off to replay the tutorial on next game start
+            {t("settings.replayTutorialHint")}
           </Typography>
         </Stack>
       </SettingSection>
 
-      <SettingSection title="Developer">
+      <SettingSection title={t("settings.developer")}>
         <Stack useFlexGap spacing={0}>
-          <SettingToggle label="Dev Mode" checked={devMode} onChange={toggleDevMode} />
+          <SettingToggle label={t("settings.devMode")} checked={devMode} onChange={toggleDevMode} />
           <Typography variant="caption" sx={{ color: "silver.dark" }}>
-            Enables the Playground panel during gameplay
+            {t("settings.devModeHint")}
           </Typography>
         </Stack>
       </SettingSection>
 
-      <SettingSection title="Credits">
+      <SettingSection title={t("settings.credits")}>
         <Stack useFlexGap spacing={1}>
           <Typography variant="body2" sx={{ color: "silver.light" }}>
-            Arcane Poker by{" "}
+            {t("common.madeBy")}{" "}
             <Link
               href="https://aleixo.me"
               target="_blank"
@@ -71,7 +73,7 @@ export function SettingsPanel() {
             </Link>
           </Typography>
           <Typography variant="body2" sx={{ color: "silver.light" }}>
-            Licensed under{" "}
+            {t("common.licensedUnder")}{" "}
             <Link
               href="https://creativecommons.org/licenses/by-nc-sa/4.0/"
               target="_blank"
@@ -81,13 +83,13 @@ export function SettingsPanel() {
             </Link>
           </Typography>
           <Typography variant="body2" sx={{ color: "silver.light" }}>
-            Found a bug?{" "}
+            {t("settings.foundBug")}{" "}
             <Link
               href="https://github.com/raphaelaleixo/arcanepoker/issues"
               target="_blank"
               rel="noopener noreferrer"
             >
-              Report it on GitHub
+              {t("settings.reportOnGithub")}
             </Link>
           </Typography>
 
@@ -95,7 +97,7 @@ export function SettingsPanel() {
             variant="overline"
             sx={{ color: "silver.dark", display: "block", mt: 1 }}
           >
-            Sound Credits
+            {t("settings.soundCredits")}
           </Typography>
           <Typography variant="caption" sx={{ color: "silver.dark" }}>
             {/* Add sound attribution entries here */}

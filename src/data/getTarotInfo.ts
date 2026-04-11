@@ -1,14 +1,15 @@
-import tarot from "./tarot";
+import getTarotData from "./tarot";
 import type { CardEntryInfo } from "../components/Modals/CardEntry";
 
 /**
  * Look up the tarot reading info for any card (standard or arcana).
  * Returns null when the card has no entry in the data file.
  */
-export function getTarotInfo(card: {
-  value: string;
-  suit: string;
-}): CardEntryInfo | null {
+export function getTarotInfo(
+  card: { value: string; suit: string },
+  language: "en" | "pt-br" = "en",
+): CardEntryInfo | null {
+  const tarot = getTarotData(language);
   if (card.suit === "arcana") {
     return (tarot.arcana as Record<string, CardEntryInfo>)[card.value] ?? null;
   }

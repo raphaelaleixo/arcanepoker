@@ -3,6 +3,7 @@
  * Pure presentational — all handlers are passed in from ActionBar.
  */
 import { Button, Stack } from "@mui/material";
+import { useTranslation } from "../../i18n";
 
 interface ActionButtonsProps {
   canCheck: boolean;
@@ -49,6 +50,7 @@ export function ActionButtons({
   tutorialAllowedAction,
   demoHighlightedAction,
 }: ActionButtonsProps) {
+  const { t } = useTranslation();
   const tut = tutorialAllowedAction ?? null;
   const demo = demoHighlightedAction ?? null;
 
@@ -85,7 +87,7 @@ export function ActionButtons({
           ...(demo === "fold" ? DEMO_PRESSED_SX : {}),
         }}
       >
-        Fold
+        {t("actions.fold")}
       </Button>
 
       {canCheck ? (
@@ -103,7 +105,7 @@ export function ActionButtons({
             ...(demo === "check" ? DEMO_PRESSED_SX : {}),
           }}
         >
-          Check
+          {t("actions.check")}
         </Button>
       ) : callExceedsStack ? (
         <Button
@@ -118,7 +120,7 @@ export function ActionButtons({
             ...(demo === "all-in" ? DEMO_PRESSED_SX : {}),
           }}
         >
-          All-in {heroStack}
+          {t("actions.allIn")} {heroStack}
         </Button>
       ) : (
         <Button
@@ -133,7 +135,7 @@ export function ActionButtons({
             ...(demo === "call" ? DEMO_PRESSED_SX : {}),
           }}
         >
-          Call {toCall}
+          {t("actions.call")} {toCall}
         </Button>
       )}
 
@@ -152,8 +154,8 @@ export function ActionButtons({
         }}
       >
         {isAllIn
-          ? `All-In (${heroStack})`
-          : `${toCall === 0 ? "Bet" : "Raise"} ${clampedRaise}`}
+          ? `${t("actions.allIn")} (${heroStack})`
+          : `${toCall === 0 ? t("actions.bet") : t("actions.raise")} ${clampedRaise}`}
       </Button>
     </Stack>
   );

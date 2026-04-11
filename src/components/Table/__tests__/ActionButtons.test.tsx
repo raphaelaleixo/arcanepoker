@@ -1,10 +1,15 @@
 import { describe, it, expect } from 'vitest';
 import { render } from '@testing-library/react';
+import { SettingsProvider } from '../../../store/SettingsContext';
 import { ActionButtons } from '../ActionButtons';
+
+function renderWithProviders(ui: React.ReactElement) {
+  return render(<SettingsProvider>{ui}</SettingsProvider>);
+}
 
 describe('ActionButtons', () => {
   it('renders check button when canCheck is true', () => {
-    const { getByText } = render(
+    const { getByText } = renderWithProviders(
       <ActionButtons
         canCheck={true}
         callExceedsStack={false}
@@ -21,7 +26,7 @@ describe('ActionButtons', () => {
   });
 
   it('renders call button with amount when there is a bet to call', () => {
-    const { getByText } = render(
+    const { getByText } = renderWithProviders(
       <ActionButtons
         canCheck={false}
         callExceedsStack={false}
@@ -38,7 +43,7 @@ describe('ActionButtons', () => {
   });
 
   it('renders all-in button when callExceedsStack', () => {
-    const { getByText } = render(
+    const { getByText } = renderWithProviders(
       <ActionButtons
         canCheck={false}
         callExceedsStack={true}
@@ -51,6 +56,6 @@ describe('ActionButtons', () => {
         onRaiseOrAllIn={() => {}}
       />
     );
-    expect(getByText('All-in 30')).not.toBeNull();
+    expect(getByText('All-In 30')).not.toBeNull();
   });
 });

@@ -3,6 +3,25 @@
  * Used by PlayerSeat and its sub-components.
  */
 
+import type { TranslationKey } from "../i18n";
+
+/** Maps a player action string to its translation key. */
+const ACTION_KEY_MAP: Record<string, TranslationKey> = {
+  fold: "actions.fold",
+  check: "actions.check",
+  call: "actions.call",
+  raise: "actions.raise",
+  bet: "actions.bet",
+  "all-in": "actions.allIn",
+  smallBlind: "actions.smallBlind",
+  bigBlind: "actions.bigBlind",
+};
+
+/** Returns the translation key for a player action, or null if unknown. */
+export function actionTranslationKey(action: string): TranslationKey | null {
+  return ACTION_KEY_MAP[action] ?? null;
+}
+
 /** Maps a player action string to a human-readable display label. */
 export function actionLabel(action: string): string {
   switch (action) {
@@ -53,6 +72,11 @@ export function actionColor(
     default:
       return "default";
   }
+}
+
+/** Returns the translation key for a kebab-case hand rank name. */
+export function handRankTranslationKey(rank: string): TranslationKey {
+  return `handRanks.${rank}` as TranslationKey;
 }
 
 /** Converts a kebab-case hand rank to Title Case (e.g. "two-pair" → "Two Pair"). */

@@ -6,12 +6,15 @@ import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import { ThemeProvider } from "@mui/material";
 import { theme } from "../../theme";
+import { SettingsProvider } from "../../store/SettingsContext";
 import { NavFab } from "../NavFab";
 
 function renderWithProviders(ui: ReactElement) {
   return render(
     <MemoryRouter>
-      <ThemeProvider theme={theme}>{ui}</ThemeProvider>
+      <SettingsProvider>
+        <ThemeProvider theme={theme}>{ui}</ThemeProvider>
+      </SettingsProvider>
     </MemoryRouter>
   );
 }

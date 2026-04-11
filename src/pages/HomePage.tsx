@@ -17,6 +17,7 @@ import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import backgroundUrl from "../assets/background.svg?url";
 import { useNavigateWithTransition } from "../hooks/useNavigateWithTransition";
 import { useSettings } from "../store/SettingsContext";
+import { useTranslation } from "../i18n";
 import { ARCANE_MENU_PAPER_SX, ARCANE_MENU_LIST_SX } from "../theme";
 import { SettingsDialog } from "../components/SettingsDialog";
 
@@ -51,6 +52,7 @@ const bgBoxStyles = {
 export function HomePage() {
   const navigateWithTransition = useNavigateWithTransition();
   const { playedTutorial, setPlayedTutorial } = useSettings();
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const anchorRef = useRef<HTMLDivElement>(null);
@@ -96,7 +98,7 @@ export function HomePage() {
                 textBox: "trim-both ex alphabetic",
               }}
             >
-              Arcane Poker
+              {t("common.appTitle")}
             </Typography>
             <ButtonGroup
               variant="contained"
@@ -112,7 +114,7 @@ export function HomePage() {
                   navigateWithTransition("/game");
                 }
               }}>
-                start new game
+                {t("nav.startNewGame")}
               </Button>
               <Button
                 size="small"
@@ -153,7 +155,7 @@ export function HomePage() {
                             navigateWithTransition("/tutorial");
                           }}
                         >
-                          Tutorial
+                          {t("nav.tutorial")}
                         </MenuItem>
                         <MenuItem
                           onClick={() => {
@@ -161,7 +163,7 @@ export function HomePage() {
                             navigateWithTransition("/rules", "fade");
                           }}
                         >
-                          Learn to Play
+                          {t("nav.learnToPlay")}
                         </MenuItem>
                         <MenuItem
                           onClick={() => {
@@ -169,7 +171,7 @@ export function HomePage() {
                             setSettingsOpen(true);
                           }}
                         >
-                          Settings
+                          {t("nav.settings")}
                         </MenuItem>
                       </MenuList>
                     </ClickAwayListener>
@@ -211,7 +213,7 @@ export function HomePage() {
             lineHeight={1.2}
             fontSize="0.65em"
           >
-            Arcane Poker by{" "}
+            {t("common.madeBy")}{" "}
             <HtmlLink
               href="https://aleixo.me"
               target="_blank"
@@ -228,7 +230,7 @@ export function HomePage() {
             fontSize="0.65em"
             component="div"
           >
-            Licensed under{" "}
+            {t("common.licensedUnder")}{" "}
             <HtmlLink
               href="https://creativecommons.org/licenses/by-nc-sa/4.0/"
               target="_blank"

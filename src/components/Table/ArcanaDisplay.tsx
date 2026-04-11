@@ -10,7 +10,8 @@ import { useEffect, useRef } from "react";
 import { keyframes } from "@emotion/react";
 import { Box, Stack, Typography } from "@mui/material";
 import type { ArcanaCard } from "../../types/types";
-import tarot from "../../data/tarot";
+import getTarotData from "../../data/tarot";
+import { useTranslation } from "../../i18n";
 import { HEADING_FONT } from "../../theme";
 
 const ROMAN = [
@@ -60,6 +61,8 @@ export function ArcanaDisplay({
   pendingArcanaCard,
   displayArcanaData,
 }: ArcanaDisplayProps) {
+  const { language } = useTranslation();
+  const tarot = getTarotData(language);
   // Keep the last revealed name/effect frozen while the card is pending (facedown).
   // Without this, the revealed box fades out while already showing the *new* card's
   // name, causing a brief flash of the next arcana's text.

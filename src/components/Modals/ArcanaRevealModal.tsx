@@ -2,6 +2,7 @@ import { Box, Button, Stack, Typography } from "@mui/material";
 import type { ArcanaCard, ArcanaValue, ArcanaSuit } from "../../types/types";
 import { PlayingCard } from "../Card/PlayingCard";
 import { HEADING_FONT } from "../../theme";
+import { useTranslation } from "../../i18n";
 import { ArcaneDialog } from "./ArcaneDialog";
 import { getTarotInfo } from "../../data/getTarotInfo";
 
@@ -23,17 +24,19 @@ export function ArcanaRevealModal({
   arcanaCard,
   onDismiss,
 }: ArcanaRevealModalProps) {
+  const { t, language } = useTranslation();
+
   if (!arcanaCard) return null;
 
-  const info = getTarotInfo(arcanaCard);
+  const info = getTarotInfo(arcanaCard, language);
 
   return (
     <ArcaneDialog
       open={open}
-      title="A Major Arcana Reveals Itself"
+      title={t("table.arcanaRevealsItself")}
       actions={
         <Button variant="contained" size="small" onClick={onDismiss}>
-          Accept Fate
+          {t("table.acceptFate")}
         </Button>
       }
     >

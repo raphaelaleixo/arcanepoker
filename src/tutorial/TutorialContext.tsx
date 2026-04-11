@@ -12,13 +12,15 @@ import {
 import { useGame } from "../store/useGame";
 import { TUTORIAL_ROUNDS, type TutorialNarration, type CardHighlight } from "./tutorialScript";
 import type { StandardCard, ActionType } from "../types/types";
+import type { TranslationKey } from "../i18n";
+import { useSettings } from "../store/SettingsContext";
 
 // ─── Context shape ────────────────────────────────────────────────────────────
 
 interface TutorialContextValue {
   isTutorial: true;
   currentRound: 1 | 2;
-  narration: { title: string; body: string } | null;
+  narration: { titleKey: TranslationKey; bodyKey: TranslationKey } | null;
   /** The one action the hero may take right now; null when it is not hero's turn. */
   tutorialAllowedAction: string | null;
   isComplete: boolean;
@@ -43,7 +45,7 @@ export function useTutorialOptional(): TutorialContextValue | null {
 
 interface TutorialState {
   currentRound: 1 | 2;
-  narration: { title: string; body: string } | null;
+  narration: { titleKey: TranslationKey; bodyKey: TranslationKey } | null;
   pendingDispatchOnDismiss: (() => void) | null;
 }
 
@@ -57,7 +59,7 @@ function tutorialReducer(state: TutorialState, action: TutorialAction): Tutorial
     case "SHOW_NARRATION":
       return {
         ...state,
-        narration: { title: action.narration.title, body: action.narration.body },
+        narration: { titleKey: action.narration.titleKey, bodyKey: action.narration.bodyKey },
         pendingDispatchOnDismiss: action.onDismiss ?? null,
       };
     case "DISMISS_NARRATION":
@@ -76,6 +78,7 @@ const HERO_ID = "hero";
 
 export function TutorialProvider({ children }: { children: ReactNode }) {
   const { state: gameState, dispatch: gameDispatch } = useGame();
+  const { language } = useSettings();
 
   const [tutState, tutDispatch] = useReducer(tutorialReducer, {
     currentRound: 1,
@@ -135,7 +138,7 @@ export function TutorialProvider({ children }: { children: ReactNode }) {
     if (startGameFiredRef.current) return;
     startGameFiredRef.current = true;
     handInitializedRef.current = false; // ensure override runs after this START_GAME
-    gameDispatch({ type: "START_GAME" });
+    gameDispatch({ type: "START_GAME", language });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Bot action queue ──────────────────────────────────────────────────────
@@ -299,7 +302,7 @@ export function TutorialProvider({ children }: { children: ReactNode }) {
   // ── Highlight cards ───────────────────────────────────────────────────────
 
   const matchedNarration = tutState.narration
-    ? getCurrentScript().narrations.find((n) => n.title === tutState.narration!.title)
+    ? getCurrentScript().narrations.find((n) => n.titleKey === tutState.narration!.titleKey)
     : null;
   const highlightCards: CardHighlight[] | null = matchedNarration?.highlightCards ?? null;
 
@@ -334,7 +337,7 @@ export function TutorialProvider({ children }: { children: ReactNode }) {
   const dismissNarration = useCallback(() => {
     const n = tutStateRef.current.narration;
     const script = getCurrentScript();
-    const matchingNarration = script.narrations.find((nr) => nr.title === n?.title);
+    const matchingNarration = script.narrations.find((nr) => nr.titleKey === n?.titleKey);
     const trigger = matchingNarration?.trigger;
 
     if (trigger === "round-end") {

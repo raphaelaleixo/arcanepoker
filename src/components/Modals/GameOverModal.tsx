@@ -5,12 +5,14 @@
 import { Box, Button, Divider, Stack, Typography } from "@mui/material";
 import { useGame } from "../../store/useGame";
 import { HERO_ID_CONST } from "../../store/initialState";
+import { useTranslation } from "../../i18n";
 import { ArcaneDialog } from "./ArcaneDialog";
 import { CardEntry } from "./CardEntry";
 import { getTarotInfo } from "../../data/getTarotInfo";
 
 export function GameOverModal() {
   const { state, dispatch } = useGame();
+  const { t, language } = useTranslation();
 
   if (state.stage !== "game-over") return null;
 
@@ -19,15 +21,15 @@ export function GameOverModal() {
   );
   const heroWon = heroAlive && !state.isFinalHand;
   const title = heroWon
-    ? "Fortune Favors You!"
+    ? t("gameOver.wonTitle")
     : heroAlive
-      ? "The World's Decree"
-      : "Eliminated";
+      ? t("gameOver.finalHandTitle")
+      : t("gameOver.eliminatedTitle");
   const subtitle = heroWon
-    ? "You outlasted every challenger. The arcane table is yours."
+    ? t("gameOver.wonSubtitle")
     : heroAlive
-      ? "The World has spoken — the game is complete."
-      : "Your chips have run dry. The arcane table claims another soul.";
+      ? t("gameOver.finalHandSubtitle")
+      : t("gameOver.eliminatedSubtitle");
 
   const standings = [...state.players].sort((a, b) => b.stack - a.stack);
 
@@ -58,15 +60,15 @@ export function GameOverModal() {
         <Button
           size="small"
           variant="contained"
-          onClick={() => dispatch({ type: "START_GAME" })}
+          onClick={() => dispatch({ type: "START_GAME", language })}
         >
-          Play Again
+          {t("common.playAgain")}
         </Button>
       }
     >
       {heroAlive && !heroWon &&
         (() => {
-          const info = getTarotInfo({ value: "21", suit: "arcana" });
+          const info = getTarotInfo({ value: "21", suit: "arcana" }, language);
           if (!info) return null;
           return (
             <>

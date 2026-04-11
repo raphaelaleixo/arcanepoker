@@ -1,8 +1,11 @@
 import { Box, Typography } from "@mui/material";
 import { SettingsPanel } from "../components/SettingsPanel";
+import { useTranslation } from "../i18n";
 import { HEADING_FONT } from "../theme";
 
 export function SettingsPage() {
+  const { t } = useTranslation();
+
   return (
     <Box
       sx={{
@@ -20,7 +23,7 @@ export function SettingsPage() {
           mb: 3,
         }}
       >
-        Settings
+        {t("settings.title")}
       </Typography>
 
       <SettingsPanel />

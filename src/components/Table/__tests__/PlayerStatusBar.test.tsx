@@ -1,10 +1,15 @@
 import { describe, it, expect } from 'vitest';
 import { render } from '@testing-library/react';
+import { SettingsProvider } from '../../../store/SettingsContext';
 import { PlayerStatusBar } from '../PlayerStatusBar';
+
+function renderWithProviders(ui: React.ReactElement) {
+  return render(<SettingsProvider>{ui}</SettingsProvider>);
+}
 
 describe('PlayerStatusBar', () => {
   it('renders without crashing with minimal props', () => {
-    const { container } = render(
+    const { container } = renderWithProviders(
       <PlayerStatusBar
         currentAction={null}
         handResult={undefined}
@@ -16,7 +21,7 @@ describe('PlayerStatusBar', () => {
   });
 
   it('action chip is visible when showHandResult is false', () => {
-    const { getByText } = render(
+    const { getByText } = renderWithProviders(
       <PlayerStatusBar
         currentAction="raise"
         handResult={undefined}
@@ -24,13 +29,13 @@ describe('PlayerStatusBar', () => {
         showHandResult={false}
       />
     );
-    const actionEl = getByText('raise', { exact: false });
+    const actionEl = getByText(/raise/i);
     expect(actionEl).toBeTruthy();
     expect(actionEl.style.visibility).not.toBe('hidden');
   });
 
   it('action chip text is still in DOM when showHandResult is true (opacity fades via CSS)', () => {
-    const { getByText } = render(
+    const { getByText } = renderWithProviders(
       <PlayerStatusBar
         currentAction="raise"
         handResult={undefined}
@@ -39,12 +44,12 @@ describe('PlayerStatusBar', () => {
       />
     );
     // Element remains in DOM (opacity 0 via CSS), not removed
-    const actionEl = getByText('raise', { exact: false });
+    const actionEl = getByText(/raise/i);
     expect(actionEl).toBeTruthy();
   });
 
   it('hand rank is visible at showdown', () => {
-    const { getByText } = render(
+    const { getByText } = renderWithProviders(
       <PlayerStatusBar
         currentAction={null}
         handResult={{ rankName: 'two-pair' }}

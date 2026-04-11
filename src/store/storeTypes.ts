@@ -141,7 +141,7 @@ export interface StoreGameState {
 // ─── Actions ──────────────────────────────────────────────────────────────────
 
 export type GameAction =
-  | { type: "START_GAME" }
+  | { type: "START_GAME"; language?: "en" | "pt-br" }
   | {
       type: "PLAYER_ACTION";
       payload: { playerId: string; action: ActionType; amount?: number };

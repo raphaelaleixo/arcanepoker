@@ -14,7 +14,7 @@ import CheckIcon from "@mui/icons-material/Check";
 import { useState, useEffect } from "react";
 import { useGame } from "../../store/useGame";
 import { useSettings } from "../../store/SettingsContext";
-import tarot from "../../data/tarot";
+import getTarotData from "../../data/tarot";
 import type { ArcanaValue } from "../../types/types";
 import { HEADING_FONT } from "../../theme";
 
@@ -29,6 +29,7 @@ const VALID_STAGES = ["pre-flop", "flop", "turn", "river"] as const;
 
 const ARCANA_LIST = Array.from({ length: 22 }, (_, i) => {
   const value = String(i) as ArcanaValue;
+  const tarot = getTarotData();
   const data = (
     tarot.arcana as Record<string, { fullName: string; gameEffect?: string }>
   )[value];

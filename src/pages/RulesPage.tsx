@@ -1,106 +1,16 @@
 import { Box, Divider, Stack, Typography } from "@mui/material";
+import { useTranslation } from "../i18n";
+import type { TranslationKey } from "../i18n";
 
-const ARCANA: { name: string; effect: string }[] = [
-  {
-    name: "The Fool",
-    effect:
-      "Acts as a wildcard; evaluator finds the best possible hand for each player.",
-  },
-  {
-    name: "The Magician",
-    effect:
-      "After the final betting round, each player may discard both hole cards and draw two new ones before the reveal.",
-  },
-  {
-    name: "The High Priestess",
-    effect: "All active players reveal one hole card face up.",
-  },
-  {
-    name: "The Empress",
-    effect: "A 6th community card is dealt after the River.",
-  },
-  {
-    name: "The Emperor",
-    effect:
-      "All hands are treated as high-card hands. Players compare highest card, then next highest, and so on.",
-  },
-  {
-    name: "The Hierophant",
-    effect:
-      "Purges the game of Pages: all Pages are removed from the draw deck, and any Page currently in play is replaced with a new card. For this round, flushes beat straights.",
-  },
-  {
-    name: "The Lovers",
-    effect: "The pot is split between the two best hands.",
-  },
-  {
-    name: "The Chariot",
-    effect: "Active players pass one hole card to the left.",
-  },
-  {
-    name: "Strength",
-    effect: "Card values are inverted — Page is highest, Ace is lowest.",
-  },
-  {
-    name: "The Hermit",
-    effect: "The board is ignored; hands are formed from hole cards only.",
-  },
-  {
-    name: "Wheel of Fortune",
-    effect:
-      "All players' hole cards are shuffled together and redealt. Each player receives the same number of cards they had. Community cards remain unchanged.",
-  },
-  {
-    name: "Justice",
-    effect:
-      "One random player still in the round reveals all cards in their hand. Those cards remain face up for the rest of the round.",
-  },
-  {
-    name: "The Hanged Man",
-    effect: "An all-in player receives a 3rd hole card.",
-  },
-  {
-    name: "Death",
-    effect:
-      "The round ends immediately; hands are compared at the current stage.",
-  },
-  {
-    name: "Temperance",
-    effect:
-      "River reveals 3 cards; each player chooses 1 to keep on the board.",
-  },
-  {
-    name: "The Devil",
-    effect:
-      "The first player to act each post-flop street must bet — checking is forbidden for the opener.",
-  },
-  {
-    name: "The Tower",
-    effect:
-      "Half the pot (rounded up) is set aside as a ruins pot, awarded to the winner of the next round.",
-  },
-  {
-    name: "The Star",
-    effect: "Players may discard 1 hole card and draw a new one.",
-  },
-  {
-    name: "The Moon",
-    effect:
-      "One random community card is turned face down and hidden until showdown, when it is revealed and used normally.",
-  },
-  {
-    name: "The Sun",
-    effect: "Round ends; pot is split equally among active players.",
-  },
-  {
-    name: "Judgement",
-    effect:
-      "Any player who bets or raises may not fold for the remainder of the hand.",
-  },
-  { name: "The World", effect: "Announces the final hand of the entire game." },
-];
+const ARCANA_KEYS: { nameKey: TranslationKey; effectKey: TranslationKey }[] =
+  Array.from({ length: 22 }, (_, i) => ({
+    nameKey: `arcana.${i}.name` as TranslationKey,
+    effectKey: `arcana.${i}.effect` as TranslationKey,
+  }));
 
 export function RulesPage() {
+  const { t } = useTranslation();
+
   return (
     <Box
       sx={{
@@ -117,56 +27,50 @@ export function RulesPage() {
             color: "gold.main",
           }}
         >
-          How to Play
+          {t("rules.howToPlay")}
         </Typography>
 
         <Typography
           variant="body1"
           sx={{ color: "silver.light", opacity: 0.8 }}
         >
-          Arcane Poker follows standard Texas Hold'Em rules with two additions:
-          the Page card and the Major Arcana deck.
+          {t("rules.intro")}
         </Typography>
 
         {/* Section 1: The Page Card */}
         <Stack spacing={1.5}>
           <Typography variant="h5" sx={{ color: "gold.light" }}>
-            The Page Card (0)
+            {t("rules.pageCardTitle")}
           </Typography>
           <Divider sx={{ borderColor: "gold.dark", opacity: 0.4 }} />
-          <Typography variant="body1" sx={{ color: "silver.light" }}>
-            Each suit contains a <strong>Page</strong> card with a value of 0 —
-            the lowest card in a standard comparison. However, in straights, the
-            Page connects <em>before</em> the Ace:{" "}
-            <strong>Page, A, 2, 3, 4</strong> is a valid straight.
-          </Typography>
-          <Typography variant="body1" sx={{ color: "silver.light" }}>
-            <strong>Board trigger:</strong> When a Page is revealed in the
-            community cards, the top card of the Arcana modifier deck is drawn
-            and its effect activates immediately. Only one Arcana card can be
-            active per round — subsequent Pages on the board do not trigger new
-            draws.
-          </Typography>
-          <Typography variant="body1" sx={{ color: "silver.light" }}>
-            <strong>Showdown bonus:</strong> If the winning player holds a Page
-            in their hole cards, all other players (including folded ones) pay
-            them 1 Big Blind.
-          </Typography>
+          <Typography
+            variant="body1"
+            sx={{ color: "silver.light" }}
+            dangerouslySetInnerHTML={{ __html: t("rules.pageCardDesc1") }}
+          />
+          <Typography
+            variant="body1"
+            sx={{ color: "silver.light" }}
+            dangerouslySetInnerHTML={{ __html: t("rules.pageCardBoardTrigger") }}
+          />
+          <Typography
+            variant="body1"
+            sx={{ color: "silver.light" }}
+            dangerouslySetInnerHTML={{ __html: t("rules.pageCardShowdownBonus") }}
+          />
         </Stack>
 
         {/* Section 2: Hand Rankings */}
         <Stack spacing={1.5}>
           <Typography variant="h5" sx={{ color: "gold.light" }}>
-            Hand Rankings
+            {t("rules.handRankingsTitle")}
           </Typography>
           <Divider sx={{ borderColor: "gold.dark", opacity: 0.4 }} />
           <Typography
             variant="body1"
             sx={{ color: "silver.light", opacity: 0.8 }}
           >
-            Arcane Poker uses a modified ranking where a{" "}
-            <strong>Straight beats a Flush</strong>. The odds change below
-            reflects the shift in probability from standard poker.{" "}
+            <span dangerouslySetInnerHTML={{ __html: t("rules.handRankingsDesc") }} />{" "}
             <Typography
               component="a"
               href="http://datagenetics.com/blog/september22016/index.html"
@@ -179,7 +83,7 @@ export function RulesPage() {
                 "&:hover": { opacity: 1 },
               }}
             >
-              Reference
+              {t("rules.reference")}
             </Typography>
           </Typography>
           <Box sx={{ display: "flex", gap: { xs: 1, sm: 2 }, pl: 3, mb: 0.5 }}>
@@ -192,7 +96,7 @@ export function RulesPage() {
                 flexShrink: 0,
               }}
             >
-              Hand
+              {t("rules.tableHand")}
             </Typography>
             <Typography
               variant="caption"
@@ -204,7 +108,7 @@ export function RulesPage() {
                 display: { xs: "none", sm: "block" },
               }}
             >
-              Standard
+              {t("rules.tableStandard")}
             </Typography>
             <Typography
               variant="caption"
@@ -215,13 +119,13 @@ export function RulesPage() {
                 flexShrink: 0,
               }}
             >
-              Arcane
+              {t("rules.tableArcane")}
             </Typography>
             <Typography
               variant="caption"
               sx={{ color: "silver.light", opacity: 0.4 }}
             >
-              Change
+              {t("rules.tableChange")}
             </Typography>
           </Box>
           <Box
@@ -235,65 +139,65 @@ export function RulesPage() {
               "& li::marker": { fontFamily: "Rubik, sans-serif" },
             }}
           >
-            {[
+            {([
               {
-                hand: "Straight Flush",
+                rankKey: "handRanks.straight-flush" as TranslationKey,
                 standard: "0.0015%",
                 arcane: "0.0011%",
                 note: "-25.16%",
               },
               {
-                hand: "Four of a Kind",
+                rankKey: "handRanks.four-of-a-kind" as TranslationKey,
                 standard: "0.0240%",
                 arcane: "0.0190%",
                 note: "-20.62%",
               },
               {
-                hand: "Full House",
+                rankKey: "handRanks.full-house" as TranslationKey,
                 standard: "0.1440%",
                 arcane: "0.1143%",
                 note: "-20.62%",
               },
               {
-                hand: "Straight",
+                rankKey: "handRanks.straight" as TranslationKey,
                 standard: "0.3924%",
                 arcane: "0.2937%",
                 note: "-25.16%",
               },
               {
-                hand: "Flush",
+                rankKey: "handRanks.flush" as TranslationKey,
                 standard: "0.1965%",
                 arcane: "0.2084%",
                 note: "+6.08%",
               },
               {
-                hand: "Three of a Kind",
+                rankKey: "handRanks.three-of-a-kind" as TranslationKey,
                 standard: "2.1128%",
                 arcane: "1.8296%",
                 note: "-13.41%",
               },
               {
-                hand: "Two Pair",
+                rankKey: "handRanks.two-pair" as TranslationKey,
                 standard: "4.7539%",
                 arcane: "4.1166%",
                 note: "-13.41%",
               },
               {
-                hand: "One Pair",
+                rankKey: "handRanks.one-pair" as TranslationKey,
                 standard: "42.2569%",
                 arcane: "40.2515%",
                 note: "-4.75%",
               },
               {
-                hand: "High Card",
+                rankKey: "handRanks.high-card" as TranslationKey,
                 standard: "50.1177%",
                 arcane: "53.1653%",
                 note: "+6.08%",
               },
-            ].map(({ hand, standard, arcane, note }) => (
+            ] as const).map(({ rankKey, standard, arcane, note }) => (
               <Box
                 component="li"
-                key={hand}
+                key={rankKey}
                 sx={{ color: "silver.light", fontSize: "0.875rem" }}
               >
                 <Box
@@ -311,7 +215,7 @@ export function RulesPage() {
                       flexShrink: 0,
                     }}
                   >
-                    {hand}
+                    {t(rankKey)}
                   </Typography>
                   <Typography
                     variant="body2"
@@ -359,19 +263,16 @@ export function RulesPage() {
         {/* Section 3: The Major Arcana Deck */}
         <Stack spacing={1.5}>
           <Typography variant="h5" sx={{ color: "gold.light" }}>
-            The Major Arcana Deck
+            {t("rules.majorArcanaTitle")}
           </Typography>
           <Divider sx={{ borderColor: "gold.dark", opacity: 0.4 }} />
+          <Typography
+            variant="body1"
+            sx={{ color: "silver.light" }}
+            dangerouslySetInnerHTML={{ __html: t("rules.majorArcanaSetup") }}
+          />
           <Typography variant="body1" sx={{ color: "silver.light" }}>
-            A separate 22-card deck runs alongside the playing deck.{" "}
-            <strong>Setup:</strong> The World (21) is set aside, the remaining
-            21 cards are split in half, The World is shuffled into the second
-            half, and the first half is placed on top — ensuring The World only
-            appears late in the game.
-          </Typography>
-          <Typography variant="body1" sx={{ color: "silver.light" }}>
-            A card is drawn only when a Page appears on the board. Its effect
-            modifies the rules for the rest of that round.
+            {t("rules.majorArcanaDraw")}
           </Typography>
 
           <Box
@@ -386,10 +287,10 @@ export function RulesPage() {
               "& li::marker": { fontFamily: "Rubik, sans-serif" },
             }}
           >
-            {ARCANA.map(({ name, effect }) => (
+            {ARCANA_KEYS.map(({ nameKey, effectKey }) => (
               <Box
                 component="li"
-                key={name}
+                key={nameKey}
                 sx={{ color: "silver.light", fontSize: "0.875rem" }}
               >
                 <Box sx={{ display: "flex", gap: 2, alignItems: "flex-start" }}>
@@ -401,13 +302,13 @@ export function RulesPage() {
                       flexShrink: 0,
                     }}
                   >
-                    {name}
+                    {t(nameKey)}
                   </Typography>
                   <Typography
                     variant="body2"
                     sx={{ color: "silver.light", opacity: 0.8, minWidth: 0 }}
                   >
-                    {effect}
+                    {t(effectKey)}
                   </Typography>
                 </Box>
               </Box>

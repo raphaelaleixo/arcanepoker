@@ -1,6 +1,7 @@
 // src/components/Tutorial/TutorialNarrationContent.tsx
 import { Box, Button, Typography } from "@mui/material";
 import { useTutorial } from "../../tutorial/TutorialContext";
+import { useTranslation } from "../../i18n";
 import { HEADING_FONT } from "../../theme";
 
 /**
@@ -11,6 +12,7 @@ import { HEADING_FONT } from "../../theme";
  */
 export function TutorialNarrationContent() {
   const { narration, dismissNarration } = useTutorial();
+  const { t } = useTranslation();
 
   if (!narration) return null;
 
@@ -41,10 +43,10 @@ export function TutorialNarrationContent() {
             fontFamily: HEADING_FONT,
           }}
         >
-          Tutorial · {narration.title}
+          {t("tutorial.label")} · {t(narration.titleKey)}
         </Typography>
         <Button variant="text" size="small" onClick={dismissNarration} sx={{}}>
-          Next →
+          {t("tutorial.nextButton")}
         </Button>
       </Box>
 
@@ -56,7 +58,7 @@ export function TutorialNarrationContent() {
           lineHeight: 1.4,
         }}
       >
-        {narration.body}
+        {t(narration.bodyKey)}
       </Typography>
     </Box>
   );

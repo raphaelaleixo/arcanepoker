@@ -7,6 +7,7 @@ import { Button, Chip, Divider, Stack, Typography } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
 import { useGame } from "../../store/useGame";
 import { GOLD_DIVIDER_SX } from "../../theme";
+import { useTranslation } from "../../i18n";
 import { ArcaneDialog } from "./ArcaneDialog";
 import { CardEntry } from "./CardEntry";
 import { getTarotInfo } from "../../data/getTarotInfo";
@@ -26,6 +27,7 @@ interface ArcanaInfoModalProps {
 
 export function ArcanaInfoModal({ open, onClose }: ArcanaInfoModalProps) {
   const { state } = useGame();
+  const { t, language } = useTranslation();
 
   const activeValue = state.activeArcana?.card.value ?? null;
   const deckValues = new Set(state.arcanaDeck.map((c) => c.value));
@@ -40,10 +42,10 @@ export function ArcanaInfoModal({ open, onClose }: ArcanaInfoModalProps) {
     <ArcaneDialog
       open={open}
       onClose={onClose}
-      title="Major Arcana"
+      title={t("arcanaInfo.title")}
       actions={
         <Button variant="contained" size="small" onClick={onClose}>
-          Got it
+          {t("common.gotIt")}
         </Button>
       }
     >
@@ -51,14 +53,10 @@ export function ArcanaInfoModal({ open, onClose }: ArcanaInfoModalProps) {
         variant="overline"
         sx={{ color: "gold.dark", display: "block", textAlign: "center", mb: 1 }}
       >
-        About
+        {t("arcanaInfo.about")}
       </Typography>
       <Typography variant="body2" sx={{ color: "white", lineHeight: 1.7 }}>
-        The Major Arcana is a 22-card deck that modifies the rules of the
-        game. When the first Page is dealt to the community cards each round,
-        the top Arcana card is drawn and its effect takes hold for that hand.
-        Once a card is drawn, it's removed from the deck from the rest of the
-        game.
+        {t("arcanaInfo.aboutText")}
       </Typography>
 
       <Divider sx={{ my: 2, ...GOLD_DIVIDER_SX }} />
@@ -66,25 +64,23 @@ export function ArcanaInfoModal({ open, onClose }: ArcanaInfoModalProps) {
         variant="overline"
         sx={{ color: "gold.dark", display: "block", textAlign: "center", mb: 1 }}
       >
-        Setup
+        {t("arcanaInfo.setup")}
       </Typography>
 
       <Typography variant="body2" sx={{ color: "white", lineHeight: 1.7 }}>
-        The World card (21) is set aside, the remaining 21 cards are split in
-        half, The World is shuffled into the second half, and the first half
-        is placed on top — ensuring The World only appears late in the game.
+        {t("arcanaInfo.setupText")}
       </Typography>
       <Divider sx={{ my: 2, ...GOLD_DIVIDER_SX }} />
       <Typography
         variant="overline"
         sx={{ color: "gold.dark", display: "block", textAlign: "center", mb: 1.5 }}
       >
-        The 22 Arcanas
+        {t("arcanaInfo.the22Arcanas")}
       </Typography>
       <Stack direction="column" gap={1.5}>
         {ALL_ARCANA_VALUES.map((value) => {
           const status = getStatus(value);
-          const info = getTarotInfo({ value, suit: "arcana" });
+          const info = getTarotInfo({ value, suit: "arcana" }, language);
           if (!info) return null;
           return (
             <CardEntry
@@ -95,7 +91,7 @@ export function ArcanaInfoModal({ open, onClose }: ArcanaInfoModalProps) {
               titleAdornment={
                 status === "active" ? (
                   <Chip
-                    label="Active"
+                    label={t("arcanaInfo.active")}
                     size="small"
                     color="secondary"
                     sx={{ height: 16, fontSize: "0.6rem" }}

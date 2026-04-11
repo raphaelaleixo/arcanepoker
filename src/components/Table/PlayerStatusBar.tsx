@@ -3,10 +3,12 @@
  * Pure presentational — receives all data as props from PlayerSeat.
  */
 import { Box, Typography } from "@mui/material";
+import { useTranslation } from "../../i18n";
 import {
+  actionTranslationKey,
   actionLabel,
   actionColor,
-  formatHandRank,
+  handRankTranslationKey,
 } from "../../utils/cardUtils";
 
 interface PlayerStatusBarProps {
@@ -24,6 +26,19 @@ export function PlayerStatusBar({
   isWinner,
   showHandResult,
 }: PlayerStatusBarProps) {
+  const { t } = useTranslation();
+
+  const translatedAction = currentAction
+    ? (() => {
+        const key = actionTranslationKey(currentAction);
+        return key ? t(key) : actionLabel(currentAction);
+      })()
+    : null;
+
+  const translatedRank = handResult
+    ? t(handRankTranslationKey(handResult.rankName))
+    : null;
+
   return (
     <>
       {/*
@@ -53,7 +68,7 @@ export function PlayerStatusBar({
               visibility: currentAction ? "visible" : "hidden",
             }}
           >
-            {currentAction ? actionLabel(currentAction) : "\u00A0"}
+            {translatedAction ?? "\u00A0"}
           </Typography>
         </Box>
 
@@ -77,8 +92,9 @@ export function PlayerStatusBar({
               visibility: handResult ? "visible" : "hidden",
             }}
           >
-            {handResult ? formatHandRank(handResult.rankName) : "\u00A0"}
-            {isWinner ? " ★" : ""}
+            {translatedRank
+              ? `${translatedRank}${isWinner ? " ★" : ""}`
+              : "\u00A0"}
           </Typography>
         </Box>
       </Box>
