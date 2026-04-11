@@ -1,15 +1,22 @@
-import { useEffect } from 'react';
-import { useSettings } from '../store/SettingsContext';
+import { useEffect, useRef } from "react";
+import { useSettings } from "../store/SettingsContext";
 
 export function useBackgroundMusic(src: string): void {
   const { musicEnabled } = useSettings();
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    if (!musicEnabled) return;
+    if (!audioRef.current) {
+      audioRef.current = new Audio(src);
+      audioRef.current.loop = true;
+      audioRef.current.volume = 0.4;
+    }
+    const audio = audioRef.current;
 
-    const audio = new Audio(src);
-    audio.loop = true;
-    audio.volume = 0.4;
+    if (!musicEnabled) {
+      audio.pause();
+      return;
+    }
 
     let cancelled = false;
     const unlockFns: (() => void)[] = [];
@@ -18,15 +25,14 @@ export function useBackgroundMusic(src: string): void {
     if (playPromise !== undefined) {
       playPromise.catch(() => {
         if (cancelled) return;
-        // Autoplay blocked — wait for first user gesture and retry
         const unlock = () => {
           if (!cancelled) audio.play().catch(() => {});
         };
-        document.addEventListener('click', unlock, { once: true });
-        document.addEventListener('keydown', unlock, { once: true });
+        document.addEventListener("click", unlock, { once: true });
+        document.addEventListener("keydown", unlock, { once: true });
         unlockFns.push(
-          () => document.removeEventListener('click', unlock),
-          () => document.removeEventListener('keydown', unlock),
+          () => document.removeEventListener("click", unlock),
+          () => document.removeEventListener("keydown", unlock),
         );
       });
     }

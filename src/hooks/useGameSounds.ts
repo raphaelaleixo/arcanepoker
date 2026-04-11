@@ -1,18 +1,19 @@
 import { useEffect, useRef } from "react";
 import { useGame } from "../store/useGame";
 import { useSettings } from "../store/SettingsContext";
+import { playPooled, preloadSounds } from "../utils/audioPool";
 
-function playOnce(src: string, volume = 0.7, playbackRate = 1): void {
-  const audio = new Audio(src);
-  audio.volume = volume;
-  audio.playbackRate = playbackRate;
-  const playPromise = audio.play();
-  if (playPromise !== undefined) {
-    playPromise.catch(() => {
-      // Autoplay blocked — no-op
-    });
-  }
-}
+const SFX_PATHS = [
+  "/audio/card-deal.mp3",
+  "/audio/arcana.mp3",
+  "/audio/bet.mp3",
+  "/audio/round-end.mp3",
+  "/audio/page.mp3",
+  "/audio/fold.mp3",
+  "/audio/check.mp3",
+  "/audio/modal-open.mp3",
+];
+preloadSounds(SFX_PATHS);
 
 export function useGameSounds(modalOpenStates?: boolean[]): void {
   const { state } = useGame();
@@ -68,7 +69,10 @@ export function useGameSounds(modalOpenStates?: boolean[]): void {
     if (state.stage === "pre-flop" && prevStageRef.current !== "pre-flop") {
       // Fire one sound per player, staggered 150ms apart
       state.players.forEach((_, i) => {
-        setTimeout(() => playOnce("/audio/card-deal.mp3", 0.1, 1.5), i * 150);
+        setTimeout(
+          () => playPooled("/audio/card-deal.mp3", 0.1, 1.5),
+          i * 150,
+        );
       });
     }
 
@@ -76,22 +80,28 @@ export function useGameSounds(modalOpenStates?: boolean[]): void {
       const newCards =
         state.communityCards.length - prevCommunityLengthRef.current;
       for (let i = 0; i < newCards; i++) {
-        setTimeout(() => playOnce("/audio/card-deal.mp3", 0.1, 1.5), i * 150);
+        setTimeout(
+          () => playPooled("/audio/card-deal.mp3", 0.1, 1.5),
+          i * 150,
+        );
       }
     }
 
     if (isArcanaGlowing && !prevArcanaGlowingRef.current) {
-      playOnce("/audio/arcana.mp3", 0.5);
+      playPooled("/audio/arcana.mp3", 0.5);
     }
 
     if (isArcanaActive && !prevArcanaActiveRef.current) {
-      playOnce("/audio/card-deal.mp3", 0.1, 1.5);
+      playPooled("/audio/card-deal.mp3", 0.1, 1.5);
     }
 
     // Wheel of Fortune: full redeal → one sound per player
     if (state.wheelRound > prevWheelRoundRef.current) {
       state.players.forEach((_, i) => {
-        setTimeout(() => playOnce("/audio/card-deal.mp3", 0.1, 1.5), i * 150);
+        setTimeout(
+          () => playPooled("/audio/card-deal.mp3", 0.1, 1.5),
+          i * 150,
+        );
       });
     }
 
@@ -99,7 +109,10 @@ export function useGameSounds(modalOpenStates?: boolean[]): void {
     if (holeCardSeedSum > prevHoleCardSeedSumRef.current) {
       const changed = holeCardSeedSum - prevHoleCardSeedSumRef.current;
       for (let i = 0; i < changed; i++) {
-        setTimeout(() => playOnce("/audio/card-deal.mp3", 0.1, 1.5), i * 150);
+        setTimeout(
+          () => playPooled("/audio/card-deal.mp3", 0.1, 1.5),
+          i * 150,
+        );
       }
     }
 
@@ -108,23 +121,23 @@ export function useGameSounds(modalOpenStates?: boolean[]): void {
     prevArcanaActiveRef.current = isArcanaActive;
     prevArcanaGlowingRef.current = isArcanaGlowing;
     if (state.potSize > prevPotSizeRef.current) {
-      playOnce("/audio/bet.mp3", 0.1);
+      playPooled("/audio/bet.mp3", 0.1);
     }
 
     if (state.potWon > 0 && prevPotWonRef.current === 0) {
-      playOnce("/audio/round-end.mp3", 0.5);
+      playPooled("/audio/round-end.mp3", 0.5);
     }
 
     if (isPageChallenge && !prevPageChallengeRef.current) {
-      playOnce("/audio/page.mp3", 0.5);
+      playPooled("/audio/page.mp3", 0.5);
     }
 
     if (foldCount > prevFoldCountRef.current) {
-      playOnce("/audio/fold.mp3", 0.1);
+      playPooled("/audio/fold.mp3", 0.1);
     }
 
     if (state.checkCount > prevCheckCountRef.current) {
-      playOnce("/audio/check.mp3", 0.1, 1.5);
+      playPooled("/audio/check.mp3", 0.1, 1.5);
     }
 
     // Modal open / close sounds
@@ -132,11 +145,11 @@ export function useGameSounds(modalOpenStates?: boolean[]): void {
       const prev = prevModalStatesRef.current;
       for (let i = 0; i < modalOpenStates.length; i++) {
         if (modalOpenStates[i] && !prev[i]) {
-          playOnce("/audio/modal-open.mp3", 0.5);
+          playPooled("/audio/modal-open.mp3", 0.5);
           break;
         }
         if (!modalOpenStates[i] && prev[i]) {
-          playOnce("/audio/fold.mp3", 0.1);
+          playPooled("/audio/fold.mp3", 0.1);
           break;
         }
       }

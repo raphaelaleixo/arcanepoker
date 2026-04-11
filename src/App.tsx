@@ -1,11 +1,22 @@
 import { lazy, Suspense } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
-import { GamePage } from "./pages/GamePage";
 import { HomePage } from "./pages/HomePage";
-import { RulesPage } from "./pages/RulesPage";
-import { TutorialGamePage } from "./pages/TutorialGamePage";
-import { SettingsPage } from "./pages/SettingsPage";
 import { NavFab } from "./components/NavFab";
+
+const GamePage = lazy(() =>
+  import("./pages/GamePage").then((m) => ({ default: m.GamePage })),
+);
+const TutorialGamePage = lazy(() =>
+  import("./pages/TutorialGamePage").then((m) => ({
+    default: m.TutorialGamePage,
+  })),
+);
+const RulesPage = lazy(() =>
+  import("./pages/RulesPage").then((m) => ({ default: m.RulesPage })),
+);
+const SettingsPage = lazy(() =>
+  import("./pages/SettingsPage").then((m) => ({ default: m.SettingsPage })),
+);
 
 const demoEnabled = import.meta.env.VITE_ENABLE_DEMO === "true";
 

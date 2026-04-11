@@ -6,11 +6,16 @@ import { useGameSounds } from "./useGameSounds";
 import type { StoreGameState } from "../store/storeTypes";
 import type { GameContextValue } from "../store/context";
 
-// Stub HTMLMediaElement and use fake timers (staggered deal sounds use setTimeout)
+vi.mock("../utils/audioPool", () => ({
+  playPooled: vi.fn(),
+  preloadSounds: vi.fn(),
+}));
+
+import { playPooled } from "../utils/audioPool";
+
 beforeEach(() => {
   vi.useFakeTimers();
-  window.HTMLMediaElement.prototype.play = vi.fn().mockResolvedValue(undefined) as unknown as () => Promise<void>;
-  window.HTMLMediaElement.prototype.pause = vi.fn() as unknown as () => void;
+  vi.mocked(playPooled).mockClear();
 });
 
 afterEach(() => {
@@ -80,12 +85,13 @@ describe("useGameSounds", () => {
   it("plays card-deal sound per player when stage changes to 'pre-flop'", () => {
     mockState.current = makeState({ stage: "pre-game", players: [{} as any, {} as any] });
     const { rerender } = renderHook(() => useGameSounds(), { wrapper });
-    expect(window.HTMLMediaElement.prototype.play).not.toHaveBeenCalled();
+    expect(playPooled).not.toHaveBeenCalled();
 
     mockState.current = makeState({ stage: "pre-flop", players: [{} as any, {} as any] });
     rerender();
     vi.runAllTimers();
-    expect(window.HTMLMediaElement.prototype.play).toHaveBeenCalledTimes(2); // one per player
+    expect(playPooled).toHaveBeenCalledTimes(2); // one per player
+    expect(playPooled).toHaveBeenCalledWith("/audio/card-deal.mp3", 0.1, 1.5);
   });
 
   it("plays one card-deal sound per community card added", () => {
@@ -96,27 +102,28 @@ describe("useGameSounds", () => {
     mockState.current = makeState({ stage: "flop", communityCards: [{} as any, {} as any, {} as any] });
     rerender();
     vi.runAllTimers();
-    expect(window.HTMLMediaElement.prototype.play).toHaveBeenCalledTimes(3);
+    expect(playPooled).toHaveBeenCalledTimes(3);
   });
 
   it("plays arcana sound when arcana starts glowing (pendingInteraction arcana-reveal)", () => {
     mockState.current = makeState({ pendingInteraction: null });
     const { rerender } = renderHook(() => useGameSounds(), { wrapper });
-    expect(window.HTMLMediaElement.prototype.play).not.toHaveBeenCalled();
+    expect(playPooled).not.toHaveBeenCalled();
 
     mockState.current = makeState({ pendingInteraction: { type: "arcana-reveal", arcanaCard: {} as any } });
     rerender();
-    expect(window.HTMLMediaElement.prototype.play).toHaveBeenCalledTimes(1);
+    expect(playPooled).toHaveBeenCalledTimes(1);
+    expect(playPooled).toHaveBeenCalledWith("/audio/arcana.mp3", 0.5);
   });
 
   it("plays card-deal sound when arcana becomes active", () => {
     mockState.current = makeState({ activeArcana: null });
     const { rerender } = renderHook(() => useGameSounds(), { wrapper });
-    expect(window.HTMLMediaElement.prototype.play).not.toHaveBeenCalled();
+    expect(playPooled).not.toHaveBeenCalled();
 
     mockState.current = makeState({ activeArcana: { card: {} as any, effectKey: "fool-wildcard" } });
     rerender();
-    expect(window.HTMLMediaElement.prototype.play).toHaveBeenCalledTimes(1);
+    expect(playPooled).toHaveBeenCalledTimes(1);
   });
 
   it("plays one sound per player on Wheel of Fortune redeal", () => {
@@ -126,7 +133,7 @@ describe("useGameSounds", () => {
     mockState.current = makeState({ wheelRound: 1, players: [{} as any, {} as any, {} as any] });
     rerender();
     vi.runAllTimers();
-    expect(window.HTMLMediaElement.prototype.play).toHaveBeenCalledTimes(3);
+    expect(playPooled).toHaveBeenCalledTimes(3);
   });
 
   it("plays one sound per changed player on hole card replacement (Magician/Star/etc)", () => {
@@ -136,7 +143,7 @@ describe("useGameSounds", () => {
     mockState.current = makeState({ holeCardChangeSeeds: { p1: 1, p2: 0 } });
     rerender();
     vi.runAllTimers();
-    expect(window.HTMLMediaElement.prototype.play).toHaveBeenCalledTimes(1);
+    expect(playPooled).toHaveBeenCalledTimes(1);
   });
 
   it("plays bet sound when potSize increases", () => {
@@ -145,7 +152,8 @@ describe("useGameSounds", () => {
 
     mockState.current = makeState({ potSize: 20 });
     rerender();
-    expect(window.HTMLMediaElement.prototype.play).toHaveBeenCalledTimes(1);
+    expect(playPooled).toHaveBeenCalledTimes(1);
+    expect(playPooled).toHaveBeenCalledWith("/audio/bet.mp3", 0.1);
   });
 
   it("does not play bet sound when potSize decreases (showdown payout)", () => {
@@ -154,7 +162,7 @@ describe("useGameSounds", () => {
 
     mockState.current = makeState({ potSize: 0 });
     rerender();
-    expect(window.HTMLMediaElement.prototype.play).not.toHaveBeenCalled();
+    expect(playPooled).not.toHaveBeenCalled();
   });
 
   it("plays round-end sound when potWon goes from 0 to >0", () => {
@@ -163,7 +171,8 @@ describe("useGameSounds", () => {
 
     mockState.current = makeState({ potWon: 200 });
     rerender();
-    expect(window.HTMLMediaElement.prototype.play).toHaveBeenCalledTimes(1);
+    expect(playPooled).toHaveBeenCalledTimes(1);
+    expect(playPooled).toHaveBeenCalledWith("/audio/round-end.mp3", 0.5);
   });
 
   it("plays round-end sound on page challenge", () => {
@@ -172,13 +181,14 @@ describe("useGameSounds", () => {
 
     mockState.current = makeState({ pendingInteraction: { type: "page-challenge" } });
     rerender();
-    expect(window.HTMLMediaElement.prototype.play).toHaveBeenCalledTimes(1);
+    expect(playPooled).toHaveBeenCalledTimes(1);
+    expect(playPooled).toHaveBeenCalledWith("/audio/page.mp3", 0.5);
   });
 
   it("does not play when there is no state change", () => {
     mockState.current = makeState({ stage: "pre-game" });
     renderHook(() => useGameSounds(), { wrapper });
-    expect(window.HTMLMediaElement.prototype.play).not.toHaveBeenCalled();
+    expect(playPooled).not.toHaveBeenCalled();
   });
 
   it("does not play when sfxEnabled is false", () => {
@@ -197,7 +207,7 @@ describe("useGameSounds", () => {
     mockState.current = makeState({ stage: "pre-flop", players: [{} as any] });
     rerender();
     vi.runAllTimers();
-    expect(window.HTMLMediaElement.prototype.play).toHaveBeenCalledTimes(1);
+    expect(playPooled).toHaveBeenCalledTimes(1);
 
     // Disable SFX
     act(() => {
@@ -210,6 +220,6 @@ describe("useGameSounds", () => {
       communityCards: [{} as any, {} as any, {} as any],
     });
     rerender();
-    expect(window.HTMLMediaElement.prototype.play).toHaveBeenCalledTimes(1); // still 1
+    expect(playPooled).toHaveBeenCalledTimes(1); // still 1
   });
 });
