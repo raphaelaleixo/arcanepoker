@@ -23,7 +23,8 @@ export function SettingsPage() {
   return (
     <Box
       sx={{
-        maxWidth: 480,
+        width: "100%",
+        maxWidth: 720,
         mx: "auto",
         p: 3,
       }}

@@ -1,10 +1,19 @@
+import { useRef, useState } from "react";
 import {
   Box,
   Button,
+  ButtonGroup,
+  ClickAwayListener,
+  Grow,
   Link as HtmlLink,
+  MenuItem,
+  MenuList,
+  Paper,
+  Popper,
   Stack,
   Typography,
 } from "@mui/material";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import backgroundUrl from "../assets/background.svg?url";
 import { useNavigateWithTransition } from "../hooks/useNavigateWithTransition";
 
@@ -38,6 +47,8 @@ const bgBoxStyles = {
 
 export function HomePage() {
   const navigateWithTransition = useNavigateWithTransition();
+  const [open, setOpen] = useState(false);
+  const anchorRef = useRef<HTMLDivElement>(null);
 
   return (
     <>
@@ -72,7 +83,7 @@ export function HomePage() {
               backgroundImage: `url(${backgroundUrl})`,
             }}
           />
-          <Stack sx={{ pt: 3, pb: 2 }} spacing={1} useFlexGap>
+          <Stack sx={{ py: "3em" }} spacing={1} useFlexGap>
             <Typography
               variant="h1"
               sx={{
@@ -82,33 +93,96 @@ export function HomePage() {
             >
               Arcane Poker
             </Typography>
-            <Stack
-              direction="column"
-              gap={1}
-              sx={{ justifyContent: "center", mt: 1 }}
+            <ButtonGroup
+              variant="contained"
+              size="small"
+              ref={anchorRef}
+              sx={{ mt: 1, width: "100%" }}
             >
-              <Button
-                variant="contained"
-                size="small"
-                onClick={() => navigateWithTransition("/game")}
-              >
+              <Button sx={{ flexGrow: 1 }} onClick={() => navigateWithTransition("/game")}>
                 start new game
               </Button>
               <Button
-                variant="outlined"
                 size="small"
-                onClick={() => navigateWithTransition("/tutorial")}
+                onClick={() => setOpen((prev) => !prev)}
+                aria-label="open menu"
               >
-                tutorial
+                <ArrowDropDownIcon />
               </Button>
-              <Button
-                variant="outlined"
-                size="small"
-                onClick={() => navigateWithTransition("/rules", "fade")}
-              >
-                learn to play
-              </Button>
-            </Stack>
+            </ButtonGroup>
+            <Popper
+              open={open}
+              anchorEl={anchorRef.current}
+              transition
+              disablePortal
+              modifiers={[
+                { name: "offset", options: { offset: [0, 4] } },
+              ]}
+              sx={{ zIndex: 1, width: anchorRef.current?.offsetWidth }}
+            >
+              {({ TransitionProps, placement }) => (
+                <Grow
+                  {...TransitionProps}
+                  style={{
+                    transformOrigin:
+                      placement === "bottom"
+                        ? "center top"
+                        : "center bottom",
+                  }}
+                >
+                  <Paper
+                    sx={{
+                      bgcolor: "blackSuit.main",
+                      border: 1,
+                      borderColor: "blackSuit.light",
+                      color: "#fff",
+                    }}
+                  >
+                    <ClickAwayListener
+                      onClickAway={() => setOpen(false)}
+                    >
+                      <MenuList
+                        autoFocusItem
+                        sx={{
+                          "& .MuiMenuItem-root": {
+                            fontFamily: "Young Serif, serif",
+                          },
+                          "& .MuiMenuItem-root:hover": {
+                            bgcolor: "transparent",
+                            color: "secondary.main",
+                          },
+                        }}
+                      >
+                        <MenuItem
+                          onClick={() => {
+                            setOpen(false);
+                            navigateWithTransition("/tutorial");
+                          }}
+                        >
+                          Tutorial
+                        </MenuItem>
+                        <MenuItem
+                          onClick={() => {
+                            setOpen(false);
+                            navigateWithTransition("/rules", "fade");
+                          }}
+                        >
+                          Learn to Play
+                        </MenuItem>
+                        <MenuItem
+                          onClick={() => {
+                            setOpen(false);
+                            navigateWithTransition("/settings");
+                          }}
+                        >
+                          Settings
+                        </MenuItem>
+                      </MenuList>
+                    </ClickAwayListener>
+                  </Paper>
+                </Grow>
+              )}
+            </Popper>
           </Stack>
           <Box
             style={{ viewTransitionName: "bg-bottom" }}
