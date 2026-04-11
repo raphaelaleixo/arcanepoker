@@ -1,10 +1,11 @@
-import { useEffect, useRef } from 'react';
-import { useGame } from '../store/useGame';
-import { useAudioPreferences } from '../store/AudioPreferencesContext';
+import { useEffect, useRef } from "react";
+import { useGame } from "../store/useGame";
+import { useAudioPreferences } from "../store/AudioPreferencesContext";
 
-function playOnce(src: string, volume = 0.7): void {
+function playOnce(src: string, volume = 0.7, playbackRate = 1): void {
   const audio = new Audio(src);
   audio.volume = volume;
+  audio.playbackRate = playbackRate;
   const playPromise = audio.play();
   if (playPromise !== undefined) {
     playPromise.catch(() => {
@@ -21,13 +22,20 @@ export function useGameSounds(): void {
   const prevStageRef = useRef(state.stage);
   const prevCommunityLengthRef = useRef(state.communityCards.length);
   const prevArcanaActiveRef = useRef(state.activeArcana !== null);
-  const prevArcanaGlowingRef = useRef(state.pendingInteraction?.type === "arcana-reveal");
+  const prevArcanaGlowingRef = useRef(
+    state.pendingInteraction?.type === "arcana-reveal"
+  );
   const prevWheelRoundRef = useRef(state.wheelRound);
-  const holeCardSeedSum = Object.values(state.holeCardChangeSeeds).reduce((a, b) => a + b, 0);
+  const holeCardSeedSum = Object.values(state.holeCardChangeSeeds).reduce(
+    (a, b) => a + b,
+    0
+  );
   const prevHoleCardSeedSumRef = useRef(holeCardSeedSum);
   const prevPotSizeRef = useRef(state.potSize);
   const prevPotWonRef = useRef(state.potWon);
-  const prevPageChallengeRef = useRef(state.pendingInteraction?.type === "page-challenge");
+  const prevPageChallengeRef = useRef(
+    state.pendingInteraction?.type === "page-challenge"
+  );
   const foldCount = state.players.filter((p) => p.folded).length;
   const prevFoldCountRef = useRef(foldCount);
   const prevCheckCountRef = useRef(state.checkCount);
@@ -58,14 +66,15 @@ export function useGameSounds(): void {
     if (state.stage === "pre-flop" && prevStageRef.current !== "pre-flop") {
       // Fire one sound per player, staggered 150ms apart
       state.players.forEach((_, i) => {
-        setTimeout(() => playOnce("/audio/card-deal.mp3", 0.1), i * 150);
+        setTimeout(() => playOnce("/audio/card-deal.mp3", 0.1, 1.5), i * 150);
       });
     }
 
     if (state.communityCards.length > prevCommunityLengthRef.current) {
-      const newCards = state.communityCards.length - prevCommunityLengthRef.current;
+      const newCards =
+        state.communityCards.length - prevCommunityLengthRef.current;
       for (let i = 0; i < newCards; i++) {
-        setTimeout(() => playOnce("/audio/card-deal.mp3", 0.1), i * 150);
+        setTimeout(() => playOnce("/audio/card-deal.mp3", 0.1, 1.5), i * 150);
       }
     }
 
@@ -74,13 +83,13 @@ export function useGameSounds(): void {
     }
 
     if (isArcanaActive && !prevArcanaActiveRef.current) {
-      playOnce("/audio/card-deal.mp3", 0.1);
+      playOnce("/audio/card-deal.mp3", 0.1, 1.5);
     }
 
     // Wheel of Fortune: full redeal → one sound per player
     if (state.wheelRound > prevWheelRoundRef.current) {
       state.players.forEach((_, i) => {
-        setTimeout(() => playOnce("/audio/card-deal.mp3", 0.1), i * 150);
+        setTimeout(() => playOnce("/audio/card-deal.mp3", 0.1, 1.5), i * 150);
       });
     }
 
@@ -88,7 +97,7 @@ export function useGameSounds(): void {
     if (holeCardSeedSum > prevHoleCardSeedSumRef.current) {
       const changed = holeCardSeedSum - prevHoleCardSeedSumRef.current;
       for (let i = 0; i < changed; i++) {
-        setTimeout(() => playOnce("/audio/card-deal.mp3", 0.1), i * 150);
+        setTimeout(() => playOnce("/audio/card-deal.mp3", 0.1, 1.5), i * 150);
       }
     }
 
@@ -105,7 +114,7 @@ export function useGameSounds(): void {
     }
 
     if (isPageChallenge && !prevPageChallengeRef.current) {
-      playOnce("/audio/round-end.mp3", 0.5);
+      playOnce("/audio/page.mp3", 0.5);
     }
 
     if (foldCount > prevFoldCountRef.current) {
@@ -113,7 +122,7 @@ export function useGameSounds(): void {
     }
 
     if (state.checkCount > prevCheckCountRef.current) {
-      playOnce("/audio/check.mp3", 0.1);
+      playOnce("/audio/check.mp3", 0.1, 2);
     }
 
     prevWheelRoundRef.current = state.wheelRound;
@@ -123,5 +132,18 @@ export function useGameSounds(): void {
     prevPageChallengeRef.current = isPageChallenge;
     prevFoldCountRef.current = foldCount;
     prevCheckCountRef.current = state.checkCount;
-  }, [state.stage, state.communityCards.length, isArcanaActive, isArcanaGlowing, state.wheelRound, holeCardSeedSum, state.potSize, state.potWon, isPageChallenge, foldCount, state.checkCount, sfxEnabled]);
+  }, [
+    state.stage,
+    state.communityCards.length,
+    isArcanaActive,
+    isArcanaGlowing,
+    state.wheelRound,
+    holeCardSeedSum,
+    state.potSize,
+    state.potWon,
+    isPageChallenge,
+    foldCount,
+    state.checkCount,
+    sfxEnabled,
+  ]);
 }
