@@ -7,16 +7,16 @@
  * When any arcana causes a hole card redraw, the old cards animate out (dealOut)
  * and the new cards deal in (dealIn) automatically via key-based remounting.
  */
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
 import { keyframes } from "@emotion/react";
-import { Box, Stack, Tooltip } from "@mui/material";
+import { Box, Stack } from "@mui/material";
 import type { Theme } from "@mui/material/styles";
 import { PlayingCard } from "../Card/PlayingCard";
-import { DealtCard } from "../Card/DealtCard";
 import { DealerBadge } from "./DealerBadge";
 import type { StandardCard } from "../../types/types";
 import { useTutorialOptional } from "../../tutorial/TutorialContext";
-import { CardTooltipTitle } from "./CardTooltipTitle";
+import { useDealerBadge } from "./useDealerBadge";
+import { HoleCard } from "./HoleCard";
 
 const dealOut = keyframes`
   from { opacity: 1; }
@@ -83,32 +83,7 @@ export function PlayerCards({
   const prevSeedRef = useRef(redrawSeed);
   const prevWheelRef = useRef(wheelRound);
 
-  // Dealer badge visibility — separate from isDealer so we can animate out.
-  const [showBadge, setShowBadge] = useState(isDealer);
-  const [badgeExiting, setBadgeExiting] = useState(false);
-  const exitTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const triggerBadgeExit = useCallback(() => {
-    setBadgeExiting(true);
-    exitTimerRef.current = setTimeout(() => {
-      setShowBadge(false);
-      setBadgeExiting(false);
-    }, 260);
-  }, []);
-
-  useEffect(() => {
-    if (isDealer) {
-      if (exitTimerRef.current) {
-        clearTimeout(exitTimerRef.current);
-        exitTimerRef.current = null;
-      }
-      setBadgeExiting(false);
-      setShowBadge(true);
-    } else if (showBadge) {
-      triggerBadgeExit();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isDealer]);
+  const { showBadge, badgeExiting } = useDealerBadge(isDealer);
 
   useEffect(() => {
     // New hand: wheelRound changed — animate cards out, then swap in new cards.
@@ -170,94 +145,26 @@ export function PlayerCards({
           }}
         >
           {displayCards.length > 0 ? (
-            displayCards.map((card, i) => {
-              const isPriestessRevealed =
-                !showFaceUp &&
-                priestessCard != null &&
-                card.value === priestessCard.value &&
-                card.suit === priestessCard.suit;
-              const faceUp = showFaceUp || isPriestessRevealed;
-              const isSelected =
-                selectedCard != null &&
-                card.value === selectedCard.value &&
-                card.suit === selectedCard.suit;
-              const isHighlighted =
-                highlights != null &&
-                highlights.some(
-                  (h) =>
-                    h.type === "hole" &&
-                    h.playerId === playerId &&
-                    h.cardIndex === i,
-                );
-              const isPageCard = card.value === "0";
-              const showPageTooltip =
-                isHero && faceUp && isPageCard && !!onOpenPageInfo;
-
-              const total = displayCards.length;
-              const center = (total - 1) / 2;
-              const rotDeg = (i - center) * 6;
-              const transform = isSelected
-                ? `rotate(${rotDeg}deg) translateY(-8px)`
-                : `rotate(${rotDeg}deg)`;
-
-              const cardBox = (
-                <Box
-                  key={`${cardKey}-${card.value}-${card.suit}`}
-                  onClick={onCardClick ? () => onCardClick(card) : undefined}
-                  sx={{
-                    transform,
-                    transformOrigin: "bottom center",
-                    ml: i === 0 ? 0 : -0.75,
-                    cursor: onCardClick ? "pointer" : "default",
-                    transition: "transform 0.15s ease",
-                    outline: isSelected ? "2px solid gold" : "none",
-                    borderRadius: 1,
-                    lineHeight: 0,
-                    ...(isHighlighted
-                      ? {
-                          position: "relative",
-                          zIndex: 1295,
-                          boxShadow: "0 0 18px 6px rgba(201,169,110,0.75)",
-                        }
-                      : {}),
-                  }}
-                >
-                  <DealtCard
-                    small
-                    rank={faceUp ? card.value : undefined}
-                    suit={faceUp ? card.suit : undefined}
-                    flipped={faceUp}
-                    dealIndex={playerIndex * 2 + i}
-                    revealDelay={
-                      !isHero ? 200 + playerIndex * 300 + i * 100 : undefined
-                    }
-                  />
-                </Box>
-              );
-
-              if (showPageTooltip) {
-                const tooltipKey = `${cardKey}-${card.value}-${card.suit}`;
-                return (
-                  <Tooltip
-                    key={tooltipKey}
-                    open={openPageTooltip === tooltipKey}
-                    onOpen={() => setOpenPageTooltip(tooltipKey)}
-                    onClose={() => setOpenPageTooltip(null)}
-                    title={
-                      <CardTooltipTitle
-                        label="The Page (Ø) — lowest card"
-                        onLearnMore={() => onOpenPageInfo!()}
-                        onCloseTooltip={() => setOpenPageTooltip(null)}
-                        learnMoreText="Learn more →"
-                      />
-                    }
-                  >
-                    {cardBox}
-                  </Tooltip>
-                );
-              }
-              return cardBox;
-            })
+            displayCards.map((card, i) => (
+              <HoleCard
+                key={`${cardKey}-${card.value}-${card.suit}`}
+                card={card}
+                index={i}
+                cardKey={cardKey}
+                showFaceUp={showFaceUp}
+                priestessCard={priestessCard}
+                selectedCard={selectedCard}
+                onCardClick={onCardClick}
+                playerIndex={playerIndex}
+                isHero={isHero}
+                highlights={highlights}
+                playerId={playerId}
+                onOpenPageInfo={onOpenPageInfo}
+                openPageTooltip={openPageTooltip}
+                onSetPageTooltip={setOpenPageTooltip}
+                displayCardsLength={displayCards.length}
+              />
+            ))
           ) : (
             <>
               <Box

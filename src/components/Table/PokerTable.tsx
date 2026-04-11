@@ -5,17 +5,13 @@
  * delegates all overlay UI to TableOverlayContent.
  */
 import { useState } from "react";
-import { Box, Button, Chip } from "@mui/material";
+import { Box } from "@mui/material";
 import { useGame } from "../../store/useGame";
 import type { ArcanaCard, StandardCard } from "../../types/types";
 import { PlayerSeat } from "./PlayerSeat";
 import { CommunityArea } from "./CommunityArea";
 import { ActionBar } from "./ActionBar";
-import { TarotModal } from "../Modals/TarotModal";
-import { InteractionModal } from "../Modals/InteractionModal";
-import { GameOverModal } from "../Modals/GameOverModal";
 import { HERO_ID_CONST } from "../../store/initialState";
-import { PlaygroundDrawer } from "../Dev/PlaygroundDrawer";
 import { TableOverlayContent } from "./TableOverlayContent";
 import { TutorialOverlay } from "../Tutorial/TutorialOverlay";
 import { useTutorialOptional } from "../../tutorial/TutorialContext";
@@ -23,10 +19,10 @@ import { useDemo3Optional } from "../../demo/Demo3Context";
 import { useSettings } from "../../store/SettingsContext";
 import { TutorialNarrationContent } from "../Tutorial/TutorialNarrationContent";
 import { ArcanaDisplayCard } from "./ArcanaDisplayCard";
-import { PageInfoModal } from "../Modals/PageInfoModal";
-import { ArcanaInfoModal } from "../Modals/ArcanaInfoModal";
-import { ArcanaRevealModal } from "../Modals/ArcanaRevealModal";
 import { useGameSounds } from "../../hooks/useGameSounds";
+import { PokerTableModals } from "./PokerTableModals";
+import { BotSeatsGrid } from "./BotSeatsGrid";
+import { TarotMinimizedChip } from "./TarotMinimizedChip";
 
 const BETTING_STAGES = ["pre-flop", "flop", "turn", "river", "empress"];
 
@@ -104,11 +100,6 @@ export function PokerTable() {
       dispatch({ type: "NEXT_HAND" });
     }
   }
-
-  const bot1 = state.players.find((p) => p.position === 1);
-  const bot2 = state.players.find((p) => p.position === 2);
-  const bot3 = state.players.find((p) => p.position === 3);
-  const bot4 = state.players.find((p) => p.position === 4);
 
   // Mirrors the render conditions inside TableOverlayContent so that
   // overlayContent is undefined (falsy) when nothing would show — allowing
@@ -211,51 +202,10 @@ export function PokerTable() {
           }}
           onOpenPageInfo={() => setPageInfoOpen(true)}
         />
-        {bot1 && (
-          <PlayerSeat
-            player={bot1}
-            playerIndex={state.players.indexOf(bot1)}
-            isActive={activePlayer?.id === bot1.id}
-            sx={{
-              gridColumn: 1,
-              gridRow: 2,
-            }}
-          />
-        )}
-        {bot2 && (
-          <PlayerSeat
-            player={bot2}
-            playerIndex={state.players.indexOf(bot2)}
-            isActive={activePlayer?.id === bot2.id}
-            sx={{
-              gridColumn: 3,
-              gridRow: 2,
-            }}
-          />
-        )}
-        {bot3 && (
-          <PlayerSeat
-            player={bot3}
-            playerIndex={state.players.indexOf(bot3)}
-            isActive={activePlayer?.id === bot3.id}
-            sx={{
-              gridColumn: 1,
-              gridRow: 3,
-            }}
-          />
-        )}
-
-        {bot4 && (
-          <PlayerSeat
-            player={bot4}
-            playerIndex={state.players.indexOf(bot4)}
-            isActive={activePlayer?.id === bot4.id}
-            sx={{
-              gridColumn: 3,
-              gridRow: 3,
-            }}
-          />
-        )}
+        <BotSeatsGrid
+          players={state.players}
+          activePlayerId={activePlayer?.id}
+        />
         {hero && (
           <PlayerSeat
             player={hero}
@@ -280,27 +230,7 @@ export function PokerTable() {
           onOpenArcanaInfo={() => setArcanaInfoOpen(true)}
         />
         {showTarot && tarotMinimized && (
-          <Box
-            sx={{
-              gridRow: "2 / 4",
-              gridColumn: 2,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              zIndex: 1,
-            }}
-          >
-            <Chip
-              label="The Cards Speak"
-              size="small"
-              color="primary"
-              onClick={() => setTarotMinimized(false)}
-              sx={{
-                fontWeight: 500,
-                cursor: "pointer",
-              }}
-            />
-          </Box>
+          <TarotMinimizedChip onClick={() => setTarotMinimized(false)} />
         )}
         {/* Action bar */}
         <Box
@@ -320,77 +250,42 @@ export function PokerTable() {
           />
         </Box>
       </Box>
-      {/* Overlay modals */}
-      {showTarot && (
-        <TarotModal
-          minimized={tarotMinimized}
-          onMinimize={() => setTarotMinimized(true)}
-          onRestore={() => setTarotMinimized(false)}
-          onClose={() => {
-            setShowTarot(false);
-            setTarotMinimized(false);
-          }}
-          onNextHand={() => {
-            setTarotMinimized(false);
-            handleNextHand();
-          }}
-        />
-      )}
-      <InteractionModal />
-      <GameOverModal />
-      <PageInfoModal
-        open={pageInfoOpen}
-        onClose={() => setPageInfoOpen(false)}
-      />
-      <ArcanaInfoModal
-        open={arcanaInfoOpen}
-        onClose={() => setArcanaInfoOpen(false)}
-      />
-      <ArcanaRevealModal
-        open={arcanaRevealCard !== null}
-        arcanaCard={arcanaRevealCard}
-        onDismiss={() => {
+      <PokerTableModals
+        showTarot={showTarot}
+        tarotMinimized={tarotMinimized}
+        onMinimizeTarot={() => setTarotMinimized(true)}
+        onRestoreTarot={() => setTarotMinimized(false)}
+        onCloseTarot={() => {
+          setShowTarot(false);
+          setTarotMinimized(false);
+        }}
+        onNextHandTarot={() => {
+          setTarotMinimized(false);
+          handleNextHand();
+        }}
+        pageInfoOpen={pageInfoOpen}
+        onClosePageInfo={() => setPageInfoOpen(false)}
+        arcanaInfoOpen={arcanaInfoOpen}
+        onCloseArcanaInfo={() => setArcanaInfoOpen(false)}
+        arcanaRevealCard={arcanaRevealCard}
+        onDismissArcanaReveal={() => {
           setArcanaRevealCard(null);
           dispatch({ type: "REVEAL_ARCANA" });
         }}
+        devMode={devMode}
+        playgroundOpen={playgroundOpen}
+        onOpenPlayground={() => setPlaygroundOpen(true)}
+        onClosePlayground={() => setPlaygroundOpen(false)}
+        onOpenTarotFromPlayground={() => {
+          setPlaygroundOpen(false);
+          setShowTarot(true);
+        }}
+        onOpenGameOverFromPlayground={() => {
+          setPlaygroundOpen(false);
+          dispatch({ type: "DEV_FORCE_GAME_OVER" });
+        }}
+        dispatch={dispatch}
       />
-      {devMode && (
-        <>
-          <Button
-            size="small"
-            variant="outlined"
-            onClick={() => setPlaygroundOpen(true)}
-            sx={{
-              position: "fixed",
-              top: 16,
-              right: 16,
-              zIndex: 1200,
-              minWidth: 0,
-              px: 1.5,
-              py: 0.5,
-              fontSize: "0.7rem",
-              opacity: 0.5,
-              color: "secondary.light",
-              borderColor: "secondary.dark",
-              "&:hover": { opacity: 1 },
-            }}
-          >
-            DEV
-          </Button>
-          <PlaygroundDrawer
-            open={playgroundOpen}
-            onClose={() => setPlaygroundOpen(false)}
-            onOpenTarot={() => {
-              setPlaygroundOpen(false);
-              setShowTarot(true);
-            }}
-            onOpenGameOver={() => {
-              setPlaygroundOpen(false);
-              dispatch({ type: "DEV_FORCE_GAME_OVER" });
-            }}
-          />
-        </>
-      )}
       <TutorialOverlay />
     </Box>
   );
