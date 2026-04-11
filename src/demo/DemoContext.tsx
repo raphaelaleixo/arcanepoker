@@ -176,9 +176,9 @@ export function DemoProvider({ children }: { children: ReactNode }) {
         setPendingButtonHighlight(null);
 
         if (action === "raise") {
-          // Use the clamped raise amount: min raise = currentBet * 2 (or bigBlind floor)
+          // Use the clamped raise amount: min raise = currentBet + lastRaiseSize (or bigBlind floor)
           const minRaise = Math.max(
-            gameState.currentBet * 2,
+            gameState.currentBet + gameState.lastRaiseSize,
             hero.currentBet + gameState.bigBlind,
             gameState.bigBlind,
           );

@@ -64,6 +64,8 @@ export interface StoreGameState {
   potSize: number;
   /** Highest bet placed by any player this betting round. */
   currentBet: number;
+  /** Size of the last raise increment (used to compute minimum re-raise). */
+  lastRaiseSize: number;
   /** Cumulative chips each player has wagered this hand (across all streets). */
   totalContributions: Record<string, number>;
   /** Computed at showdown only. Empty during active play. */

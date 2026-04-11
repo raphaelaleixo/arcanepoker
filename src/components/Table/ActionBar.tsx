@@ -44,7 +44,7 @@ export function ActionBar({
   const toCall = hero ? state.currentBet - hero.currentBet : 0;
   const canCheck = toCall === 0;
   const minRaiseCalc = hero
-    ? Math.max(state.currentBet * 2, hero.currentBet + state.bigBlind)
+    ? Math.max(state.currentBet + state.lastRaiseSize, hero.currentBet + state.bigBlind)
     : state.bigBlind;
   const minRaise = Math.max(minRaiseCalc, state.bigBlind);
   const effectiveMax = hero

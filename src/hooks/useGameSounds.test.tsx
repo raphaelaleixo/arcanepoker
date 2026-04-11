@@ -28,6 +28,7 @@ function makeState(overrides: Partial<StoreGameState>): StoreGameState {
     smallBlind: 10,
     potSize: 0,
     currentBet: 0,
+    lastRaiseSize: 20,
     totalContributions: {},
     pots: [],
     dealerIndex: 0,

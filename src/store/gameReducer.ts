@@ -198,6 +198,7 @@ function resetBettingRound(
   return {
     ...state,
     currentBet: 0,
+    lastRaiseSize: state.bigBlind,
     roundActors: [],
     activePlayerIndex: startIndex,
     players: state.players.map((p) => ({ ...p, currentBet: 0 })),
@@ -539,6 +540,7 @@ function startHand(state: StoreGameState): StoreGameState {
     communityCards: [],
     potSize: sbPaid + bbPaid,
     currentBet: bbPaid,
+    lastRaiseSize: state.bigBlind,
     totalContributions: {
       [players[sbIdx].id]: sbPaid,
       [players[bbIdx].id]: bbPaid,
@@ -607,6 +609,7 @@ function processPlayerAction(
   const players = [...state.players] as GamePlayer[];
   let potDelta = 0;
   let newCurrentBet = state.currentBet;
+  let newLastRaiseSize = state.lastRaiseSize;
   let newRoundActors = [...state.roundActors, playerId];
 
   switch (action) {
@@ -643,6 +646,11 @@ function processPlayerAction(
       potDelta = toAdd;
       const newPlayerBet = player.currentBet + toAdd;
       const isAllIn = toAdd === player.stack;
+      // Track the raise increment for minimum re-raise calculations
+      const raiseIncrement = newPlayerBet - newCurrentBet;
+      if (raiseIncrement > 0) {
+        newLastRaiseSize = raiseIncrement;
+      }
       newCurrentBet = Math.max(newCurrentBet, newPlayerBet);
       players[playerIdx] = {
         ...player,
@@ -662,6 +670,10 @@ function processPlayerAction(
       const newPlayerBet = player.currentBet + allInAmt;
       const isRaise = newPlayerBet > newCurrentBet;
       if (isRaise) {
+        const raiseIncrement = newPlayerBet - newCurrentBet;
+        if (raiseIncrement > 0) {
+          newLastRaiseSize = raiseIncrement;
+        }
         newCurrentBet = newPlayerBet;
         newRoundActors = [playerId];
       }
@@ -731,6 +743,7 @@ function processPlayerAction(
     potSize: newPot,
     totalContributions: newTotalContributions,
     currentBet: newCurrentBet,
+    lastRaiseSize: newLastRaiseSize,
     roundActors: newRoundActors,
     judgementCommittedIds,
     holeCardChangeSeeds: hangedManDealt
