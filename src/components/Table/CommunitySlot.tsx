@@ -8,6 +8,7 @@ import { keyframes } from "@mui/system";
 import { DealtCard } from "../Card/DealtCard";
 import type { StandardCard, StandardCardValue, ArcanaValue, Suit, ArcanaSuit } from "../../types/types";
 import { CardTooltipTitle } from "./CardTooltipTitle";
+import { useTranslation } from "../../i18n";
 
 const slotExpand = keyframes`
   from { width: 0; min-width: 0; opacity: 0; }
@@ -45,6 +46,7 @@ export function CommunitySlot({
   slotIndex,
   onSetPageTooltipIndex,
 }: CommunitySlotProps) {
+  const { t } = useTranslation();
   const highlight = isHighlighted
     ? {
         zIndex: 1295,
@@ -98,10 +100,9 @@ export function CommunitySlot({
         onClose={() => onSetPageTooltipIndex(null)}
         title={
           <CardTooltipTitle
-            label="The Page (Ø) — lowest card"
+            label={t("tooltips.pageTooltip")}
             onLearnMore={onOpenPageInfo!}
             onCloseTooltip={() => onSetPageTooltipIndex(null)}
-            learnMoreText="Learn more →"
           />
         }
       >

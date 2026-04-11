@@ -13,7 +13,8 @@
     "theMerchant": "The Merchant",
     "theSwordsman": "The Swordsman",
     "theMystic": "The Mystic",
-    "theWanderer": "The Wanderer"
+    "theWanderer": "The Wanderer",
+    "gameOver": "GAME OVER"
   },
   "nav": {
     "home": "Home",
@@ -30,6 +31,16 @@
     "raise": "Raise",
     "bet": "Bet",
     "allIn": "All-In",
+    "smallBlind": "Small Blind",
+    "bigBlind": "Big Blind"
+  },
+  "actionChips": {
+    "fold": "Fold",
+    "check": "Check",
+    "call": "Call",
+    "raise": "Raise",
+    "bet": "Bet",
+    "all-in": "All-In",
     "smallBlind": "Small Blind",
     "bigBlind": "Big Blind"
   },
@@ -58,6 +69,21 @@
     "finalHandSubtitle": "The World has spoken — the game is complete.",
     "eliminatedTitle": "Eliminated",
     "eliminatedSubtitle": "Your chips have run dry. The arcane table claims another soul."
+  },
+  "pot": {
+    "pot": "Pot",
+    "bet": "Bet",
+    "tower": "Tower",
+    "splitPot": "Split Pot — {{amount}} each",
+    "youWin": "You win {{amount}}!",
+    "playerWins": "{{name}} wins {{amount}}!"
+  },
+  "tooltips": {
+    "arcanaStirs": "An arcana stirs...",
+    "pageTooltip": "The Page (Ø) — lowest card",
+    "learnMore": "Learn more →",
+    "arcanaTooltip": "A Major Arcana card.",
+    "theCardsSpeak": "The Cards Speak"
   },
   "table": {
     "revealArcana": "Reveal Arcana",

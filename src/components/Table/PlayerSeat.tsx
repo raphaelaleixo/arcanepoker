@@ -11,6 +11,7 @@ import type { StandardCard } from "../../types/types";
 import { PlayerCards } from "./PlayerCards";
 import { PlayerStatusBar } from "./PlayerStatusBar";
 import { useAnimatedValue } from "../../hooks/useAnimatedValue";
+import { useTranslation } from "../../i18n";
 import { HEADING_FONT } from "../../theme";
 
 interface PlayerSeatProps {
@@ -38,6 +39,7 @@ export function PlayerSeat({
   sx,
 }: PlayerSeatProps) {
   const { state } = useGame();
+  const { t } = useTranslation();
 
   const isShowdown = state.stage === "showdown";
   const isDealer = state.players[state.dealerIndex]?.id === player.id;
@@ -146,7 +148,7 @@ export function PlayerSeat({
         </Typography>
         {player.isEliminated ? (
           <Typography variant="caption" fontWeight={800} fontSize="0.75em" color="error.main">
-            GAME OVER
+            {t("players.gameOver")}
           </Typography>
         ) : (
           <Typography variant="caption" fontWeight={800} fontSize="0.75em">

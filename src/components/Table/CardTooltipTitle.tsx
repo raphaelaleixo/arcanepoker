@@ -1,4 +1,5 @@
 import { Box, Typography } from "@mui/material";
+import { useTranslation } from "../../i18n";
 
 interface CardTooltipTitleProps {
   /** The main text line (e.g. "The Page (0) — lowest card"). */
@@ -7,7 +8,7 @@ interface CardTooltipTitleProps {
   onLearnMore: () => void;
   /** Called to close the tooltip after navigating. */
   onCloseTooltip: () => void;
-  /** Link text — defaults to "Learn more". */
+  /** Link text — overrides the default translated "Learn more". */
   learnMoreText?: string;
 }
 
@@ -15,8 +16,10 @@ export function CardTooltipTitle({
   label,
   onLearnMore,
   onCloseTooltip,
-  learnMoreText = "Learn more",
+  learnMoreText,
 }: CardTooltipTitleProps) {
+  const { t } = useTranslation();
+  const linkText = learnMoreText ?? t("tooltips.learnMore");
   return (
     <Box sx={{ textAlign: "center" }}>
       <Typography
@@ -46,7 +49,7 @@ export function CardTooltipTitle({
           fontWeight: "bold",
         }}
       >
-        {learnMoreText}
+        {linkText}
       </Typography>
     </Box>
   );

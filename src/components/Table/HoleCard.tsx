@@ -7,6 +7,7 @@ import { DealtCard } from "../Card/DealtCard";
 import type { StandardCard } from "../../types/types";
 import type { CardHighlight } from "../../tutorial/tutorialScript";
 import { CardTooltipTitle } from "./CardTooltipTitle";
+import { useTranslation } from "../../i18n";
 
 interface HoleCardProps {
   card: StandardCard;
@@ -43,6 +44,7 @@ export function HoleCard({
   onSetPageTooltip,
   displayCardsLength,
 }: HoleCardProps) {
+  const { t } = useTranslation();
   const isPriestessRevealed =
     !showFaceUp &&
     priestessCard != null &&
@@ -113,10 +115,9 @@ export function HoleCard({
         onClose={() => onSetPageTooltip(null)}
         title={
           <CardTooltipTitle
-            label="The Page (Ø) — lowest card"
+            label={t("tooltips.pageTooltip")}
             onLearnMore={() => onOpenPageInfo!()}
             onCloseTooltip={() => onSetPageTooltip(null)}
-            learnMoreText="Learn more →"
           />
         }
       >

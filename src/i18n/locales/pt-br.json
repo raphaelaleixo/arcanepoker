@@ -13,7 +13,8 @@
     "theMerchant": "O Mercador",
     "theSwordsman": "O Espadachim",
     "theMystic": "O Místico",
-    "theWanderer": "O Andarilho"
+    "theWanderer": "O Andarilho",
+    "gameOver": "FIM DE JOGO"
   },
   "nav": {
     "home": "Início",
@@ -30,6 +31,16 @@
     "raise": "Aumentar",
     "bet": "Apostar",
     "allIn": "All-In",
+    "smallBlind": "Small Blind",
+    "bigBlind": "Big Blind"
+  },
+  "actionChips": {
+    "fold": "Desistiu",
+    "check": "Mesa",
+    "call": "Pagou",
+    "raise": "Aumentou",
+    "bet": "Apostou",
+    "all-in": "All-In",
     "smallBlind": "Small Blind",
     "bigBlind": "Big Blind"
   },
@@ -58,6 +69,21 @@
     "finalHandSubtitle": "O Mundo falou — o jogo está completo.",
     "eliminatedTitle": "Eliminado",
     "eliminatedSubtitle": "Suas fichas acabaram. A mesa arcana reclama mais uma alma."
+  },
+  "pot": {
+    "pot": "Pote",
+    "bet": "Aposta",
+    "tower": "Torre",
+    "splitPot": "Pote dividido — {{amount}} cada",
+    "youWin": "Você ganha {{amount}}!",
+    "playerWins": "{{name}} ganha {{amount}}!"
+  },
+  "tooltips": {
+    "arcanaStirs": "Um arcano se agita...",
+    "pageTooltip": "O Pajem (Ø) — carta mais baixa",
+    "learnMore": "Saiba mais →",
+    "arcanaTooltip": "Uma carta de Arcano Maior.",
+    "theCardsSpeak": "As Cartas Falam"
   },
   "table": {
     "revealArcana": "Revelar Arcana",

@@ -14,6 +14,7 @@ import { CardBack } from "../Card/CardBack";
 import type { ArcanaCard } from "../../types/types";
 import backgroundTableUrl from "../../assets/background-table.svg?url";
 import { CardTooltipTitle } from "./CardTooltipTitle";
+import { useTranslation } from "../../i18n";
 
 const arcanaFloatBob = keyframes`
   0%, 100% { transform: translateY(0); }
@@ -45,13 +46,14 @@ export function ArcanaDisplayCard({
   isDiscarding = false,
   onOpenArcanaInfo,
 }: ArcanaDisplayProps) {
+  const { t } = useTranslation();
   const [tooltipOpen, setTooltipOpen] = useState(false);
 
   const showTooltip = !!onOpenArcanaInfo;
 
   const tooltipTitle = (
     <CardTooltipTitle
-      label="A Major Arcana card."
+      label={t("tooltips.arcanaTooltip")}
       onLearnMore={() => onOpenArcanaInfo!()}
       onCloseTooltip={() => setTooltipOpen(false)}
     />

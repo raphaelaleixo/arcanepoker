@@ -61,7 +61,7 @@ export function ArcanaDisplay({
   pendingArcanaCard,
   displayArcanaData,
 }: ArcanaDisplayProps) {
-  const { language } = useTranslation();
+  const { t, language } = useTranslation();
   const tarot = getTarotData(language);
   // Keep the last revealed name/effect frozen while the card is pending (facedown).
   // Without this, the revealed box fades out while already showing the *new* card's
@@ -138,7 +138,7 @@ export function ArcanaDisplay({
                   animation: `${stirsPulse} 2s ease-in-out infinite`,
                 }}
               >
-                An arcana stirs...
+                {t("tooltips.arcanaStirs")}
               </Typography>
             </Box>
             {/* Revealed name + effect — visible after reveal, staggered per line */}

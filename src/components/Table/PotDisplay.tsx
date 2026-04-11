@@ -5,6 +5,7 @@
 import { Stack, Typography } from "@mui/material";
 import type { GamePlayer } from "../../store/storeTypes";
 import { useAnimatedValue } from "../../hooks/useAnimatedValue";
+import { useTranslation } from "../../i18n";
 
 interface PotDisplayProps {
   stage: string;
@@ -27,6 +28,7 @@ export function PotDisplay({
   players,
   ruinsPot,
 }: PotDisplayProps) {
+  const { t } = useTranslation();
   const animatedPot = useAnimatedValue(potSize, 300);
   const animatedBet = useAnimatedValue(currentBet, 300);
 
@@ -36,7 +38,7 @@ export function PotDisplay({
         variant="body2"
         sx={{ color: "secondary.light", fontWeight: "bold" }}
       >
-        Tower: {ruinsPot}
+        {t("pot.tower")}: {ruinsPot}
       </Typography>
     ) : null;
 
@@ -58,7 +60,7 @@ export function PotDisplay({
             variant="body2"
             sx={{ color: "gold.main", fontWeight: "bold" }}
           >
-            Split Pot — {perWinner} each
+            {t("pot.splitPot", { amount: perWinner })}
           </Typography>
           {ruinsPotEl}
         </Stack>
@@ -66,10 +68,7 @@ export function PotDisplay({
     }
     if (winnerIds.length === 1) {
       const isHero = winnerIds[0] === heroId;
-      const name = isHero
-        ? "You"
-        : players.find((p) => p.id === winnerIds[0])?.name;
-      const verb = isHero ? "win" : "wins";
+      const name = players.find((p) => p.id === winnerIds[0])?.name ?? "";
       return (
         <Stack
           direction="row"
@@ -82,7 +81,9 @@ export function PotDisplay({
             variant="body2"
             sx={{ color: "gold.main", fontWeight: "bold" }}
           >
-            {name} {verb} {perWinner}!
+            {isHero
+              ? t("pot.youWin", { amount: perWinner })
+              : t("pot.playerWins", { name, amount: perWinner })}
           </Typography>
           {ruinsPotEl}
         </Stack>
@@ -103,11 +104,11 @@ export function PotDisplay({
         variant="body2"
         sx={{ color: "gold.main", fontWeight: "bold" }}
       >
-        Pot: {animatedPot}
+        {t("pot.pot")}: {animatedPot}
       </Typography>
       {currentBet > 0 && (
         <Typography variant="body2" sx={{ color: "silver.light" }}>
-          Bet: {animatedBet}
+          {t("pot.bet")}: {animatedBet}
         </Typography>
       )}
       {ruinsPotEl}

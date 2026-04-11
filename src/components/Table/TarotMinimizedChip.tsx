@@ -3,12 +3,14 @@
  * Clicking it restores the full modal.
  */
 import { Box, Chip } from "@mui/material";
+import { useTranslation } from "../../i18n";
 
 interface TarotMinimizedChipProps {
   onClick: () => void;
 }
 
 export function TarotMinimizedChip({ onClick }: TarotMinimizedChipProps) {
+  const { t } = useTranslation();
   return (
     <Box
       sx={{
@@ -21,7 +23,7 @@ export function TarotMinimizedChip({ onClick }: TarotMinimizedChipProps) {
       }}
     >
       <Chip
-        label="The Cards Speak"
+        label={t("tooltips.theCardsSpeak")}
         size="small"
         color="primary"
         onClick={onClick}

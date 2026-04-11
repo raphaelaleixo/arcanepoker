@@ -5,21 +5,21 @@
 
 import type { TranslationKey } from "../i18n";
 
-/** Maps a player action string to its translation key. */
-const ACTION_KEY_MAP: Record<string, TranslationKey> = {
-  fold: "actions.fold",
-  check: "actions.check",
-  call: "actions.call",
-  raise: "actions.raise",
-  bet: "actions.bet",
-  "all-in": "actions.allIn",
-  smallBlind: "actions.smallBlind",
-  bigBlind: "actions.bigBlind",
+/** Maps a player action string to its chip-display translation key. */
+const ACTION_CHIP_KEY_MAP: Record<string, TranslationKey> = {
+  fold: "actionChips.fold",
+  check: "actionChips.check",
+  call: "actionChips.call",
+  raise: "actionChips.raise",
+  bet: "actionChips.bet",
+  "all-in": "actionChips.all-in",
+  smallBlind: "actionChips.smallBlind",
+  bigBlind: "actionChips.bigBlind",
 };
 
-/** Returns the translation key for a player action, or null if unknown. */
+/** Returns the chip-display translation key for a player action, or null if unknown. */
 export function actionTranslationKey(action: string): TranslationKey | null {
-  return ACTION_KEY_MAP[action] ?? null;
+  return ACTION_CHIP_KEY_MAP[action] ?? null;
 }
 
 /** Maps a player action string to a human-readable display label. */

@@ -183,7 +183,7 @@ export function RulesPage() {
                 note: "-13.41%",
               },
               {
-                rankKey: "handRanks.one-pair" as TranslationKey,
+                rankKey: "handRanks.pair" as TranslationKey,
                 standard: "42.2569%",
                 arcane: "40.2515%",
                 note: "-4.75%",
