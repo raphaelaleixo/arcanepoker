@@ -37,6 +37,7 @@ interface TableOverlayContentProps {
   onKeepBothStar: () => void;
   onNextHand: () => void;
   onShowTarot: () => void;
+  onRevealArcana: () => void;
   /** Pre-bound dispatch from PokerTable's useGame() call. */
   dispatch: React.Dispatch<GameAction>;
 }
@@ -58,6 +59,7 @@ export function TableOverlayContent({
   onKeepBothStar,
   onNextHand,
   onShowTarot,
+  onRevealArcana,
   dispatch,
 }: TableOverlayContentProps): React.ReactNode {
   // ── Card-pick interactions (Priestess reveal / Chariot pass / Star discard) ─
@@ -131,7 +133,7 @@ export function TableOverlayContent({
       <Button
         variant="contained"
         size="small"
-        onClick={() => dispatch({ type: "REVEAL_ARCANA" })}
+        onClick={onRevealArcana}
       >
         Reveal Arcana
       </Button>

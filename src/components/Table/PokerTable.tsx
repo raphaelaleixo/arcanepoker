@@ -24,6 +24,7 @@ import { TutorialNarrationContent } from "../Tutorial/TutorialNarrationContent";
 import { ArcanaDisplayCard } from "./ArcanaDisplayCard";
 import { PageInfoModal } from "../Modals/PageInfoModal";
 import { ArcanaInfoModal } from "../Modals/ArcanaInfoModal";
+import { ArcanaRevealModal } from "../Modals/ArcanaRevealModal";
 
 const BETTING_STAGES = ["pre-flop", "flop", "turn", "river", "empress"];
 
@@ -40,6 +41,7 @@ export function PokerTable() {
   const [pageInfoOpen, setPageInfoOpen] = useState(false);
   const [arcanaInfoOpen, setArcanaInfoOpen] = useState(false);
   const [arcanaDiscarding, setArcanaDiscarding] = useState(false);
+  const [arcanaRevealCard, setArcanaRevealCard] = useState<ArcanaCard | null>(null);
 
   const cardPickInteraction =
     state.pendingInteraction?.type === "priestess-reveal" ||
@@ -130,6 +132,13 @@ export function PokerTable() {
       onKeepBothStar={keepBothStar}
       onNextHand={handleNextHand}
       onShowTarot={() => setShowTarot(true)}
+      onRevealArcana={() => {
+        if (state.pendingInteraction?.type === "arcana-reveal") {
+          setArcanaRevealCard(
+            (state.pendingInteraction as { type: "arcana-reveal"; arcanaCard: ArcanaCard }).arcanaCard
+          );
+        }
+      }}
       dispatch={dispatch}
     />
   ) : undefined;
@@ -325,6 +334,14 @@ export function PokerTable() {
       <ArcanaInfoModal
         open={arcanaInfoOpen}
         onClose={() => setArcanaInfoOpen(false)}
+      />
+      <ArcanaRevealModal
+        open={arcanaRevealCard !== null}
+        arcanaCard={arcanaRevealCard}
+        onDismiss={() => {
+          setArcanaRevealCard(null);
+          dispatch({ type: "REVEAL_ARCANA" });
+        }}
       />
       <Button
         size="small"
