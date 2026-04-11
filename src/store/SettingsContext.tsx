@@ -28,12 +28,19 @@ const DEFAULTS: Settings = {
   playedTutorial: false,
 };
 
+const VALID_LANGUAGES: ReadonlySet<string> = new Set(["en", "pt-br"]);
+
 function loadSettings(): Settings {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return DEFAULTS;
-    const parsed = JSON.parse(raw);
-    return { ...DEFAULTS, ...parsed };
+    const base = raw ? { ...DEFAULTS, ...JSON.parse(raw) } : DEFAULTS;
+
+    const urlLang = new URLSearchParams(window.location.search).get("lang");
+    if (urlLang && VALID_LANGUAGES.has(urlLang)) {
+      base.language = urlLang as Settings["language"];
+    }
+
+    return base;
   } catch {
     return DEFAULTS;
   }
