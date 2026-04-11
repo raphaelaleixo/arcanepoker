@@ -2,6 +2,7 @@ import {
   useReducer,
   useEffect,
   useCallback,
+  useRef,
   type ReactNode,
 } from "react";
 import { gameReducer } from "./gameReducer";
@@ -26,11 +27,23 @@ export function GameProvider({ children, isTutorial = false }: { children: React
 
   const startGame = useCallback(() => dispatch({ type: "START_GAME", language }), [language]);
 
+  const isFirstRender = useRef(true);
+
   // Auto-start on mount (suppressed in tutorial — TutorialContext controls hand start)
   useEffect(() => {
     if (isTutorial) return;
     dispatch({ type: "START_GAME", language });
-  }, [isTutorial, language]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isTutorial]);
+
+  // Update player names when language changes without restarting the game
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    dispatch({ type: "UPDATE_PLAYER_NAMES", language });
+  }, [language]);
 
   // Auto-run bot turns (suppressed in tutorial — TutorialContext drives bot actions)
   useEffect(() => {

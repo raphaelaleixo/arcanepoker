@@ -79,16 +79,16 @@
     "playerWins": "{{name}} ganha {{amount}}!"
   },
   "tooltips": {
-    "arcanaStirs": "Uma Arcana surge...",
+    "arcanaStirs": "Um Arcano surge...",
     "pageTooltip": "O Pajem (Ø) — carta mais baixa",
     "learnMore": "Saiba mais →",
-    "arcanaTooltip": "Uma carta de Arcana Maior.",
+    "arcanaTooltip": "Uma carta dos Arcanos Maiores.",
     "theCardsSpeak": "As cartas falam"
   },
   "table": {
-    "revealArcana": "Revelar Arcana",
+    "revealArcana": "Revelar Arcano",
     "acceptFate": "Aceitar o destino",
-    "arcanaRevealsItself": "A Arcana se revela",
+    "arcanaRevealsItself": "O Arcano se revela",
     "pageChallengeHint": "O vencedor possui um Pajem — todos os outros pagam {{amount}} fichas.",
     "challengeOfThePage": "Desafio do Pajem",
     "priestessInstruction": "Clique em uma carta para revelá-la a todos os jogadores.",
@@ -105,13 +105,13 @@
   "tarotModal": {
     "yourCardsSpeak": "Suas cartas falam",
     "minimize": "Minimizar",
-    "activeArcana": "Arcana ativa"
+    "activeArcana": "Arcano ativo"
   },
   "pageInfo": {
     "title": "O Pajem",
     "cardValue": "Valor da carta",
     "cardValueDesc": "O Pajem (0) é uma carta exclusiva do Arcane Poker — uma adicionada a cada naipe, totalizando <strong>56 cartas</strong>. Tem o valor mais baixo quando jogada sozinha, mas se conecta <em>antes</em> do Ás em sequências: 0 · A · 2 · 3 · 4.",
-    "arcanaTrigger": "Gatilho de Arcana",
+    "arcanaTrigger": "Ativação do Arcano",
     "arcanaTriggerDesc": "O <strong>primeiro</strong> Pajem distribuído nas cartas comunitárias compra uma carta de Arcano Maior, que muda as regras daquela mão. Isso só pode acontecer <em>uma vez por rodada</em>.",
     "challengeOfThePage": "Desafio do Pajem",
     "challengeDesc": "Vença uma mão segurando um Pajem nas suas cartas de mão e todos os outros jogadores devem pagar <strong>1 big blind</strong>. A recompensa é coletada antes da próxima mão começar.",
@@ -127,6 +127,7 @@
     "active": "Ativa"
   },
   "handRanks": {
+    "royal-flush": "Royal flush",
     "straight-flush": "Straight flush",
     "four-of-a-kind": "Quadra",
     "full-house": "Full house",
@@ -142,8 +143,8 @@
     "intro": "Arcane Poker segue as regras padrão do Texas Hold'Em com duas adições: a carta Pajem e o baralho de Arcanos Maiores.",
     "pageCardTitle": "A carta Pajem (0)",
     "pageCardDesc1": "Cada naipe contém uma carta <strong>Pajem</strong> com valor 0 — a carta mais baixa em uma comparação padrão. No entanto, em sequências, o Pajem se conecta <em>antes</em> do Ás: <strong>Pajem, A, 2, 3, 4</strong> é uma sequência válida.",
-    "pageCardBoardTrigger": "<strong>Gatilho da mesa:</strong> Quando um Pajem é revelado nas cartas comunitárias, a carta do topo do baralho modificador de Arcana é comprada e seu efeito é ativado imediatamente. Apenas uma carta de Arcana pode estar ativa por rodada — Pajens subsequentes na mesa não ativam novas compras.",
-    "pageCardShowdownBonus": "<strong>Bônus de showdown:</strong> Se o jogador vencedor possuir um Pajem em suas cartas de mão, todos os outros jogadores (incluindo os que desistiram) pagam 1 Big Blind a ele.",
+    "pageCardBoardTrigger": "<strong>Ativação do Arcano:</strong> Quando um Pajem é revelado nas cartas comunitárias, a carta do topo do baralho modificador de Arcanos é comprada e seu efeito é ativado imediatamente. Apenas uma carta de Arcano pode estar ativa por rodada — Pajens subsequentes na mesa não ativam novas compras.",
+    "pageCardShowdownBonus": "<strong>Desafio do Pajem:</strong> Se o jogador vencedor possuir um Pajem em suas cartas de mão, todos os outros jogadores (incluindo os que desistiram) pagam 1 Big Blind a ele.",
     "handRankingsTitle": "Rankings de mãos",
     "handRankingsDesc": "Arcane Poker usa um ranking modificado onde uma <strong>Sequência vence um Flush</strong>. A mudança de probabilidade abaixo reflete a alteração em relação ao poker padrão.",
     "reference": "Referência",
@@ -251,11 +252,11 @@
     "round1": {
       "intro": {
         "title": "Bem-vindo ao Arcane Poker",
-        "body": "Este é um tutorial guiado. Você jogará duas mãos roteirizadas para aprender as mecânicas principais: como a carta Pajem funciona em sequências, e como as cartas de Arcana podem virar as regras no meio do jogo. Os bots não agirão até você fechar cada painel."
+        "body": "Este é um tutorial guiado. Você jogará duas mãos para aprender as mecânicas: como a carta do Pajem funciona nas sequências, e como as cartas de Arcano podem mudar regras no meio do jogo. "
       },
       "holeCardsPage": {
         "title": "A carta Pajem (0)",
-        "body": "Você recebeu o Pajem de Copas — valor 0. Arcane Poker adiciona um Pajem a cada naipe, totalizando 56 cartas. Como agora são 14 cartas por naipe em vez de 13, sequências são mais difíceis de conseguir — então neste jogo, uma sequência vence um flush."
+        "body": "Você recebeu o Pajem de Copas (valor 0). O Arcane Poker adiciona um Pajem a cada naipe, tendo 56 cartas. Como agora são 14 cartas por naipe em vez de 13, sequências são mais difíceis de conseguir — então neste jogo, uma sequência vence um flush."
       },
       "showdown": {
         "title": "O Pajem em uma sequência",
@@ -267,7 +268,7 @@
       },
       "roundEnd": {
         "title": "Rodada 1 completa",
-        "body": "Você viu como o Pajem se encaixa em uma sequência e como funciona uma rodada normal sem Arcana. A Rodada 2 mostrará o que acontece quando um Pajem aparece na mesa."
+        "body": "Você viu como o Pajem se encaixa em uma sequência e como funciona uma rodada normal sem Arcanos. A Rodada 2 mostrará o que acontece quando um Pajem aparece na mesa."
       }
     },
     "round2": {
@@ -277,11 +278,11 @@
       },
       "arcanaRevealed": {
         "title": "O Louco",
-        "body": "Cada carta de Arcana carrega um efeito diferente — algumas mudam os rankings de mãos, algumas viram as regras completamente. Desta vez, O Louco apareceu: ele substitui o Pajem e atua como curinga, tornando-se qualquer valor de carta que melhor complete a mão de cada jogador."
+        "body": "Cada carta de Arcano tem um efeito diferente — algumas mudam os valores de mãos, algumas mudam regras completamente. Desta vez, O Louco surgiu: ele substitui o Pajem e vira um curinga, tornando-se a carta que melhor complete a mão de cada jogador."
       },
       "showdown": {
         "title": "O Louco como Rei",
-        "body": "O Louco é um curinga — ele se torna qualquer carta que melhor complete a mão de cada jogador. Para você, ele se torna um Rei, dando a você 10 → J → Q → K → A — um royal flush. Para Místico, ele se torna um Ás, completando uma quadra. Um royal flush vence uma quadra."
+        "body": "O Louco é um curinga — se torna a carta que melhor complete a mão de cada jogador. Para você, ele se torna um Rei, dando a você 10 → J → Q → K → A — um royal flush. Para Místico, ele se torna um Ás, completando uma quadra. Um royal flush vence uma quadra."
       },
       "roundEnd": {
         "title": "Tutorial completo",

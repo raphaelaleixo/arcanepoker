@@ -127,6 +127,7 @@
     "active": "Active"
   },
   "handRanks": {
+    "royal-flush": "Royal flush",
     "straight-flush": "Straight flush",
     "four-of-a-kind": "Four of a kind",
     "full-house": "Full house",

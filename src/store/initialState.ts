@@ -7,7 +7,7 @@ import ptBr from "../i18n/locales/pt-br.json";
 
 const locales = { en, "pt-br": ptBr } as const;
 
-function resolveKey(language: "en" | "pt-br", key: TranslationKey): string {
+export function resolveKey(language: "en" | "pt-br", key: TranslationKey): string {
   return key.split(".").reduce<unknown>((acc, k) => {
     if (acc && typeof acc === "object") return (acc as Record<string, unknown>)[k];
     return undefined;
@@ -19,6 +19,15 @@ const BIG_BLIND = 20;
 const SMALL_BLIND = 10;
 
 const HERO_ID = "hero";
+
+/** Map from player id → translation key for their display name. */
+export const PLAYER_NAME_KEYS: Record<string, TranslationKey> = {
+  [HERO_ID]: "players.you",
+  "bot-pentacles": "players.theMerchant" as TranslationKey,
+  "bot-swords": "players.theSwordsman" as TranslationKey,
+  "bot-cups": "players.theMystic" as TranslationKey,
+  "bot-wands": "players.theWanderer" as TranslationKey,
+};
 
 /** The four bots in fixed seat order (positions 1–4 around the table). */
 // Array order = dealing order starting left of hero (hero → merchant → swordsman → mystic → wanderer).

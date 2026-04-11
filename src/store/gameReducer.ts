@@ -22,7 +22,7 @@ import type {
   Pot,
 } from "./storeTypes";
 import { ARCANA_EFFECT_KEYS } from "./storeTypes";
-import { createInitialState, HERO_ID_CONST } from "./initialState";
+import { createInitialState, HERO_ID_CONST, resolveKey, PLAYER_NAME_KEYS } from "./initialState";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -1322,6 +1322,15 @@ export function gameReducer(
   switch (action.type) {
     case "START_GAME":
       return startHand(createInitialState(action.language));
+
+    case "UPDATE_PLAYER_NAMES":
+      return {
+        ...state,
+        players: state.players.map((p) => {
+          const nameKey = PLAYER_NAME_KEYS[p.id];
+          return nameKey ? { ...p, name: resolveKey(action.language, nameKey) } : p;
+        }),
+      };
 
     case "PLAYER_ACTION":
       return processPlayerAction(state, action.payload);
