@@ -37,6 +37,7 @@ describe('useNavigateWithTransition', () => {
   it('calls startViewTransition when available', () => {
     const mockStartViewTransition = vi.fn((cb: () => void) => {
       cb();
+      return { finished: Promise.resolve() };
     });
     Object.defineProperty(document, 'startViewTransition', {
       value: mockStartViewTransition,
