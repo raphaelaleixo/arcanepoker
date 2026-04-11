@@ -11,6 +11,7 @@ import type { StandardCard } from "../../types/types";
 import { PlayerCards } from "./PlayerCards";
 import { PlayerStatusBar } from "./PlayerStatusBar";
 import { useAnimatedValue } from "../../hooks/useAnimatedValue";
+import { HEADING_FONT } from "../../theme";
 
 interface PlayerSeatProps {
   player: GamePlayer;
@@ -135,7 +136,7 @@ export function PlayerSeat({
           variant="caption"
           fontWeight="bold"
           fontSize="0.65em"
-          fontFamily="Young Serif"
+          fontFamily={HEADING_FONT}
           color="gold.main"
           sx={{
             wordWrap: "nowrap",

@@ -1,10 +1,5 @@
 import {
-  Box,
   Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   Divider,
   IconButton,
   Stack,
@@ -13,19 +8,14 @@ import {
 } from "@mui/material";
 import { useGame } from "../../store/useGame";
 import { HERO_ID_CONST } from "../../store/initialState";
-import tarot from "../../data/tarot";
-import { PlayingCard } from "../Card/PlayingCard";
 import { evaluateBestHand } from "../../engine/handEvaluator";
 import { buildEvalOptions } from "../../store/gameReducer";
-import type {
-  StandardCard,
-  ArcanaCard,
-  StandardCardValue,
-  ArcanaValue,
-  Suit,
-  ArcanaSuit,
-} from "../../types/types";
+import type { StandardCard } from "../../types/types";
 import { Minimize } from "@mui/icons-material";
+import { GOLD_DIVIDER_SX } from "../../theme";
+import { ArcaneDialog } from "./ArcaneDialog";
+import { CardEntry } from "./CardEntry";
+import { getTarotInfo } from "../../data/getTarotInfo";
 
 interface TarotModalProps {
   onClose: () => void;
@@ -33,89 +23,6 @@ interface TarotModalProps {
   minimized: boolean;
   onMinimize: () => void;
   onRestore: () => void;
-}
-
-type TarotEntry = {
-  fullName: string;
-  tags: string[];
-  description: string;
-  gameEffect?: string;
-};
-
-function getTarotInfo(card: StandardCard | ArcanaCard): TarotEntry | null {
-  if (card.suit === "arcana") {
-    return (tarot.arcana as Record<string, TarotEntry>)[card.value] ?? null;
-  }
-  const suitData = tarot[card.suit] as Record<string, TarotEntry>;
-  return suitData[card.value] ?? null;
-}
-
-function CardEntry({
-  card,
-  showGameEffect,
-}: {
-  card: StandardCard | ArcanaCard;
-  showGameEffect?: boolean;
-}) {
-  const info = getTarotInfo(card);
-  if (!info) return null;
-
-  return (
-    <Stack direction="row" alignItems="center" spacing={2}>
-      <Box sx={{ display: "inline-block", scale: 0.7, flexShrink: 0 }}>
-        <PlayingCard
-          rank={card.value as StandardCardValue | ArcanaValue}
-          suit={card.suit as Suit | ArcanaSuit}
-          flipped
-        />
-      </Box>
-      <Stack spacing={0}>
-        <Typography
-          variant="caption"
-          sx={{
-            color: "gold.main",
-            fontWeight: "bold",
-            fontSize: "0.875rem",
-            fontFamily: 'Young Serif, "Georgia", serif',
-          }}
-        >
-          {info.fullName}
-        </Typography>
-        <Typography
-          component="div"
-          variant="caption"
-          sx={{
-            my: 0.5,
-            color: "silver.main",
-            fontSize: "0.6rem",
-            fontWeight: 600,
-            textTransform: "uppercase",
-          }}
-        >
-          {info.tags.join(" · ")}
-        </Typography>
-        <Typography
-          variant="caption"
-          sx={{ color: "white", fontSize: "0.75rem", lineHeight: 1.5 }}
-        >
-          {info.description}
-        </Typography>
-        {showGameEffect && info.gameEffect && (
-          <Typography
-            variant="caption"
-            sx={{
-              color: "gold.light",
-              fontSize: "0.65rem",
-              fontStyle: "italic",
-              mt: 0.5,
-            }}
-          >
-            {info.gameEffect}
-          </Typography>
-        )}
-      </Stack>
-    </Stack>
-  );
 }
 
 export function TarotModal({
@@ -150,36 +57,10 @@ export function TarotModal({
   if (minimized) return null;
 
   return (
-    <Dialog
+    <ArcaneDialog
       open
-      maxWidth="sm"
-      fullWidth
-      slotProps={{
-        paper: {
-          sx: {
-            backgroundColor: "rgba(0,0,0,0.8)",
-            border: "1px solid",
-            borderColor: "gold.dark",
-            borderRadius: 2,
-            overflow: "hidden",
-          },
-        },
-      }}
-    >
-      <DialogTitle
-        sx={{
-          color: "gold.main",
-          fontFamily: 'Young Serif, "Georgia", serif',
-          textAlign: "center",
-          fontSize: "1.4rem",
-          borderBottom: "1px solid rgba(255,215,0,0.2)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          pr: 6,
-        }}
-      >
-        Your Cards Speak
+      title="Your Cards Speak"
+      titleAction={
         <IconButton
           size="small"
           onClick={onMinimize}
@@ -190,18 +71,28 @@ export function TarotModal({
             <Minimize />
           </SvgIcon>
         </IconButton>
-      </DialogTitle>
+      }
+      titleSx={{ display: "flex", alignItems: "center", justifyContent: "center", pr: 6 }}
+      actions={
+        <Button variant="contained" size="small" onClick={handleContinue}>
+          Next Hand
+        </Button>
+      }
+    >
+      <Stack direction="column" gap={1.5}>
+        {bestCards.map((card, i) => {
+          const info = getTarotInfo(card);
+          if (!info) return null;
+          return <CardEntry key={i} card={card} info={info} />;
+        })}
+      </Stack>
 
-      <DialogContent sx={{ py: 3 }}>
-        <Stack direction="column" gap={1.5}>
-          {bestCards.map((card, i) => (
-            <CardEntry key={i} card={card} />
-          ))}
-        </Stack>
-
-        {arcanaCard && (
+      {arcanaCard && (() => {
+        const info = getTarotInfo(arcanaCard);
+        if (!info) return null;
+        return (
           <>
-            <Divider sx={{ my: 2, borderColor: "rgba(255,215,0,0.2)" }} />
+            <Divider sx={{ my: 2, ...GOLD_DIVIDER_SX }} />
             <Typography
               variant="overline"
               sx={{
@@ -213,16 +104,10 @@ export function TarotModal({
             >
               Active Arcana
             </Typography>
-            <CardEntry card={arcanaCard} showGameEffect />
+            <CardEntry card={arcanaCard} info={info} showGameEffect />
           </>
-        )}
-      </DialogContent>
-
-      <DialogActions sx={{ justifyContent: "center", pb: 2 }}>
-        <Button variant="contained" size="small" onClick={handleContinue}>
-          Next Hand
-        </Button>
-      </DialogActions>
-    </Dialog>
+        );
+      })()}
+    </ArcaneDialog>
   );
 }

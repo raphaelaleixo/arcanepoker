@@ -4,11 +4,7 @@ import {
   Button,
   ButtonGroup,
   ClickAwayListener,
-  Dialog,
-  DialogContent,
-  DialogTitle,
   Grow,
-  IconButton,
   Link as HtmlLink,
   MenuItem,
   MenuList,
@@ -17,12 +13,12 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import backgroundUrl from "../assets/background.svg?url";
 import { useNavigateWithTransition } from "../hooks/useNavigateWithTransition";
 import { useSettings } from "../store/SettingsContext";
-import { SettingsPanel } from "../components/SettingsPanel";
+import { ARCANE_MENU_PAPER_SX, ARCANE_MENU_LIST_SX } from "../theme";
+import { SettingsDialog } from "../components/SettingsDialog";
 
 const LudoratorySvg = () => (
   <svg
@@ -146,30 +142,11 @@ export function HomePage() {
                         : "center bottom",
                   }}
                 >
-                  <Paper
-                    sx={{
-                      bgcolor: "blackSuit.main",
-                      border: 1,
-                      borderColor: "blackSuit.light",
-                      color: "#fff",
-                    }}
-                  >
+                  <Paper sx={ARCANE_MENU_PAPER_SX}>
                     <ClickAwayListener
                       onClickAway={() => setOpen(false)}
                     >
-                      <MenuList
-                        autoFocusItem
-                        sx={{
-                          "& .MuiMenuItem-root": {
-                            fontFamily: "Young Serif, serif",
-                            fontSize: "0.875em",
-                          },
-                          "& .MuiMenuItem-root:hover": {
-                            bgcolor: "transparent",
-                            color: "secondary.main",
-                          },
-                        }}
-                      >
+                      <MenuList autoFocusItem sx={ARCANE_MENU_LIST_SX}>
                         <MenuItem
                           onClick={() => {
                             setOpen(false);
@@ -264,50 +241,10 @@ export function HomePage() {
         </Box>
       </Box>
 
-      <Dialog
+      <SettingsDialog
         open={settingsOpen}
         onClose={() => setSettingsOpen(false)}
-        maxWidth="sm"
-        fullWidth
-        slotProps={{
-          paper: {
-            sx: {
-              bgcolor: "blackSuit.main",
-              border: 1,
-              borderColor: "blackSuit.light",
-              color: "#fff",
-            },
-          },
-        }}
-      >
-        <DialogTitle
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            fontFamily: "Young Serif, serif",
-            color: "gold.light",
-          }}
-        >
-          <Typography
-            variant="h5"
-            component="span"
-            sx={{ fontFamily: "inherit" }}
-          >
-            Settings
-          </Typography>
-          <IconButton
-            aria-label="close"
-            onClick={() => setSettingsOpen(false)}
-            sx={{ color: "silver.dark" }}
-          >
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
-        <DialogContent>
-          <SettingsPanel />
-        </DialogContent>
-      </Dialog>
+      />
     </>
   );
 }

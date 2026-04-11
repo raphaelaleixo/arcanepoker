@@ -2,23 +2,19 @@
 import { useRef, useState } from "react";
 import {
   ClickAwayListener,
-  Dialog,
-  DialogContent,
-  DialogTitle,
   Fab,
   Grow,
-  IconButton,
   MenuItem,
   MenuList,
   Paper,
   Popper,
-  Typography,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import MenuIcon from "@mui/icons-material/Menu";
 import { useLocation } from "react-router-dom";
 import { useNavigateWithTransition } from "../hooks/useNavigateWithTransition";
-import { SettingsPanel } from "./SettingsPanel";
+import { ARCANE_MENU_PAPER_SX, ARCANE_MENU_LIST_SX } from "../theme";
+import { SettingsDialog } from "./SettingsDialog";
 
 const GAME_ROUTES = ["/game", "/tutorial"];
 
@@ -71,28 +67,9 @@ export function NavFab() {
       >
         {({ TransitionProps }) => (
           <Grow {...TransitionProps} style={{ transformOrigin: "left top" }}>
-            <Paper
-              sx={{
-                bgcolor: "blackSuit.main",
-                border: 1,
-                borderColor: "blackSuit.light",
-                color: "#fff",
-              }}
-            >
+            <Paper sx={ARCANE_MENU_PAPER_SX}>
               <ClickAwayListener onClickAway={() => setOpen(false)}>
-                <MenuList
-                  autoFocusItem
-                  sx={{
-                    "& .MuiMenuItem-root": {
-                      fontFamily: "Young Serif, serif",
-                      fontSize: "0.875em",
-                    },
-                    "& .MuiMenuItem-root:hover": {
-                      bgcolor: "transparent",
-                      color: "secondary.main",
-                    },
-                  }}
-                >
+                <MenuList autoFocusItem sx={ARCANE_MENU_LIST_SX}>
                   {ACTIONS.map((action) => (
                     <MenuItem
                       key={action.name}
@@ -108,50 +85,10 @@ export function NavFab() {
         )}
       </Popper>
 
-      <Dialog
+      <SettingsDialog
         open={settingsOpen}
         onClose={() => setSettingsOpen(false)}
-        maxWidth="sm"
-        fullWidth
-        slotProps={{
-          paper: {
-            sx: {
-              bgcolor: "blackSuit.main",
-              border: 1,
-              borderColor: "blackSuit.light",
-              color: "#fff",
-            },
-          },
-        }}
-      >
-        <DialogTitle
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            fontFamily: "Young Serif, serif",
-            color: "gold.light",
-          }}
-        >
-          <Typography
-            variant="h5"
-            component="span"
-            sx={{ fontFamily: "inherit" }}
-          >
-            Settings
-          </Typography>
-          <IconButton
-            aria-label="close"
-            onClick={() => setSettingsOpen(false)}
-            sx={{ color: "silver.dark" }}
-          >
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
-        <DialogContent>
-          <SettingsPanel />
-        </DialogContent>
-      </Dialog>
+      />
     </>
   );
 }

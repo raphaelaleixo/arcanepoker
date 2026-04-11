@@ -1,6 +1,7 @@
 // src/components/Tutorial/TutorialNarrationContent.tsx
 import { Box, Button, Typography } from "@mui/material";
 import { useTutorial } from "../../tutorial/TutorialContext";
+import { HEADING_FONT } from "../../theme";
 
 /**
  * Two-row narration panel rendered inside the ActionBar's overlayContent slot.
@@ -37,7 +38,7 @@ export function TutorialNarrationContent() {
             letterSpacing: "0.08em",
             lineHeight: 1,
             fontWeight: "bold",
-            fontFamily: "Young Serif, serif",
+            fontFamily: HEADING_FONT,
           }}
         >
           Tutorial · {narration.title}

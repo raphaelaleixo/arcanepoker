@@ -7,12 +7,13 @@
  * via a CSS grid stack so no layout shift occurs.
  */
 import { useState } from "react";
-import { Box, Stack, Tooltip, Typography } from "@mui/material";
+import { Box, Stack, Tooltip } from "@mui/material";
 import { keyframes } from "@emotion/react";
 import { PlayingCard } from "../Card/PlayingCard";
 import { CardBack } from "../Card/CardBack";
 import type { ArcanaCard } from "../../types/types";
 import backgroundTableUrl from "../../assets/background-table.svg?url";
+import { CardTooltipTitle } from "./CardTooltipTitle";
 
 const arcanaFloatBob = keyframes`
   0%, 100% { transform: translateY(0); }
@@ -49,37 +50,11 @@ export function ArcanaDisplayCard({
   const showTooltip = !!onOpenArcanaInfo;
 
   const tooltipTitle = (
-    <Box sx={{ textAlign: "center" }}>
-      <Typography
-        variant="caption"
-        sx={{
-          color: "white",
-          display: "block",
-          lineHeight: 1.2,
-          fontWeight: 500,
-        }}
-      >
-        A Major Arcana card.
-      </Typography>
-      <Typography
-        variant="caption"
-        component="span"
-        onMouseDown={(e) => e.stopPropagation()}
-        onClick={(e) => {
-          e.stopPropagation();
-          setTooltipOpen(false);
-          onOpenArcanaInfo!();
-        }}
-        sx={{
-          color: "gold.light",
-          cursor: "pointer",
-          textDecoration: "underline",
-          fontWeight: "bold",
-        }}
-      >
-        Learn more
-      </Typography>
-    </Box>
+    <CardTooltipTitle
+      label="A Major Arcana card."
+      onLearnMore={() => onOpenArcanaInfo!()}
+      onCloseTooltip={() => setTooltipOpen(false)}
+    />
   );
 
   const card = (
@@ -170,10 +145,6 @@ export function ArcanaDisplayCard({
       <Box sx={{ display: "inline-block", scale: 0.7 }}>
         {showTooltip ? (
           <Tooltip
-            placement="top"
-            arrow
-            enterDelay={750}
-            disableInteractive={false}
             open={tooltipOpen}
             onOpen={() => setTooltipOpen(true)}
             onClose={() => setTooltipOpen(false)}

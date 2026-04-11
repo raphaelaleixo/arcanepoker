@@ -4,11 +4,12 @@
  * Fool arcana) and the Empress sixth-card slot.
  */
 import { useEffect, useRef, useState } from "react";
-import { Box, Stack, Tooltip, Typography } from "@mui/material";
+import { Box, Stack, Tooltip } from "@mui/material";
 import { keyframes } from "@mui/system";
 import { DealtCard } from "../Card/DealtCard";
 import type { StandardCard, ArcanaCard } from "../../types/types";
 import { useTutorialOptional } from "../../tutorial/TutorialContext";
+import { CardTooltipTitle } from "./CardTooltipTitle";
 
 const dealOut = keyframes`
   from { opacity: 1; }
@@ -127,37 +128,12 @@ export function CommunityCards({
         const di = card && i < 3 ? i : 0;
 
         const pageTooltipTitle = onOpenPageInfo ? (
-          <Box sx={{ textAlign: "center" }}>
-            <Typography
-              variant="caption"
-              sx={{
-                color: "white",
-                display: "block",
-                lineHeight: 1.2,
-                fontWeight: 500,
-              }}
-            >
-              The Page (Ø) — lowest card
-            </Typography>
-            <Typography
-              variant="caption"
-              component="span"
-              onMouseDown={(e) => e.stopPropagation()}
-              onClick={(e) => {
-                e.stopPropagation();
-                setOpenPageTooltipIndex(null);
-                onOpenPageInfo();
-              }}
-              sx={{
-                color: "gold.light",
-                cursor: "pointer",
-                textDecoration: "underline",
-                fontWeight: "bold",
-              }}
-            >
-              Learn more →
-            </Typography>
-          </Box>
+          <CardTooltipTitle
+            label="The Page (Ø) — lowest card"
+            onLearnMore={onOpenPageInfo}
+            onCloseTooltip={() => setOpenPageTooltipIndex(null)}
+            learnMoreText="Learn more →"
+          />
         ) : null;
 
         // Fool substitution: render this slot as The Fool arcana face
@@ -230,9 +206,6 @@ export function CommunityCards({
           return moonIsPage ? (
             <Tooltip
               key={`${renderedRound}-moon-${communityChangeKey}-${i}`}
-              placement="top"
-              arrow
-              disableInteractive={false}
               open={openPageTooltipIndex === i}
               onOpen={() => setOpenPageTooltipIndex(i)}
               onClose={() => setOpenPageTooltipIndex(null)}
@@ -287,9 +260,6 @@ export function CommunityCards({
         return normalIsPage ? (
           <Tooltip
             key={slotKey}
-            placement="top"
-            arrow
-            disableInteractive={false}
             open={openPageTooltipIndex === i}
             onOpen={() => setOpenPageTooltipIndex(i)}
             onClose={() => setOpenPageTooltipIndex(null)}

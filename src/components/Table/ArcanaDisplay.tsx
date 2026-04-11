@@ -11,6 +11,7 @@ import { keyframes } from "@emotion/react";
 import { Box, Stack, Typography } from "@mui/material";
 import type { ArcanaCard } from "../../types/types";
 import tarot from "../../data/tarot";
+import { HEADING_FONT } from "../../theme";
 
 const ROMAN = [
   "0", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X",
@@ -130,7 +131,7 @@ export function ArcanaDisplay({
                   textAlign: "center",
                   fontWeight: "bold",
                   fontSize: "0.9rem",
-                  fontFamily: "Young Serif, serif",
+                  fontFamily: HEADING_FONT,
                   animation: `${stirsPulse} 2s ease-in-out infinite`,
                 }}
               >
@@ -154,7 +155,7 @@ export function ArcanaDisplay({
                   display: "block",
                   fontWeight: "bold",
                   fontSize: "0.9rem",
-                  fontFamily: "Young Serif, serif",
+                  fontFamily: HEADING_FONT,
                   lineHeight: 1.1,
                   position: "relative",
                   color: "primary.main",

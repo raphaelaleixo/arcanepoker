@@ -1,5 +1,6 @@
 import { Box, Typography } from "@mui/material";
 import { SettingsPanel } from "../components/SettingsPanel";
+import { HEADING_FONT } from "../theme";
 
 export function SettingsPage() {
   return (
@@ -14,7 +15,7 @@ export function SettingsPage() {
       <Typography
         variant="h4"
         sx={{
-          fontFamily: "Young Serif, serif",
+          fontFamily: HEADING_FONT,
           color: "gold.light",
           mb: 3,
         }}

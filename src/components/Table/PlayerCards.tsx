@@ -9,13 +9,14 @@
  */
 import { useEffect, useRef, useState, useCallback } from "react";
 import { keyframes } from "@emotion/react";
-import { Box, Stack, Tooltip, Typography } from "@mui/material";
+import { Box, Stack, Tooltip } from "@mui/material";
 import type { Theme } from "@mui/material/styles";
 import { PlayingCard } from "../Card/PlayingCard";
 import { DealtCard } from "../Card/DealtCard";
 import { DealerBadge } from "./DealerBadge";
 import type { StandardCard } from "../../types/types";
 import { useTutorialOptional } from "../../tutorial/TutorialContext";
+import { CardTooltipTitle } from "./CardTooltipTitle";
 
 const dealOut = keyframes`
   from { opacity: 1; }
@@ -239,45 +240,16 @@ export function PlayerCards({
                 return (
                   <Tooltip
                     key={tooltipKey}
-                    placement="top"
-                    arrow
-                    enterDelay={750}
-                    disableInteractive={false}
                     open={openPageTooltip === tooltipKey}
                     onOpen={() => setOpenPageTooltip(tooltipKey)}
                     onClose={() => setOpenPageTooltip(null)}
                     title={
-                      <Box sx={{ textAlign: "center" }}>
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            color: "white",
-                            display: "block",
-                            lineHeight: 1.2,
-                            fontWeight: 500,
-                          }}
-                        >
-                          The Page (Ø) — lowest card
-                        </Typography>
-                        <Typography
-                          variant="caption"
-                          component="span"
-                          onMouseDown={(e) => e.stopPropagation()}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setOpenPageTooltip(null);
-                            onOpenPageInfo!();
-                          }}
-                          sx={{
-                            color: "gold.light",
-                            cursor: "pointer",
-                            textDecoration: "underline",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          Learn more →
-                        </Typography>
-                      </Box>
+                      <CardTooltipTitle
+                        label="The Page (Ø) — lowest card"
+                        onLearnMore={() => onOpenPageInfo!()}
+                        onCloseTooltip={() => setOpenPageTooltip(null)}
+                        learnMoreText="Learn more →"
+                      />
                     }
                   >
                     {cardBox}

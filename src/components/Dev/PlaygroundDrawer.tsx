@@ -16,6 +16,7 @@ import { useGame } from "../../store/useGame";
 import { useSettings } from "../../store/SettingsContext";
 import tarot from "../../data/tarot";
 import type { ArcanaValue } from "../../types/types";
+import { HEADING_FONT } from "../../theme";
 
 interface PlaygroundDrawerProps {
   open: boolean;
@@ -108,7 +109,7 @@ export function PlaygroundDrawer({
           sx={{
             color: "gold.light",
             fontWeight: "bold",
-            fontFamily: "Young Serif, serif",
+            fontFamily: HEADING_FONT,
           }}
         >
           Playground
