@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import type { ReactNode } from "react";
-import { AudioPreferencesProvider, useAudioPreferences } from "../store/AudioPreferencesContext";
+import { SettingsProvider, useSettings } from "../store/SettingsContext";
 import { useGameSounds } from "./useGameSounds";
 import type { StoreGameState } from "../store/storeTypes";
 import type { GameContextValue } from "../store/context";
@@ -73,7 +73,7 @@ vi.mock("../store/useGame", () => ({
 }));
 
 const wrapper = ({ children }: { children: ReactNode }) => (
-  <AudioPreferencesProvider>{children}</AudioPreferencesProvider>
+  <SettingsProvider>{children}</SettingsProvider>
 );
 
 describe("useGameSounds", () => {
@@ -188,7 +188,7 @@ describe("useGameSounds", () => {
     const { rerender, result } = renderHook(
       () => {
         useGameSounds();
-        return useAudioPreferences();
+        return useSettings();
       },
       { wrapper }
     );

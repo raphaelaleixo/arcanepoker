@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useGame } from "../store/useGame";
-import { useAudioPreferences } from "../store/AudioPreferencesContext";
+import { useSettings } from "../store/SettingsContext";
 
 function playOnce(src: string, volume = 0.7, playbackRate = 1): void {
   const audio = new Audio(src);
@@ -16,7 +16,7 @@ function playOnce(src: string, volume = 0.7, playbackRate = 1): void {
 
 export function useGameSounds(): void {
   const { state } = useGame();
-  const { sfxEnabled } = useAudioPreferences();
+  const { sfxEnabled } = useSettings();
   // Initialize refs to current state. Hook mounts before startGame() can set stage to "deal",
   // so this guarantees no spurious sound plays on first mount.
   const prevStageRef = useRef(state.stage);

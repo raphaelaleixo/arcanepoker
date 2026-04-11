@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook } from "@testing-library/react";
 import type { ReactNode } from "react";
-import { AudioPreferencesProvider } from "../store/AudioPreferencesContext";
+import { SettingsProvider } from "../store/SettingsContext";
 import { useBackgroundMusic } from "./useBackgroundMusic";
 
 // jsdom doesn't implement HTMLMediaElement — stub play/pause
@@ -20,7 +20,7 @@ afterEach(() => {
 });
 
 const wrapper = ({ children }: { children: ReactNode }) => (
-  <AudioPreferencesProvider>{children}</AudioPreferencesProvider>
+  <SettingsProvider>{children}</SettingsProvider>
 );
 
 describe("useBackgroundMusic", () => {

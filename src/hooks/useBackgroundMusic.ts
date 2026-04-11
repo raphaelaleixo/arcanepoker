@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
-import { useAudioPreferences } from '../store/AudioPreferencesContext';
+import { useSettings } from '../store/SettingsContext';
 
 export function useBackgroundMusic(src: string): void {
-  const { musicEnabled } = useAudioPreferences();
+  const { musicEnabled } = useSettings();
 
   useEffect(() => {
     if (!musicEnabled) return;

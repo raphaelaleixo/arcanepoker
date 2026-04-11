@@ -13,7 +13,7 @@ import {
 import CheckIcon from "@mui/icons-material/Check";
 import { useState, useEffect } from "react";
 import { useGame } from "../../store/useGame";
-import { useAudioPreferences } from "../../store/AudioPreferencesContext";
+import { useSettings } from "../../store/SettingsContext";
 import tarot from "../../data/tarot";
 import type { ArcanaValue } from "../../types/types";
 
@@ -45,7 +45,7 @@ export function PlaygroundDrawer({
   onOpenGameOver,
 }: PlaygroundDrawerProps) {
   const { state, dispatch } = useGame();
-  const { musicEnabled, sfxEnabled, toggleMusic, toggleSfx } = useAudioPreferences();
+  const { musicEnabled, sfxEnabled, toggleMusic, toggleSfx } = useSettings();
   const isValidStage = VALID_STAGES.includes(
     state.stage as (typeof VALID_STAGES)[number],
   );
