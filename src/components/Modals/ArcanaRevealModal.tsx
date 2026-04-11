@@ -143,7 +143,12 @@ export function ArcanaRevealModal({
               {info.gameEffect && (
                 <Typography
                   variant="caption"
-                  sx={{ color: "white", fontSize: "1rem", lineHeight: 1.5 }}
+                  sx={{
+                    color: "white",
+                    fontSize: "1rem",
+                    lineHeight: 1.3,
+                    fontWeight: 600,
+                  }}
                 >
                   {info.gameEffect}
                 </Typography>

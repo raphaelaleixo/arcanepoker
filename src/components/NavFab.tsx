@@ -2,16 +2,25 @@
 import { useRef, useState } from "react";
 import {
   ClickAwayListener,
+  Dialog,
+  DialogContent,
+  DialogTitle,
   Fab,
   Grow,
+  IconButton,
   MenuItem,
   MenuList,
   Paper,
   Popper,
+  Typography,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import MenuIcon from "@mui/icons-material/Menu";
+import { useLocation } from "react-router-dom";
 import { useNavigateWithTransition } from "../hooks/useNavigateWithTransition";
+import { SettingsPanel } from "./SettingsPanel";
+
+const GAME_ROUTES = ["/game", "/tutorial"];
 
 const ACTIONS = [
   { name: "Home", to: "/", transition: "fade" as const },
@@ -23,8 +32,21 @@ const ACTIONS = [
 
 export function NavFab() {
   const navigate = useNavigateWithTransition();
+  const location = useLocation();
   const [open, setOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const anchorRef = useRef<HTMLButtonElement>(null);
+
+  const isInGame = GAME_ROUTES.includes(location.pathname);
+
+  const handleAction = (action: (typeof ACTIONS)[number]) => {
+    setOpen(false);
+    if (action.name === "Settings" && isInGame) {
+      setSettingsOpen(true);
+    } else {
+      navigate(action.to, action.transition);
+    }
+  };
 
   return (
     <>
@@ -63,6 +85,7 @@ export function NavFab() {
                   sx={{
                     "& .MuiMenuItem-root": {
                       fontFamily: "Young Serif, serif",
+                      fontSize: "0.875em",
                     },
                     "& .MuiMenuItem-root:hover": {
                       bgcolor: "transparent",
@@ -73,10 +96,7 @@ export function NavFab() {
                   {ACTIONS.map((action) => (
                     <MenuItem
                       key={action.name}
-                      onClick={() => {
-                        setOpen(false);
-                        navigate(action.to, action.transition);
-                      }}
+                      onClick={() => handleAction(action)}
                     >
                       {action.name}
                     </MenuItem>
@@ -87,6 +107,51 @@ export function NavFab() {
           </Grow>
         )}
       </Popper>
+
+      <Dialog
+        open={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+        maxWidth="sm"
+        fullWidth
+        slotProps={{
+          paper: {
+            sx: {
+              bgcolor: "blackSuit.main",
+              border: 1,
+              borderColor: "blackSuit.light",
+              color: "#fff",
+            },
+          },
+        }}
+      >
+        <DialogTitle
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            fontFamily: "Young Serif, serif",
+            color: "gold.light",
+          }}
+        >
+          <Typography
+            variant="h5"
+            component="span"
+            sx={{ fontFamily: "inherit" }}
+          >
+            Settings
+          </Typography>
+          <IconButton
+            aria-label="close"
+            onClick={() => setSettingsOpen(false)}
+            sx={{ color: "silver.dark" }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+          <SettingsPanel />
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

@@ -26,6 +26,7 @@ import { ArcanaDisplayCard } from "./ArcanaDisplayCard";
 import { PageInfoModal } from "../Modals/PageInfoModal";
 import { ArcanaInfoModal } from "../Modals/ArcanaInfoModal";
 import { ArcanaRevealModal } from "../Modals/ArcanaRevealModal";
+import { useGameSounds } from "../../hooks/useGameSounds";
 
 const BETTING_STAGES = ["pre-flop", "flop", "turn", "river", "empress"];
 
@@ -44,6 +45,14 @@ export function PokerTable() {
   const [arcanaInfoOpen, setArcanaInfoOpen] = useState(false);
   const [arcanaDiscarding, setArcanaDiscarding] = useState(false);
   const [arcanaRevealCard, setArcanaRevealCard] = useState<ArcanaCard | null>(null);
+
+  useGameSounds([
+    showTarot,
+    pageInfoOpen,
+    arcanaInfoOpen,
+    arcanaRevealCard !== null,
+    state.stage === "game-over",
+  ]);
 
   const cardPickInteraction =
     state.pendingInteraction?.type === "priestess-reveal" ||

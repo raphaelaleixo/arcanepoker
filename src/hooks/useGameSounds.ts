@@ -14,7 +14,7 @@ function playOnce(src: string, volume = 0.7, playbackRate = 1): void {
   }
 }
 
-export function useGameSounds(): void {
+export function useGameSounds(modalOpenStates?: boolean[]): void {
   const { state } = useGame();
   const { sfxEnabled } = useSettings();
   // Initialize refs to current state. Hook mounts before startGame() can set stage to "deal",
@@ -39,6 +39,7 @@ export function useGameSounds(): void {
   const foldCount = state.players.filter((p) => p.folded).length;
   const prevFoldCountRef = useRef(foldCount);
   const prevCheckCountRef = useRef(state.checkCount);
+  const prevModalStatesRef = useRef(modalOpenStates ?? []);
 
   const isPageChallenge = state.pendingInteraction?.type === "page-challenge";
 
@@ -60,6 +61,7 @@ export function useGameSounds(): void {
       prevPageChallengeRef.current = isPageChallenge;
       prevFoldCountRef.current = foldCount;
       prevCheckCountRef.current = state.checkCount;
+      prevModalStatesRef.current = modalOpenStates ?? [];
       return;
     }
 
@@ -125,6 +127,22 @@ export function useGameSounds(): void {
       playOnce("/audio/check.mp3", 0.1, 1.5);
     }
 
+    // Modal open / close sounds
+    if (modalOpenStates) {
+      const prev = prevModalStatesRef.current;
+      for (let i = 0; i < modalOpenStates.length; i++) {
+        if (modalOpenStates[i] && !prev[i]) {
+          playOnce("/audio/modal-open.mp3", 0.5);
+          break;
+        }
+        if (!modalOpenStates[i] && prev[i]) {
+          playOnce("/audio/fold.mp3", 0.1);
+          break;
+        }
+      }
+      prevModalStatesRef.current = modalOpenStates;
+    }
+
     prevWheelRoundRef.current = state.wheelRound;
     prevHoleCardSeedSumRef.current = holeCardSeedSum;
     prevPotSizeRef.current = state.potSize;
@@ -145,5 +163,6 @@ export function useGameSounds(): void {
     foldCount,
     state.checkCount,
     sfxEnabled,
+    modalOpenStates,
   ]);
 }

@@ -11,9 +11,6 @@ vi.mock("../components/Table/PokerTable", () => ({
 vi.mock("../hooks/useBackgroundMusic", () => ({
   useBackgroundMusic: vi.fn(),
 }));
-vi.mock("../hooks/useGameSounds", () => ({
-  useGameSounds: vi.fn(),
-}));
 
 import { GamePage } from "./GamePage";
 

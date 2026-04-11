@@ -4,7 +4,11 @@ import {
   Button,
   ButtonGroup,
   ClickAwayListener,
+  Dialog,
+  DialogContent,
+  DialogTitle,
   Grow,
+  IconButton,
   Link as HtmlLink,
   MenuItem,
   MenuList,
@@ -13,9 +17,12 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import backgroundUrl from "../assets/background.svg?url";
 import { useNavigateWithTransition } from "../hooks/useNavigateWithTransition";
+import { useSettings } from "../store/SettingsContext";
+import { SettingsPanel } from "../components/SettingsPanel";
 
 const LudoratorySvg = () => (
   <svg
@@ -47,7 +54,9 @@ const bgBoxStyles = {
 
 export function HomePage() {
   const navigateWithTransition = useNavigateWithTransition();
+  const { playedTutorial, setPlayedTutorial } = useSettings();
   const [open, setOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const anchorRef = useRef<HTMLDivElement>(null);
 
   return (
@@ -99,7 +108,14 @@ export function HomePage() {
               ref={anchorRef}
               sx={{ mt: 1, width: "100%" }}
             >
-              <Button sx={{ flexGrow: 1 }} onClick={() => navigateWithTransition("/game")}>
+              <Button sx={{ flexGrow: 1 }} onClick={() => {
+                if (!playedTutorial) {
+                  setPlayedTutorial(true);
+                  navigateWithTransition("/tutorial");
+                } else {
+                  navigateWithTransition("/game");
+                }
+              }}>
                 start new game
               </Button>
               <Button
@@ -146,6 +162,7 @@ export function HomePage() {
                         sx={{
                           "& .MuiMenuItem-root": {
                             fontFamily: "Young Serif, serif",
+                            fontSize: "0.875em",
                           },
                           "& .MuiMenuItem-root:hover": {
                             bgcolor: "transparent",
@@ -172,7 +189,7 @@ export function HomePage() {
                         <MenuItem
                           onClick={() => {
                             setOpen(false);
-                            navigateWithTransition("/settings");
+                            setSettingsOpen(true);
                           }}
                         >
                           Settings
@@ -246,6 +263,51 @@ export function HomePage() {
           </Typography>
         </Box>
       </Box>
+
+      <Dialog
+        open={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+        maxWidth="sm"
+        fullWidth
+        slotProps={{
+          paper: {
+            sx: {
+              bgcolor: "blackSuit.main",
+              border: 1,
+              borderColor: "blackSuit.light",
+              color: "#fff",
+            },
+          },
+        }}
+      >
+        <DialogTitle
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            fontFamily: "Young Serif, serif",
+            color: "gold.light",
+          }}
+        >
+          <Typography
+            variant="h5"
+            component="span"
+            sx={{ fontFamily: "inherit" }}
+          >
+            Settings
+          </Typography>
+          <IconButton
+            aria-label="close"
+            onClick={() => setSettingsOpen(false)}
+            sx={{ color: "silver.dark" }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+          <SettingsPanel />
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

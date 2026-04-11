@@ -6,6 +6,7 @@ interface Settings {
   sfxEnabled: boolean;
   language: "en" | "pt-br";
   devMode: boolean;
+  playedTutorial: boolean;
 }
 
 interface SettingsContextValue extends Settings {
@@ -13,6 +14,8 @@ interface SettingsContextValue extends Settings {
   toggleSfx: () => void;
   setLanguage: (lang: "en" | "pt-br") => void;
   toggleDevMode: () => void;
+  togglePlayedTutorial: () => void;
+  setPlayedTutorial: (val: boolean) => void;
 }
 
 const STORAGE_KEY = "arcane-poker-settings";
@@ -22,6 +25,7 @@ const DEFAULTS: Settings = {
   sfxEnabled: true,
   language: "en",
   devMode: false,
+  playedTutorial: false,
 };
 
 function loadSettings(): Settings {
@@ -53,6 +57,10 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     setLanguage: (language) => setSettings((s) => ({ ...s, language })),
     toggleDevMode: () =>
       setSettings((s) => ({ ...s, devMode: !s.devMode })),
+    togglePlayedTutorial: () =>
+      setSettings((s) => ({ ...s, playedTutorial: !s.playedTutorial })),
+    setPlayedTutorial: (val: boolean) =>
+      setSettings((s) => ({ ...s, playedTutorial: val })),
   };
 
   return (
