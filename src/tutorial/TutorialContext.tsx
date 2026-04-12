@@ -23,6 +23,8 @@ interface TutorialContextValue {
   narration: { titleKey: TranslationKey; bodyKey: TranslationKey } | null;
   /** The one action the hero may take right now; null when it is not hero's turn. */
   tutorialAllowedAction: string | null;
+  /** Button key to pulse-highlight before auto-dispatching the hero action. */
+  pendingButtonHighlight: string | null;
   isComplete: boolean;
   dismissNarration: () => void;
   highlightCards: CardHighlight[] | null;
@@ -74,6 +76,8 @@ function tutorialReducer(state: TutorialState, action: TutorialAction): Tutorial
 // ─── Provider ─────────────────────────────────────────────────────────────────
 
 const BOT_THINK_MS = 700;
+const HERO_PRETHINK_MS = 800;
+const HERO_PULSE_MS = 400;
 const HERO_ID = "hero";
 
 export function TutorialProvider({ children }: { children: ReactNode }) {
@@ -86,6 +90,7 @@ export function TutorialProvider({ children }: { children: ReactNode }) {
     pendingDispatchOnDismiss: null,
   });
   const [isComplete, setIsComplete] = useState(false);
+  const [pendingButtonHighlight, setPendingButtonHighlight] = useState<string | null>(null);
 
   // Refs for latest values without stale closures
   const tutStateRef = useRef(tutState);
@@ -299,6 +304,43 @@ export function TutorialProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  // ── Hero auto-action ───────────────────────────────────────────────────────
+
+  useEffect(() => {
+    if (!isHeroTurn || !hero || !tutorialAllowedAction || !handInitializedRef.current) return;
+
+    const timer1 = setTimeout(() => {
+      if (tutStateRef.current.narration !== null) return;
+      setPendingButtonHighlight(tutorialAllowedAction);
+
+      const timer2 = setTimeout(() => {
+        setPendingButtonHighlight(null);
+
+        let action: ActionType = tutorialAllowedAction as ActionType;
+        let amount: number | undefined;
+
+        if (tutorialAllowedAction === "raise") {
+          action = "raise";
+          const minRaiseCalc = Math.max(
+            gameState.currentBet + gameState.lastRaiseSize,
+            hero.currentBet + gameState.bigBlind,
+          );
+          amount = Math.max(minRaiseCalc, gameState.bigBlind);
+        }
+
+        gameDispatch({
+          type: "PLAYER_ACTION",
+          payload: { playerId: HERO_ID, action, amount },
+        });
+      }, HERO_PULSE_MS);
+
+      timerRefs.current.push(timer2);
+    }, HERO_PRETHINK_MS);
+
+    const timerRefs = { current: [timer1] };
+    return () => timerRefs.current.forEach(clearTimeout);
+  }, [isHeroTurn, tutorialAllowedAction, tutState.narration]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // ── Highlight cards ───────────────────────────────────────────────────────
 
   const matchedNarration = tutState.narration
@@ -382,6 +424,7 @@ export function TutorialProvider({ children }: { children: ReactNode }) {
         currentRound: tutState.currentRound,
         narration: tutState.narration,
         tutorialAllowedAction,
+        pendingButtonHighlight,
         isComplete,
         dismissNarration,
         highlightCards,

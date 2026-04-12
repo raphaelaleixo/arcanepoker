@@ -21,13 +21,12 @@ interface ActionButtonsProps {
   onRaiseOrAllIn: () => void;
   foldDisabled?: boolean;
   checkDisabled?: boolean;
-  /** When set, only the matching button is enabled; others are dimmed. */
-  tutorialAllowedAction?: string | null;
+  /** When true, all buttons are non-interactive (tutorial autoplay). */
+  isTutorial?: boolean;
   /** Demo mode: the button key currently being "pressed" — shows a pulse/scale animation. */
   demoHighlightedAction?: string | null;
 }
 
-const TUTORIAL_HIGHLIGHT = "2px solid #c9a96e";
 
 const DEMO_PRESSED_SX = {
   transform: "scale(0.93)",
@@ -47,29 +46,20 @@ export function ActionButtons({
   onRaiseOrAllIn,
   foldDisabled,
   checkDisabled,
-  tutorialAllowedAction,
+  isTutorial,
   demoHighlightedAction,
 }: ActionButtonsProps) {
   const { t } = useTranslation();
-  const tut = tutorialAllowedAction ?? null;
   const demo = demoHighlightedAction ?? null;
+  const inert = isTutorial ? { tabIndex: -1, pointerEvents: "none" as const } : {};
 
-  const checkCallKey = canCheck
-    ? "check"
-    : callExceedsStack
-      ? "all-in"
-      : "call";
-  const raiseKey = isAllIn ? "all-in" : "raise";
-
-  const foldEnabled = !tut || tut === "fold";
-  const checkCallEnabled = !tut || tut === checkCallKey;
-  const raiseEnabled = !tut || tut === raiseKey;
 
   return (
     <Stack
       direction="row"
       spacing={1}
       justifyContent="center"
+      useFlexGap
       sx={{
         "& > *": {
           flexGrow: 1,
@@ -82,9 +72,10 @@ export function ActionButtons({
         size="small"
         onClick={onFold}
         disabled={foldDisabled}
+        tabIndex={inert.tabIndex}
         sx={{
-          ...(!foldEnabled && tut ? { opacity: 0.45, pointerEvents: "none" } : {}),
           ...(demo === "fold" ? DEMO_PRESSED_SX : {}),
+          pointerEvents: inert.pointerEvents,
         }}
       >
         {t("actions.fold")}
@@ -96,13 +87,11 @@ export function ActionButtons({
           size="small"
           onClick={onCheckOrCall}
           disabled={checkDisabled}
+          tabIndex={inert.tabIndex}
           sx={{
             ...(checkDisabled ? { opacity: 0.4 } : {}),
-            ...(!checkCallEnabled && tut
-              ? { opacity: 0.45, pointerEvents: "none" }
-              : {}),
-            ...(checkCallEnabled && tut ? { border: TUTORIAL_HIGHLIGHT } : {}),
             ...(demo === "check" ? DEMO_PRESSED_SX : {}),
+            pointerEvents: inert.pointerEvents,
           }}
         >
           {t("actions.check")}
@@ -112,12 +101,10 @@ export function ActionButtons({
           variant="contained"
           size="small"
           onClick={onCheckOrCall}
+          tabIndex={inert.tabIndex}
           sx={{
-            ...(!checkCallEnabled && tut
-              ? { opacity: 0.45, pointerEvents: "none" }
-              : {}),
-            ...(checkCallEnabled && tut ? { border: TUTORIAL_HIGHLIGHT } : {}),
             ...(demo === "all-in" ? DEMO_PRESSED_SX : {}),
+            pointerEvents: inert.pointerEvents,
           }}
         >
           {t("actions.allIn")} {heroStack}
@@ -127,12 +114,10 @@ export function ActionButtons({
           variant="contained"
           size="small"
           onClick={onCheckOrCall}
+          tabIndex={inert.tabIndex}
           sx={{
-            ...(!checkCallEnabled && tut
-              ? { opacity: 0.45, pointerEvents: "none" }
-              : {}),
-            ...(checkCallEnabled && tut ? { border: TUTORIAL_HIGHLIGHT } : {}),
             ...(demo === "call" ? DEMO_PRESSED_SX : {}),
+            pointerEvents: inert.pointerEvents,
           }}
         >
           {t("actions.call")} {toCall}
@@ -145,12 +130,10 @@ export function ActionButtons({
         size="small"
         onClick={onRaiseOrAllIn}
         disabled={heroStack === 0}
+        tabIndex={inert.tabIndex}
         sx={{
-          ...(!raiseEnabled && tut
-            ? { opacity: 0.45, pointerEvents: "none" }
-            : {}),
-          ...(raiseEnabled && tut ? { border: TUTORIAL_HIGHLIGHT } : {}),
           ...(demo === "raise" || demo === "all-in" ? DEMO_PRESSED_SX : {}),
+          pointerEvents: inert.pointerEvents,
         }}
       >
         {isAllIn

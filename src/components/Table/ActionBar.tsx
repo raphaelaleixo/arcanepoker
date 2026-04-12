@@ -27,9 +27,8 @@ export function ActionBar({
 }: ActionBarProps) {
   const { state, dispatch } = useGame();
   const tutorial = useTutorialOptional();
-  const tutorialAllowedAction = tutorial?.tutorialAllowedAction ?? null;
   const demo = useDemoOptional();
-  const demoHighlightedAction = demo?.pendingButtonHighlight ?? null;
+  const demoHighlightedAction = demo?.pendingButtonHighlight ?? tutorial?.pendingButtonHighlight ?? null;
 
   const hero = state.players.find((p) => p.id === HERO_ID_CONST);
 
@@ -137,7 +136,7 @@ export function ActionBar({
             onRaiseOrAllIn={handleRaiseOrAllIn}
             foldDisabled={judgementFoldBlocked}
             checkDisabled={devilMustBet}
-            tutorialAllowedAction={tutorialAllowedAction}
+            isTutorial={!!tutorial}
             demoHighlightedAction={demoHighlightedAction}
           />
         </Box>
