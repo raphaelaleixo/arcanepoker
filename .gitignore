@@ -27,3 +27,4 @@ dist-ssr
 .worktrees/
 .env.development
 .superpowers/
+dist.zip

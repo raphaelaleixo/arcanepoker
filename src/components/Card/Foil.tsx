@@ -1,4 +1,5 @@
 import { Box, GlobalStyles, keyframes, SxProps } from "@mui/material";
+import illusionUrl from "../../assets/illusion.webp";
 
 const animateFoil = keyframes`
     from {
@@ -70,7 +71,7 @@ const foilStyles: SxProps = {
   borderRadius: "var(--radius)",
   mixBlendMode: "color-dodge",
   backgroundImage:
-    "url(/art/illusion.webp), repeating-linear-gradient( 0deg, rgb(255, 119, 115) calc(var(--space)*1), rgba(255,237,95,1) calc(var(--space)*2), rgba(168,255,95,1) calc(var(--space)*3), rgba(131,255,247,1) calc(var(--space)*4), rgba(120,148,255,1) calc(var(--space)*5), rgb(216, 117, 255) calc(var(--space)*6), rgb(255, 119, 115) calc(var(--space)*7) ), repeating-linear-gradient( var(--angle), #0e152e 0%, hsl(180, 10%, 60%) 3.8%, hsl(180, 29%, 66%) 4.5%, hsl(180, 10%, 60%) 5.2%, #0e152e 10% , #0e152e 12% ), radial-gradient( farthest-corner circle at var(--mx) var(--my), rgba(0, 0, 0, .1) 12%, rgba(0, 0, 0, .15) 20%, rgba(120, 120, 120, 0.25) 120% )",
+    `url(${illusionUrl}), repeating-linear-gradient( 0deg, rgb(255, 119, 115) calc(var(--space)*1), rgba(255,237,95,1) calc(var(--space)*2), rgba(168,255,95,1) calc(var(--space)*3), rgba(131,255,247,1) calc(var(--space)*4), rgba(120,148,255,1) calc(var(--space)*5), rgb(216, 117, 255) calc(var(--space)*6), rgb(255, 119, 115) calc(var(--space)*7) ), repeating-linear-gradient( var(--angle), #0e152e 0%, hsl(180, 10%, 60%) 3.8%, hsl(180, 29%, 66%) 4.5%, hsl(180, 10%, 60%) 5.2%, #0e152e 10% , #0e152e 12% ), radial-gradient( farthest-corner circle at var(--mx) var(--my), rgba(0, 0, 0, .1) 12%, rgba(0, 0, 0, .15) 20%, rgba(120, 120, 120, 0.25) 120% )`,
   backgroundBlendMode: "exclusion, hue, hard-light, exclusion",
   backgroundSize: "var(--imgsize), 200% 700%, 300%, 200%",
   backgroundPosition:
@@ -92,7 +93,7 @@ const foilStyles: SxProps = {
     borderRadius: "var(--radius)",
     mixBlendMode: "exclusion",
     backgroundImage:
-      "url(https://res.cloudinary.com/simey/image/upload/Dev/PokemonCards/illusion.webp), repeating-linear-gradient( 0deg, rgb(255, 119, 115) calc(var(--space)*1), rgba(255,237,95,1) calc(var(--space)*2), rgba(168,255,95,1) calc(var(--space)*3), rgba(131,255,247,1) calc(var(--space)*4), rgba(120,148,255,1) calc(var(--space)*5), rgb(216, 117, 255) calc(var(--space)*6), rgb(255, 119, 115) calc(var(--space)*7) ), repeating-linear-gradient( var(--angle), #0e152e 0%, hsl(180, 10%, 60%) 3.8%, hsl(180, 29%, 66%) 4.5%, hsl(180, 10%, 60%) 5.2%, #0e152e 10% , #0e152e 12% ), radial-gradient( farthest-corner circle at var(--mx) var(--my), rgba(0, 0, 0, .1) 12%, rgba(0, 0, 0, .15) 20%, rgba(0, 0, 0, .25) 120% )",
+      `url(${illusionUrl}), repeating-linear-gradient( 0deg, rgb(255, 119, 115) calc(var(--space)*1), rgba(255,237,95,1) calc(var(--space)*2), rgba(168,255,95,1) calc(var(--space)*3), rgba(131,255,247,1) calc(var(--space)*4), rgba(120,148,255,1) calc(var(--space)*5), rgb(216, 117, 255) calc(var(--space)*6), rgb(255, 119, 115) calc(var(--space)*7) ), repeating-linear-gradient( var(--angle), #0e152e 0%, hsl(180, 10%, 60%) 3.8%, hsl(180, 29%, 66%) 4.5%, hsl(180, 10%, 60%) 5.2%, #0e152e 10% , #0e152e 12% ), radial-gradient( farthest-corner circle at var(--mx) var(--my), rgba(0, 0, 0, .1) 12%, rgba(0, 0, 0, .15) 20%, rgba(0, 0, 0, .25) 120% )`,
     backgroundBlendMode: "exclusion, hue, hard-light, exclusion",
     backgroundSize: "var(--imgsize), 200% 400%, 195%, 200%",
     backgroundPosition:
