@@ -249,6 +249,7 @@
   "tutorial": {
     "label": "Tutorial",
     "nextButton": "Next →",
+    "skipButton": "Skip",
     "round1": {
       "intro": {
         "title": "Welcome to Arcane Poker",

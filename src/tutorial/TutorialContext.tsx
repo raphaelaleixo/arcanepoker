@@ -26,6 +26,7 @@ interface TutorialContextValue {
   /** Button key to pulse-highlight before auto-dispatching the hero action. */
   pendingButtonHighlight: string | null;
   isComplete: boolean;
+  skipTutorial: () => void;
   dismissNarration: () => void;
   highlightCards: CardHighlight[] | null;
 }
@@ -368,6 +369,8 @@ export function TutorialProvider({ children }: { children: ReactNode }) {
 
   // ── Dismiss dispatcher ────────────────────────────────────────────────────
 
+  const skipTutorial = useCallback(() => setIsComplete(true), []);
+
   const baseDismiss = useCallback(() => {
     const pending = tutStateRef.current.pendingDispatchOnDismiss;
     tutDispatch({ type: "DISMISS_NARRATION" });
@@ -426,6 +429,7 @@ export function TutorialProvider({ children }: { children: ReactNode }) {
         tutorialAllowedAction,
         pendingButtonHighlight,
         isComplete,
+        skipTutorial,
         dismissNarration,
         highlightCards,
       }}

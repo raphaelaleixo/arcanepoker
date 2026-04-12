@@ -11,7 +11,7 @@ import { HEADING_FONT } from "../../theme";
  * Reads state directly from TutorialContext — only render inside TutorialProvider.
  */
 export function TutorialNarrationContent() {
-  const { narration, dismissNarration } = useTutorial();
+  const { narration, dismissNarration, skipTutorial } = useTutorial();
   const { t } = useTranslation();
 
   if (!narration) return null;
@@ -45,9 +45,19 @@ export function TutorialNarrationContent() {
         >
           {t("tutorial.label")} · {t(narration.titleKey)}
         </Typography>
-        <Button variant="text" size="small" onClick={dismissNarration} sx={{}}>
-          {t("tutorial.nextButton")}
-        </Button>
+        <Box sx={{ display: "flex", gap: 1 }}>
+          <Button
+            variant="text"
+            size="small"
+            onClick={skipTutorial}
+            sx={{ opacity: 0.5, fontSize: "0.7rem" }}
+          >
+            {t("tutorial.skipButton")}
+          </Button>
+          <Button variant="text" size="small" onClick={dismissNarration}>
+            {t("tutorial.nextButton")}
+          </Button>
+        </Box>
       </Box>
 
       {/* Row 2: body */}

@@ -12,6 +12,7 @@ function makeTutorialMock(overrides = {}) {
     isTutorial: true as const,
     narration: null,
     dismissNarration: vi.fn(),
+    skipTutorial: vi.fn(),
     tutorialAllowedAction: null,
     pendingButtonHighlight: null,
     isComplete: false,
