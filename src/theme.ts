@@ -132,7 +132,8 @@ let theme = createTheme({
     cardTitle: {
       fontFamily: HEADING_FONT,
       fontWeight: "bold",
-      fontSize: "0.875rem",
+      fontSize: "1rem",
+      lineHeight: 1,
     },
     cardTags: {
       fontFamily: "Rubik",
@@ -144,10 +145,14 @@ let theme = createTheme({
       fontFamily: "Rubik",
       fontSize: "0.75rem",
       lineHeight: 1.5,
+      textWrap: "pretty",
+      fontStyle: "italic",
     },
     cardEffect: {
-      fontSize: "0.65rem",
-      fontStyle: "italic",
+      fontFamily: "Rubik",
+      fontSize: "0.875rem",
+      textWrap: "pretty",
+      fontWeight: 500,
     },
   },
 });

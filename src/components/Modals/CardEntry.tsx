@@ -1,4 +1,10 @@
-import { Box, Stack, Typography, type SxProps, type Theme } from "@mui/material";
+import {
+  Box,
+  Stack,
+  Typography,
+  type SxProps,
+  type Theme,
+} from "@mui/material";
 import { PlayingCard } from "../Card/PlayingCard";
 import type {
   StandardCardValue,
@@ -40,30 +46,37 @@ export function CardEntry({
           flipped
         />
       </Box>
-      <Stack spacing={0}>
+      <Stack spacing={0.5} useFlexGap>
         {titleAdornment ? (
           <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
-            <Typography variant="cardTitle" sx={{ color: "gold.main" }}>
+            <Typography variant="cardTitle" sx={{ color: "silver.main" }}>
               {info.fullName}
             </Typography>
             {titleAdornment}
           </Box>
         ) : (
-          <Typography variant="cardTitle" sx={{ color: "gold.main" }}>
+          <Typography variant="cardTitle" sx={{ color: "primary.main" }}>
             {info.fullName}
           </Typography>
         )}
-        <Typography component="div" variant="cardTags" sx={{ my: 0.5, color: "silver.main" }}>
-          {info.tags.join(" · ")}
-        </Typography>
-        <Typography variant="cardDesc" sx={{ color: "white" }}>
-          {info.description}
-        </Typography>
         {showGameEffect && info.gameEffect && (
-          <Typography variant="cardEffect" sx={{ mt: 0.5, color: "gold.light" }}>
+          <Typography variant="cardEffect" sx={{ color: "text.secondary" }}>
             {info.gameEffect}
           </Typography>
         )}
+        <Typography
+          component="div"
+          variant="cardTags"
+          sx={{ color: "silver.main" }}
+        >
+          {info.tags.join(" · ")}
+        </Typography>
+        <Typography
+          variant="cardDesc"
+          sx={{ color: "silver.main", textWrap: "pretty" }}
+        >
+          {info.description}
+        </Typography>
       </Stack>
     </Stack>
   );

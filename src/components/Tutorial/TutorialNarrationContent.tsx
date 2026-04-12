@@ -56,6 +56,7 @@ export function TutorialNarrationContent() {
           color: "rgba(255,255,255,0.85)",
           fontSize: "0.75rem",
           lineHeight: 1.4,
+          textWrap: "pretty",
         }}
       >
         {t(narration.bodyKey)}
