@@ -20,6 +20,7 @@ import { useSettings } from "../store/SettingsContext";
 import { useTranslation } from "../i18n";
 import { ARCANE_MENU_PAPER_SX, ARCANE_MENU_LIST_SX } from "../theme";
 import { SettingsDialog } from "../components/SettingsDialog";
+import { RulesDialog } from "../components/RulesDialog";
 
 const LudoratorySvg = () => (
   <svg
@@ -55,6 +56,7 @@ export function HomePage() {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [rulesOpen, setRulesOpen] = useState(false);
   const anchorRef = useRef<HTMLDivElement>(null);
 
   return (
@@ -160,7 +162,7 @@ export function HomePage() {
                         <MenuItem
                           onClick={() => {
                             setOpen(false);
-                            navigateWithTransition("/rules", "fade");
+                            setRulesOpen(true);
                           }}
                         >
                           {t("nav.learnToPlay")}
@@ -246,6 +248,10 @@ export function HomePage() {
       <SettingsDialog
         open={settingsOpen}
         onClose={() => setSettingsOpen(false)}
+      />
+      <RulesDialog
+        open={rulesOpen}
+        onClose={() => setRulesOpen(false)}
       />
     </>
   );

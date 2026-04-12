@@ -13,6 +13,12 @@ vi.mock("../utils/audioPool", () => ({
 
 import { playPooled } from "../utils/audioPool";
 
+import cardDealUrl from "../assets/audio/card-deal.mp3";
+import arcanaUrl from "../assets/audio/arcana.mp3";
+import betUrl from "../assets/audio/bet.mp3";
+import roundEndUrl from "../assets/audio/round-end.mp3";
+import pageUrl from "../assets/audio/page.mp3";
+
 beforeEach(() => {
   vi.useFakeTimers();
   vi.mocked(playPooled).mockClear();
@@ -91,7 +97,7 @@ describe("useGameSounds", () => {
     rerender();
     vi.runAllTimers();
     expect(playPooled).toHaveBeenCalledTimes(2); // one per player
-    expect(playPooled).toHaveBeenCalledWith("/audio/card-deal.mp3", 0.1, 1.5);
+    expect(playPooled).toHaveBeenCalledWith(cardDealUrl, 0.1, 1.5);
   });
 
   it("plays one card-deal sound per community card added", () => {
@@ -113,7 +119,7 @@ describe("useGameSounds", () => {
     mockState.current = makeState({ pendingInteraction: { type: "arcana-reveal", arcanaCard: {} as any } });
     rerender();
     expect(playPooled).toHaveBeenCalledTimes(1);
-    expect(playPooled).toHaveBeenCalledWith("/audio/arcana.mp3", 0.5);
+    expect(playPooled).toHaveBeenCalledWith(arcanaUrl, 0.5);
   });
 
   it("plays card-deal sound when arcana becomes active", () => {
@@ -153,7 +159,7 @@ describe("useGameSounds", () => {
     mockState.current = makeState({ potSize: 20 });
     rerender();
     expect(playPooled).toHaveBeenCalledTimes(1);
-    expect(playPooled).toHaveBeenCalledWith("/audio/bet.mp3", 0.1);
+    expect(playPooled).toHaveBeenCalledWith(betUrl, 0.1);
   });
 
   it("does not play bet sound when potSize decreases (showdown payout)", () => {
@@ -172,7 +178,7 @@ describe("useGameSounds", () => {
     mockState.current = makeState({ potWon: 200 });
     rerender();
     expect(playPooled).toHaveBeenCalledTimes(1);
-    expect(playPooled).toHaveBeenCalledWith("/audio/round-end.mp3", 0.5);
+    expect(playPooled).toHaveBeenCalledWith(roundEndUrl, 0.5);
   });
 
   it("plays round-end sound on page challenge", () => {
@@ -182,7 +188,7 @@ describe("useGameSounds", () => {
     mockState.current = makeState({ pendingInteraction: { type: "page-challenge" } });
     rerender();
     expect(playPooled).toHaveBeenCalledTimes(1);
-    expect(playPooled).toHaveBeenCalledWith("/audio/page.mp3", 0.5);
+    expect(playPooled).toHaveBeenCalledWith(pageUrl, 0.3);
   });
 
   it("does not play when there is no state change", () => {

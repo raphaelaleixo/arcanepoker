@@ -17,6 +17,7 @@ import { useTranslation } from "../i18n";
 import type { TranslationKey } from "../i18n";
 import { ARCANE_MENU_PAPER_SX, ARCANE_MENU_LIST_SX } from "../theme";
 import { SettingsDialog } from "./SettingsDialog";
+import { RulesDialog } from "./RulesDialog";
 
 const GAME_ROUTES = ["/game", "/tutorial"];
 
@@ -24,7 +25,7 @@ const ACTIONS: { key: TranslationKey; id: string; to: string; transition: "fade"
   { key: "nav.home", id: "home", to: "/", transition: "fade" },
   { key: "nav.newGame", id: "newGame", to: "/game", transition: "default" },
   { key: "nav.tutorial", id: "tutorial", to: "/tutorial", transition: "default" },
-  { key: "nav.learnToPlay", id: "learnToPlay", to: "/rules", transition: "fade" },
+  { key: "nav.learnToPlay", id: "learnToPlay", to: "", transition: "fade" },
   { key: "nav.settings", id: "settings", to: "/settings", transition: "fade" },
 ];
 
@@ -34,13 +35,16 @@ export function NavFab() {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [rulesOpen, setRulesOpen] = useState(false);
   const anchorRef = useRef<HTMLButtonElement>(null);
 
   const isInGame = GAME_ROUTES.includes(location.pathname);
 
   const handleAction = (action: (typeof ACTIONS)[number]) => {
     setOpen(false);
-    if (action.id === "settings" && isInGame) {
+    if (action.id === "learnToPlay") {
+      setRulesOpen(true);
+    } else if (action.id === "settings" && isInGame) {
       setSettingsOpen(true);
     } else {
       navigate(action.to, action.transition);
@@ -91,6 +95,10 @@ export function NavFab() {
       <SettingsDialog
         open={settingsOpen}
         onClose={() => setSettingsOpen(false)}
+      />
+      <RulesDialog
+        open={rulesOpen}
+        onClose={() => setRulesOpen(false)}
       />
     </>
   );

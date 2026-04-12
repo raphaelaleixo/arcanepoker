@@ -111,9 +111,6 @@ let theme = createTheme({
   },
   typography: {
     fontFamily: ["Rubik"].join(","),
-    allVariants: {
-      textWrap: "balance",
-    },
     h1: {
       fontFamily: HEADING_FONT,
       fontSize: "2em",

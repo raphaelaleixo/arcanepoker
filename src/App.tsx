@@ -11,9 +11,6 @@ const TutorialGamePage = lazy(() =>
     default: m.TutorialGamePage,
   })),
 );
-const RulesPage = lazy(() =>
-  import("./pages/RulesPage").then((m) => ({ default: m.RulesPage })),
-);
 const SettingsPage = lazy(() =>
   import("./pages/SettingsPage").then((m) => ({ default: m.SettingsPage })),
 );
@@ -46,7 +43,6 @@ export default function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/game" element={<GamePage />} />
         <Route path="/tutorial" element={<TutorialGamePage />} />
-        <Route path="/rules" element={<RulesPage />} />
         <Route path="/settings" element={<SettingsPage />} />
         {demoEnabled && DemoPage && (
           <Route path="/demo" element={<DemoPage />} />
