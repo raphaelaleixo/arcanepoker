@@ -157,8 +157,33 @@ let theme = createTheme({
   },
 });
 
+/** Shared glow-on-hover styles used by buttons, icon buttons, FABs, etc. */
+const glowHover = (t: Theme, bgColor?: string) => ({
+  transition: "filter 400ms ease",
+  "&:hover": {
+    filter: `drop-shadow(0 0 8px ${t.palette.secondary.main}99)`,
+    backgroundColor: bgColor ?? "transparent",
+  },
+  "&:active": {
+    filter: `drop-shadow(0 0 0px ${t.palette.secondary.main})`,
+  },
+});
+
+const resolvePaletteColor = (t: Theme, color?: string) => {
+  const palette = t.palette as unknown as Record<
+    string,
+    { main?: string; contrastText?: string } | undefined
+  >;
+  return color ? palette[color] : undefined;
+};
+
 theme = createTheme(theme, {
   components: {
+    MuiButtonBase: {
+      defaultProps: {
+        disableRipple: true,
+      },
+    },
     MuiButton: {
       styleOverrides: {
         root: ({
@@ -168,12 +193,13 @@ theme = createTheme(theme, {
           ownerState: { variant?: string; color?: string };
           theme: Theme;
         }) => {
-          const palette = t.palette as unknown as Record<
-            string,
-            { main?: string; contrastText?: string } | undefined
-          >;
-          const pc = ownerState.color ? palette[ownerState.color] : undefined;
+          const pc = resolvePaletteColor(t, ownerState.color);
+          const bg =
+            ownerState.variant === "contained" && pc?.main
+              ? pc.main
+              : undefined;
           return {
+            ...glowHover(t, bg),
             "&.Mui-disabled": {
               opacity: 0.45,
               pointerEvents: "none",
@@ -193,6 +219,38 @@ theme = createTheme(theme, {
             },
           };
         },
+      },
+    },
+    MuiIconButton: {
+      styleOverrides: {
+        root: ({ theme: t }: { theme: Theme }) => glowHover(t),
+      },
+    },
+    MuiFab: {
+      styleOverrides: {
+        root: ({
+          ownerState,
+          theme: t,
+        }: {
+          ownerState: { color?: string };
+          theme: Theme;
+        }) => {
+          const pc = resolvePaletteColor(t, ownerState.color);
+          return glowHover(t, pc?.main);
+        },
+      },
+    },
+    MuiButtonGroup: {
+      styleOverrides: {
+        grouped: ({ theme: t }: { theme: Theme }) => ({
+          transition: "filter 400ms ease",
+          "&:hover": {
+            filter: `drop-shadow(0 0 8px ${t.palette.secondary.main}99)`,
+          },
+          "&:active": {
+            filter: `drop-shadow(0 0 0px ${t.palette.secondary.main})`,
+          },
+        }),
       },
     },
     MuiTooltip: {

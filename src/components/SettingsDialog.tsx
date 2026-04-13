@@ -8,6 +8,7 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import { ARCANE_MENU_PAPER_SX, HEADING_FONT } from "../theme";
 import { SettingsPanel } from "./SettingsPanel";
+import { useTranslation } from "../i18n";
 
 interface SettingsDialogProps {
   open: boolean;
@@ -15,6 +16,7 @@ interface SettingsDialogProps {
 }
 
 export function SettingsDialog({ open, onClose }: SettingsDialogProps) {
+  const { t } = useTranslation();
   return (
     <Dialog
       open={open}
@@ -37,7 +39,7 @@ export function SettingsDialog({ open, onClose }: SettingsDialogProps) {
           component="span"
           sx={{ fontFamily: "inherit" }}
         >
-          Settings
+          {t("settings.title")}
         </Typography>
         <IconButton
           aria-label="close"

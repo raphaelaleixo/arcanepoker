@@ -22,7 +22,7 @@ export function RulesDialog({ open, onClose }: RulesDialogProps) {
     <Dialog
       open={open}
       onClose={onClose}
-      maxWidth="md"
+      maxWidth="sm"
       fullWidth
       slotProps={{ paper: { sx: ARCANE_MENU_PAPER_SX } }}
     >

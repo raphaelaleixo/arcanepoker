@@ -74,7 +74,8 @@ export function HomePage() {
             borderRadius: 3,
             opacity: 1,
             transition: "all 0.3s ease-in-out",
-            maskImage: "linear-gradient(to right, black calc(30% + 1.2em), transparent calc(30% + 1.2em), transparent calc(70% - 1.2em), black calc(70% - 1.2em))",
+            maskImage:
+              "linear-gradient(to right, black calc(30% + 1.2em), transparent calc(30% + 1.2em), transparent calc(70% - 1.2em), black calc(70% - 1.2em))",
           },
         }}
       >
@@ -92,7 +93,7 @@ export function HomePage() {
               backgroundImage: `url(${backgroundUrl})`,
             }}
           />
-          <Stack sx={{ py: "3em" }} spacing={1} useFlexGap>
+          <Stack sx={{ py: "2em", width: "100%" }} spacing={1} useFlexGap>
             <Typography
               variant="h1"
               sx={{
@@ -108,14 +109,17 @@ export function HomePage() {
               ref={anchorRef}
               sx={{ mt: 1, width: "100%" }}
             >
-              <Button sx={{ flexGrow: 1 }} onClick={() => {
-                if (!playedTutorial) {
-                  setPlayedTutorial(true);
-                  navigateWithTransition("/tutorial");
-                } else {
-                  navigateWithTransition("/game");
-                }
-              }}>
+              <Button
+                sx={{ flexGrow: 1 }}
+                onClick={() => {
+                  if (!playedTutorial) {
+                    setPlayedTutorial(true);
+                    navigateWithTransition("/tutorial");
+                  } else {
+                    navigateWithTransition("/game");
+                  }
+                }}
+              >
                 {t("nav.startNewGame")}
               </Button>
               <Button
@@ -131,9 +135,7 @@ export function HomePage() {
               anchorEl={anchorRef.current}
               transition
               disablePortal
-              modifiers={[
-                { name: "offset", options: { offset: [0, 4] } },
-              ]}
+              modifiers={[{ name: "offset", options: { offset: [0, 4] } }]}
               sx={{ zIndex: 1, width: anchorRef.current?.offsetWidth }}
             >
               {({ TransitionProps, placement }) => (
@@ -141,15 +143,11 @@ export function HomePage() {
                   {...TransitionProps}
                   style={{
                     transformOrigin:
-                      placement === "bottom"
-                        ? "center top"
-                        : "center bottom",
+                      placement === "bottom" ? "center top" : "center bottom",
                   }}
                 >
                   <Paper sx={ARCANE_MENU_PAPER_SX}>
-                    <ClickAwayListener
-                      onClickAway={() => setOpen(false)}
-                    >
+                    <ClickAwayListener onClickAway={() => setOpen(false)}>
                       <MenuList autoFocusItem sx={ARCANE_MENU_LIST_SX}>
                         <MenuItem
                           onClick={() => {
@@ -249,10 +247,7 @@ export function HomePage() {
         open={settingsOpen}
         onClose={() => setSettingsOpen(false)}
       />
-      <RulesDialog
-        open={rulesOpen}
-        onClose={() => setRulesOpen(false)}
-      />
+      <RulesDialog open={rulesOpen} onClose={() => setRulesOpen(false)} />
     </>
   );
 }
