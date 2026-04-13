@@ -165,12 +165,7 @@ export default {
     },
     Q: {
       fullName: "Rainha de Copas",
-      tags: [
-        "compassiva",
-        "intuitiva",
-        "acolhedora",
-        "inteligência emocional",
-      ],
+      tags: ["compassiva", "intuitiva", "acolhedora", "inteligência emocional"],
       description:
         "A Rainha de Copas representa compaixão e intuição. Significa uma pessoa acolhedora e empática, sintonizada com suas emoções. Esta carta sugere a necessidade de inteligência emocional e compreensão. É um lembrete para ser solidário e carinhoso.",
     },
@@ -223,7 +218,12 @@ export default {
 
     "6": {
       fullName: "Seis de Espadas",
-      tags: ["transição", "seguir em frente", "deixar para trás", "recuperação"],
+      tags: [
+        "transição",
+        "seguir em frente",
+        "deixar para trás",
+        "recuperação",
+      ],
       description:
         "O Seis de Espadas simboliza transição e seguir em frente. Representa um momento de deixar para trás situações difíceis e buscar águas mais calmas. Esta carta sugere a necessidade de paciência e perseverança. É um lembrete para confiar na jornada e abraçar a mudança.",
     },
@@ -294,7 +294,12 @@ export default {
   diamonds: {
     A: {
       fullName: "Ás de Ouros",
-      tags: ["prosperidade", "novas oportunidades", "manifestação", "abundância"],
+      tags: [
+        "prosperidade",
+        "novas oportunidades",
+        "manifestação",
+        "abundância",
+      ],
       description:
         "O Ás de Ouros representa prosperidade e novas oportunidades. Significa uma onda de abundância, riqueza material e estabilidade financeira. Esta carta frequentemente indica o início de um novo empreendimento, investimento ou oportunidade financeira. É um sinal para abraçar seu potencial e manifestar seus objetivos.",
     },
@@ -382,7 +387,12 @@ export default {
     },
     K: {
       fullName: "Rei de Ouros",
-      tags: ["estabilidade financeira", "prosperidade", "autoridade", "segurança"],
+      tags: [
+        "estabilidade financeira",
+        "prosperidade",
+        "autoridade",
+        "segurança",
+      ],
       description:
         "O Rei de Ouros simboliza estabilidade financeira e prosperidade. Representa uma pessoa poderosa e bem-sucedida, focada em criar riqueza e segurança. Esta carta sugere a necessidade de sabedoria financeira e planejamento estratégico. É um lembrete para ser responsável e generoso.",
     },
@@ -404,11 +414,12 @@ export default {
         "Após a rodada final, cada jogador pode descartar sua mão e comprar uma nova.",
     },
     "2": {
-      fullName: "A Sacerdotisa",
+      fullName: "A Alta Sacerdotisa",
       tags: ["intuição", "segredos", "mistério", "subconsciente"],
       description:
-        "A Sacerdotisa representa intuição, segredos e o subconsciente. Significa a necessidade de confiar em sua sabedoria interior e ouvir sua intuição. Esta carta sugere a necessidade de ser paciente e reflexivo. É um lembrete para confiar em seu instinto e buscar compreensão mais profunda.",
-      gameEffect: "Todos os jogadores viram uma carta de sua escolha com a face para cima",
+        "A Alta Sacerdotisa representa intuição, segredos e o subconsciente. Significa a necessidade de confiar em sua sabedoria interior e ouvir sua intuição. Esta carta sugere a necessidade de ser paciente e reflexivo. É um lembrete para confiar em seu instinto e buscar compreensão mais profunda.",
+      gameEffect:
+        "Todos os jogadores viram uma carta de sua escolha com a face para cima",
     },
     "3": {
       fullName: "A Imperatriz",
@@ -440,10 +451,10 @@ export default {
       gameEffect: "As duas melhores mãos dividirão o pote",
     },
     "7": {
-      fullName: "O Carro",
+      fullName: "A Carruagem",
       tags: ["força de vontade", "determinação", "controle", "sucesso"],
       description:
-        "O Carro simboliza força de vontade, determinação e sucesso. Representa a necessidade de superar obstáculos e alcançar seus objetivos. Esta carta sugere a necessidade de ser focado e disciplinado. É um lembrete para se manter determinado e perseguir suas ambições.",
+        "A Carruagem simboliza força de vontade, determinação e sucesso. Representa a necessidade de superar obstáculos e alcançar seus objetivos. Esta carta sugere a necessidade de ser focado e disciplinado. É um lembrete para se manter determinado e perseguir suas ambições.",
       gameEffect:
         "Cada jogador passa uma de suas cartas para o jogador à sua esquerda",
     },
@@ -460,15 +471,15 @@ export default {
       tags: ["introspecção", "solidão", "sabedoria", "autoconhecimento"],
       description:
         "O Eremita simboliza introspecção, solidão e autoconhecimento. Representa a necessidade de se retirar do mundo e buscar sabedoria interior. Esta carta sugere a necessidade de ser reflexivo e contemplativo. É um lembrete para confiar em sua orientação interior e buscar a solidão.",
-      gameEffect:
-        "Cada jogador usará apenas as cartas em sua mão nesta rodada",
+      gameEffect: "Cada jogador usará apenas as cartas em sua mão nesta rodada",
     },
     "10": {
-      fullName: "A Roda da Fortuna",
+      fullName: "Roda da Fortuna",
       tags: ["destino", "mudança", "ciclos", "sina"],
       description:
         "A Roda da Fortuna representa destino, mudança e sina. Significa a necessidade de abraçar a natureza cíclica da vida e aceitar as mudanças. Esta carta sugere a necessidade de ser adaptável e flexível. É um lembrete para confiar no processo e abraçar novas oportunidades.",
-      gameEffect: "As mãos de todos os jogadores são embaralhadas e redistribuídas.",
+      gameEffect:
+        "As mãos de todos os jogadores são embaralhadas e redistribuídas.",
     },
     "11": {
       fullName: "A Justiça",
@@ -483,10 +494,11 @@ export default {
       tags: ["sacrifício", "perspectiva", "rendição", "pausa"],
       description:
         "O Enforcado representa sacrifício, perspectiva e rendição. Significa a necessidade de soltar e ver as coisas de uma nova perspectiva. Esta carta sugere a necessidade de ser paciente e se render ao momento. É um lembrete para confiar no processo e abraçar a mudança.",
-      gameEffect: "Qualquer jogador que apostar tudo pode comprar uma carta extra",
+      gameEffect:
+        "Qualquer jogador que apostar tudo pode comprar uma carta extra",
     },
     "13": {
-      fullName: "A Morte",
+      fullName: "Morte",
       tags: ["fins", "transformação", "mudança", "renascimento"],
       description:
         "A Morte simboliza fins, transformação e renascimento. Representa a necessidade de deixar ir o antigo e abraçar o novo. Esta carta sugere a necessidade de estar aberto a mudanças e transformação. É um lembrete para confiar no processo e abraçar novos começos.",
@@ -505,7 +517,8 @@ export default {
       tags: ["lado sombrio", "vício", "materialismo", "restrição"],
       description:
         "O Diabo simboliza o lado sombrio, vício e restrição. Representa a necessidade de confrontar seus medos e limitações. Esta carta sugere a necessidade de estar ciente de seus padrões e comportamentos negativos. É um lembrete para se libertar de limitações autoimpostas.",
-      gameEffect: "O primeiro jogador a agir em cada rua pós-flop deve apostar.",
+      gameEffect:
+        "O primeiro jogador a agir em cada rua pós-flop deve apostar.",
     },
     "16": {
       fullName: "A Torre",

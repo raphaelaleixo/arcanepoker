@@ -1,17 +1,9 @@
-import { Box, Button, Stack, Typography } from "@mui/material";
-import type { ArcanaCard, ArcanaValue, ArcanaSuit } from "../../types/types";
-import { PlayingCard } from "../Card/PlayingCard";
-import { HEADING_FONT } from "../../theme";
+import { Button } from "@mui/material";
+import type { ArcanaCard } from "../../types/types";
 import { useTranslation } from "../../i18n";
 import { ArcaneDialog } from "./ArcaneDialog";
 import { getTarotInfo } from "../../data/getTarotInfo";
-
-const ROMAN = [
-  "0", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X",
-  "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX", "XXI",
-];
-
-const toRoman = (value: string) => ROMAN[Number(value)] ?? value;
+import { CardEntry } from "./CardEntry";
 
 interface ArcanaRevealModalProps {
   open: boolean;
@@ -40,82 +32,14 @@ export function ArcanaRevealModal({
         </Button>
       }
     >
-      <Stack
-        direction="row"
-        alignItems="flex-start"
-        spacing={2}
-        useFlexGap
-        sx={{ pt: 3 }}
-      >
-        <Box
-          sx={{
-            display: "inline-block",
-            scale: 0.9,
-            flexShrink: 0,
-            transformOrigin: "top center",
-          }}
-        >
-          <PlayingCard
-            rank={arcanaCard.value as ArcanaValue}
-            suit={arcanaCard.suit as ArcanaSuit}
-            flipped
-          />
-        </Box>
-
-        {info && (
-          <Stack spacing={0}>
-            <Typography
-              variant="caption"
-              sx={{
-                color: "primary.main",
-                fontWeight: "bold",
-                fontSize: "1.125rem",
-                fontFamily: HEADING_FONT,
-              }}
-            >
-              {toRoman(arcanaCard.value)} - {info.fullName}
-            </Typography>
-            <Typography
-              component="div"
-              variant="caption"
-              sx={{
-                my: 0.5,
-                color: "silver.main",
-                fontSize: "0.7rem",
-                fontWeight: 600,
-                textTransform: "uppercase",
-              }}
-            >
-              {info.tags.join(" · ")}
-            </Typography>
-            {info.gameEffect && (
-              <Typography
-                variant="caption"
-                sx={{
-                  color: "white",
-                  fontSize: "1rem",
-                  lineHeight: 1.3,
-                  fontWeight: 600,
-                }}
-              >
-                {info.gameEffect}
-              </Typography>
-            )}
-            <Typography
-              variant="caption"
-              sx={{
-                color: "gold.light",
-                fontSize: "0.875rem",
-                lineHeight: 1.3,
-                fontStyle: "italic",
-                mt: 0.5,
-              }}
-            >
-              {info.description}
-            </Typography>
-          </Stack>
-        )}
-      </Stack>
+      {info ? (
+        <CardEntry
+          card={arcanaCard}
+          info={info}
+          showGameEffect
+          sx={{ fontSize: "1.125em", mt: 2 }}
+        />
+      ) : null}
     </ArcaneDialog>
   );
 }
