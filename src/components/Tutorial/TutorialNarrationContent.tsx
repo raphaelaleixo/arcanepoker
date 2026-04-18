@@ -43,7 +43,7 @@ export function TutorialNarrationContent() {
             fontFamily: HEADING_FONT,
           }}
         >
-          {t("tutorial.label")} · {t(narration.titleKey)}
+          {t(narration.titleKey)}
         </Typography>
         <Box sx={{ display: "flex", gap: 1 }}>
           <Button
