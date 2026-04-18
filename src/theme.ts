@@ -88,6 +88,15 @@ declare module "@mui/material/Typography" {
 /* ------------------------------------------------------------------ */
 
 let theme = createTheme({
+  breakpoints: {
+    values: {
+      xs: 0,
+      sm: 390,
+      md: 900,
+      lg: 1200,
+      xl: 1536,
+    },
+  },
   palette: {
     text: {
       secondary: "#ffffff",
