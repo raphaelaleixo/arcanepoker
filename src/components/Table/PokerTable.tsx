@@ -183,14 +183,18 @@ export function PokerTable() {
         sx={{
           position: "absolute",
           maxHeight: "800px",
-          width: "calc(100% - 3em)",
+          width: { xs: "calc(100% - 1em)", sm: "calc(100% - 3em)" },
           maxWidth: "500px",
           top: "max(0px, calc(50% - 400px))",
           left: 0,
           right: 0,
           mx: "auto",
           display: "grid",
-          gridTemplateColumns: "minmax(130px, 1fr) auto minmax(130px, 1fr)",
+          fontSize: { xs: "0.85rem", sm: "1rem" },
+          gridTemplateColumns: {
+            xs: "minmax(100px, 1fr) auto minmax(100px, 1fr)",
+            sm: "minmax(130px, 1fr) auto minmax(130px, 1fr)",
+          },
           gridTemplateRows: "auto auto auto auto auto",
         }}
       >
