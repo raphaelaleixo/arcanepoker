@@ -45,9 +45,10 @@ describe('TutorialNarrationContent', () => {
     expect(getByText(/You've been dealt the Page of Hearts/)).not.toBeNull();
   });
 
-  it('renders the label with title', () => {
-    const { getByText } = renderWithProviders(<TutorialNarrationContent />);
-    expect(getByText(/Tutorial · The Page card/)).not.toBeNull();
+  it('renders the title without a Tutorial prefix', () => {
+    const { getByText, queryByText } = renderWithProviders(<TutorialNarrationContent />);
+    expect(getByText(/The Page card/)).not.toBeNull();
+    expect(queryByText(/Tutorial · /)).toBeNull();
   });
 
   it('calls dismissNarration when Next button is clicked', () => {
