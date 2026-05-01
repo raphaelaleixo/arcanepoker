@@ -215,7 +215,7 @@ export function HomePage() {
           >
             {t("common.madeBy")}{" "}
             <HtmlLink
-              href="https://aleixo.me"
+              href="https://ludoratory.com"
               target="_blank"
               rel="noopener noreferrer"
             >
