@@ -76,7 +76,7 @@ export function SettingsPanel() {
           <Typography variant="body2" sx={{ color: "silver.light" }}>
             {t("common.madeBy")}{" "}
             <Link
-              href="https://aleixo.me"
+              href="https://ludoratory.com"
               target="_blank"
               rel="noopener noreferrer"
             >
